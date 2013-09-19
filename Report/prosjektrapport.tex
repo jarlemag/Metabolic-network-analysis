@@ -1,0 +1,1428 @@
+\documentclass[12pt,a4paper]{article}
+%\documentclass[12pt,a4paper,titlepage,norsk]{article}
+%\usepackage[norsk]{babel}
+%\usepackage[latin1]{inputenc}
+\usepackage[cp1252]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+
+\usepackage{amsmath} %avanserte matematiske symboler
+%\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{array}
+\newcolumntype{x}[1]{%
+>{\centering\hspace{0pt}}p{#1}}
+\newcommand{\tn}{\tabularnewline}
+
+\usepackage{caption}
+\usepackage{subfig}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{lscape}
+%\usepackage{pdflscape}
+\usepackage{multirow}
+\usepackage[title,titletoc]{appendix}
+%\usepackage{regexpatch}
+\usepackage{tocloft}
+
+\usepackage{fancyvrb}
+\usepackage{fixltx2e}
+\usepackage{listings}
+%hypenation patterns - choose one (or zero):
+%\usepackage{nbhyph}
+%\usepackage{miktex-hyph-norwegian} 
+
+\lstset{basicstyle=\scriptsize }
+\captionsetup{font=scriptsize,labelfont=scriptsize}
+%chemistry-related packages:
+%\usepackage{chemstyle} %"writing chemistry with style"
+%\usepackage{chemarrow} %arrrow symbols
+%\usepackage{chemcono} %support for compound numbers
+%\usepackage{chemsym} %macros for writing chemical symbols
+%\usepackage{chemscheme}  %support for chemical schemes
+\usepackage[version=3]{mhchem} %Typesetting chemical formulae, equations and risk phrases
+%\usepackage{bpchem} %Typeset chemical names, formulae, and numbering of chemical compounds
+%\usepackage(rsc}
+
+%\usepackage{syntonly}
+%\syntaxonly
+
+\usepackage{fancyhdr} %for redigering av topptekst og bunntekst
+\usepackage{setspace} %gjør miljøer for forskjellige linjeavstander tilgjengelige
+\usepackage{wrapfig} %Tekst kan "flyte" rundt figurer
+%\usepackage{floatflt}
+
+\usepackage{hyperref}
+\usepackage{comment}
+
+%\pagestyle{fancy}
+
+%\topmargin{0in} %setter toppmargin
+%\headheight{1in} %setter høyden til toppteksten
+\lhead{}
+\chead{}
+%\rhead{\bfseries {\small{ Jarle Magnus Ribe Pahr, plassnr 69}}}
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt} %bestemmer tykkelse på linjer
+
+\newcommand\reaction[1]{\begin{equation}\ce{#1}\end{equation}}
+\newcommand\reactionnonumber[1]{\begin{equation*}\ce{#1}\end{equation*}}
+
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+
+
+%\widowpenalty=10000 
+%\clubpenalty=10000%  Hindrer "ensomme" linjer øverst/nederst på en side
+
+\author{Jarle Magnus Ribe Pahr}
+\title{Investigating the effect of cellular objectives on genome-scale metabolic
+models
+\\
+\\
+Biotechnology specialization project Fall 2012}
+\date{}
+
+%bibliografistiler - velg én:
+%\bibliographystyle{abbrv}
+%\bibliographystyle{jarlemag1}
+
+\bibliographystyle{unsrtjpa} %norsk, "usortert" (kronologisk rekkefølge)
+
+%\setcounter{tocdepth}{1}
+
+%\usepackage[citestyle=numeric-comp,bibstyle=numeric,maxbibnames=4]{biblatex}
+%\listfiles
+
+\renewcommand{\cftsecaftersnum}{:}
+
+\begin{document}
+
+\pagenumbering{arabic}
+\maketitle
+\thispagestyle{empty}
+
+%\thispagestyle{fancy}
+
+\setlength{\parindent}{0pt} %Ikke innrykk ved nytt avsnitt
+\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex} %Hopp over en linje ved nytt avsnitt
+
+\newpage
+\section*{Abstract}
+The study of microbial metabolism through computational methods is a thriving area of systems biology where Flux Balance Analysis (FBA) is a central methodology. FBA employs an optimization procedure guided by an objective function to explore metabolic performance limits and predict favourable biochemical flux patterns. Various objective functions have historically been proposed for choice as the biologically relevant optimization principle. A previous, highly cited study investigated the effect of various objectives on a small-scale model of central carbon metabolism in the bacterium \textit{E. coli}. However, the approach used therein does not scale well to genome-scale models. In this project, a MATLAB program for analysing the effect of cellular objectives on metabolic models up to the full-genome scale has been developed. Quadratic programming can be used with genome-scale models to rapidly compute flux patterns which have the best fit to experimentally gathered data, as measured by the euclidean distance between the experimental and computed flux vectors. The program framework is considered to be in a preliminary working state and some results are presented - further development would allow rigorous analyses to be performed using a variety of models, objectives and constraints. Some issues in the use of data gathered through Metabolic Flux Analysis (MFA) as a reference for FBA results are pointed out.
+
+\newpage
+\tableofcontents
+\addtocontents{toc}{~\hfill\textbf{Page}\par}
+%\addcontentsline{toc}{sec_unit}{entry} %legge til noe til innholdsfortegnelsen
+
+\newpage
+\section{Introduction}
+During the past two decades, the rise of high-throughput technologies for acquisition and analysis of biological data has enabled the rise of systems biology as an interdisciplinary field of study rooted in molecular biology.\cite{Kitano2002} Molecular biology has traditionally been a reductive science, studying one or a few components at a time. This has led to a good understanding of many basic molecular components and subsystems. However, high-throughput technologies can now be used to enumerate and analyse all components or all interactions of a specific kind in a cell, massively increasing the potential scale of analysis. With this advance, new subfields such as genomics, transcriptomics, proteomics and metabolomics have arisen to tackle the large-scale analysis of their respective areas of molecular biology. In contrast to the traditional reductive approach of molecular biology, systems biology aims to integrate knowledge from the vast datasets produced by these new subfields and other relevant sources.\cite{ChallengesInSilico} The desired result of systems biology is a holistic understanding of the biological system under study as a whole.
+
+The concept of networks is central to systems biology. In general, interactions between components of the biological system under consideration are described by networks. The components of the system are represented as ''nodes'' in the network, and two nodes are linked together if they somehow interact. The definition of interaction as used here is broad. For example, in a metabolic network representing biochemical transformations, two molecules can be said to interact if it is possible to transform one into the other by a chemical reaction. Several types of biological networks are commonly studied. Among these are protein interaction networks, transcriptional regulation networks, and metabolic networks. Specialized software is available for investigating the topological properties of diverse kinds of networks.\cite{Cytoscape}
+
+It is impossible to separate the different biological networks from each other causally. For example, gene regulation is mediated by protein-protein and protein-DNA interactions among other factors, and the state of the metabolic network is affected by gene expression levels. Synthesis of proteins and other gene regulatory molecules is in turn part of the metabolic activity of the cell. Thus, transcriptional regulation networks, protein interaction networks and metabolic networks all interact. However, meaningful information can still be acquired by considering one network at a time. Recently, efforts have also been made to integrate all the commonly studied networks in a whole-cell model to give a more complete biological picture of the processes in a single cell.\cite{Karr2012389} This advance has been hailed as ''the dawn of virtual cell biology''.\cite{Freddolino2012}
+
+A central task in systems biology is the construction of models to enable predictions to be made about the behaviour of complex biological systems under various circumstances. Metabolic models based on biochemical reaction networks have been subject to much research, and Flux Balance Analysis (FBA) is a widely used method for making predictions from such models. In addition to furthering basic biological research, metabolic modelling and FBA has applications in medicine.\cite{HHT}
+
+In performing FBA, an optimization strategy is applied to obtain a biologically realistic solution from the large feasible set containing mathematically possible solutions satisfying the constraints of the model. Mathematically, the optimization strategy is described by an objective function. This report is concerned with strategies and procedures for evaluating various objective functions. A collection of MATLAB functions for analyzing genome-scale metabolic models with respect to the effect of various objectives and constraints has been developed, and results obtained through their use are presented and discussed. The functions utilize features of the COBRA MATLAB Toolbox, a widely used tool for Flux Balance Analysis and related methods.
+
+\section{Theory}
+
+\subsection{Metabolic models}
+
+%For a general commentary on modelling in systems biology, see \cite{Kaznessis2007}.
+
+\subsubsection{General concepts}
+A metabolic model is a mathematical representation of the possible biochemical reactions in a biological system. Such a model may be limited to a few reactions, or include all known reactions in a system. Genome-scale metabolic models are examples of the latter kind, and are so called because they are based on a combination of genomic information covering the whole genome of the organism together with biochemical knowledge regarding the enzymes encoded by that information.\cite{Liu2010} Reactions that are not predicted directly by gene sequence must also be added.\cite{Liu2010} Such is the case for reactions which are not catalyzed by an enzyme, and thus are not linked to any gene, and for reactions whose genes a cursory genomic inspection fail to reveal. Software tools and methods are available online for semi-automated construction, curation and quality control of genome-scale models, and the number of available models is large and increasing.\cite{Terzer2009} A selection of software tools supporting model reconstruction is listed in Table \ref{table:modelsoftware}. Automatic construction of models has made possible the comparison of metabolic networks among a large number of species, and thereby the identification of their conserved properties.\cite{Alam2011} Using a semi-automated approach, a time requirement as short as four full-time weeks for producing a genome-scale model has been reported while at the same time noting the limitations of automatic procedures.\cite{Latendresse2012} A general protocol for  reconstruction of genome-scale models has been described by Thiele and Palsson.\cite{PalssonNatProt2010} For a high-quality, well curated model a time-frame closer to a year is suggested by the latter authors. \textit{Escherichia coli} is one of the best studied microbial organisms, but even the latest model of \textit{E. coli} metabolism, iJO1366 contains 208 ''blocked'' metabolites, corresponding to gaps in the network.\cite{Orth2012} Gaps in metabolic models can be classified as \textit{scope gaps} or \textit{knowledge gaps}. Scope gaps are those gaps which exist because not all types of reactions are included in the model, while knowledge gaps are the result of incomplete knowledge about the biochemistry of the organism in question. It is unclear when a genome-scale metabolic model that is considered ''complete'' will be available.
+
+A selection of notable genome-scale metabolic models is shown in Table \ref{table:models}. A database of genome-scale metabolic models is maintained at the Genome-Scale Metabolic Network Database (GSMNDB) at  \url{http://synbio.tju.edu.cn/GSMNDB/gsmndb.htm}.
+
+
+\begin{table}[h!]
+%\small
+\caption{Selected genome-scale metabolic models}
+\label{table:models}
+    \begin{tabularx}{\linewidth}{|X|X|X|X|X|}
+        \hline
+        Model    & Organism       & Reactions & Metabolites \\ \hline
+        RECON 1 \cite{Duarte2007} &Human          & 3311      & 2766     \\ 
+        AraGEM  \cite{AraGEM2010}&\textit{A. thaliana}    & 1567     & 1748  \\ 
+        AlgaGEM \cite{AlgaGEM} &\textit{C. reinhardtii} & 1725      & 1862           \\ 
+        iJE660  \cite{Edwards2000}&\textit{E. coli}        & 627       & 438        \\ 
+        iJR904  \cite{Reed2003}&\textit{E. coli}        & 931       & 625             \\ 
+        iAF1260 \cite{Feist2007} &\textit{E. coli}        & 2077      & 1039            \\ 
+        iJO1366  \cite{Orth2011} &\textit{E. coli}        & 2251      & 1136        \\ 
+        iJE303    \cite{Edwards1999}&\textit{H. influenzae}  & 488       & 343    \\ 
+        Yeast 5  \cite{Yeast52012}&\textit{S. cerevisiae}  & 1102      & 924 \\
+        \hline
+    \end{tabularx}
+\normalsize
+\end{table}
+
+\begin{center}
+\begin{table}[h!]
+\small
+\caption{Software tools for metabolic model reconstruction}
+\label{table:modelsoftware}
+    \begin{tabular}{|c|x{10cm}|}
+        \hline
+        Software   & Features                                                                      \tn \hline
+        GEMSiRV    & Metabolic models simulation, reconstruction and visualization.\cite{LiaoYCFAUTsai}   \tn 
+        MEMOSys    & Management, storage and development of metabolic models with version control.\cite{MEMOSys}   \tn 
+        Merlin     & Automatic gene annotation, export to metabolic model in SBML format.\cite{Merlin}          \tn
+        rBioNet    & MATLAB environment for model reconstruction with quality control measures.\cite{rBioNet}         \tn 
+        Model SEED & Web-based, automated high-throughput generation, optimization and analysis of metabolic models.\cite{Henry2010}       \tn
+        MetaFlux   & Generation of FBA models directly from pathway/genome databases through the Pathway Tools system.\cite{Latendresse2012} \tn
+        \hline
+    \end{tabular}
+    \normalsize
+\end{table}
+\end{center}
+
+%Add OMNI to the list
+%CADLIVE?
+
+Metabolic models constructed from public databases may be found to be biologically unrealistic for various reasons, and manual curation is necessary to ensure accurateness.\cite{Poolman2006} Tools are available for finding and removing errors, corresponding for example to thermodynamically or stoichiometrically impossible situations, in completed models.\cite{Gevorgyan2008} One of the main requirements of a metabolic model is that it is without major gaps. That is, the model should include all major reactions which are possible in the actual biological system. After reactions have been mapped from the genomic information available from the organism, gaps in the model may be identified and eliminated by an automatic routine.\cite{Kumar2007} Computational methods for gap-filling have been reviewed by Orth and Palsson.\cite{Orth2010} Still, models that are in themselves not incorrect may still give rise to thermodynamically prohibited flux distributions when methods such as flux balance analysis is applied. Infeasible solutions may potentially be eliminated  by changing the network topology while still maintaining the optimality of the found solution.\cite{Nigam2007}
+
+The Systems Biology Markup Language (SBML) is a commonly used format for describing metabolic models.\cite{HuckaMFAUFinney}
+
+\subsubsection{Mathematical formulation}
+The stoichiometric matrix is at the heart of mathematical treatments of metabolic networks (For an introductory text to linear algebra and matrix operations, see \cite{EdwardsPenney}). The stoichiometric matrix, denoted S, relates all the compounds and chemical reactions which is part of the network.\cite{ReconstructedNetworks} In the case of a genome-scale metabolic model, this should include all metabolites and all possible biologically significant chemical reactions in the cell.
+
+The stoichiometric matrix contains as its elements the stoichiometric coefficients for each of the compounds and all the reactions included in the network. Each rows of the matrix corresponds to one compound, and every column corresponds to one reaction. Thus, the element $S_{i,j}$ gives the stoichiometric coefficient of compound no. $i$ in reaction no. $j$.
+
+\begin{figure}[t]
+\centering
+    \includegraphics[scale=0.3]{simplenetwork1}
+\caption{A simple example of a reaction network.}
+\label{fig:network1}
+\end{figure}
+
+A simple example is given in Figure \ref{fig:network1}. Consider the reaction network shown. This network contains 4 compounds and 6 reactions. Using conventional chemical notation, we can write the reaction equations as follows:
+
+%\begin{displaymath}
+\[\begin{gathered}
+  \xrightarrow{{{v_1}}}A \hfill \\
+  A\xrightarrow{{{v_2}}}B \hfill \\
+  B\xrightarrow{{{v_3}}}2\,C \hfill \\
+  B\xrightarrow{{{v_4}}}D \hfill \\
+  C\xrightarrow{{{v_5}}}D \hfill \\
+  D\xrightarrow{{{v_6}}}\phi  \hfill \\ 
+\end{gathered} \]
+%\end{displaymath}
+
+The stoichiometric matrix then becomes
+
+\begin{center}
+
+\begin{displaymath}
+S = \begin{bmatrix}
+ 1&  -1&  0&  0&  0&0 \\ 
+ 0&  1&  -1&  -1&  0&0 \\ 
+ 0&  0&  2&  0&  -1& 0\\ 
+ 0&  0&  0&  1&  1&-1 
+\end{bmatrix}
+\end{displaymath}
+\end{center}
+
+In every row, the number of non-zero elements equals the number of reactions that the metabolite corresponding to that row participates in. 
+
+Note that, unlike what is common for chemical equations, in the first and last equations a metabolite is present only on one side of the equation. The equations are thus not balanced with respect to mass. This is acceptable because the equations are written from the point of view of an open system. A cell, the system usually represented by the reaction network, can exchange mass with the environment by both active and passive processes. In the context of a metabolic network, a metabolite ''appearing from nothing'' usually implies transport of the metabolite in question from the outside to the inside of the cell. It may also be represent production of a metabolite from a large pool of precursor metabolites, when the production rate is low such that the change in the amount of precursors is insignificant. Likewise, when transport of a metabolite out of the cell is modelled, the metabolite effectively 'disappears'. The reactions $v_1$ and $v_6$ in the set of equations above could thus be interpreted as transport reactions facilitating the transport of metabolites A and D into and out of a cell, respectively. In the last equation, the symbol $\phi$ is used to denote the empty set, signifying that the metabolite in question is removed from the system under consideration. 
+
+In general, because most metabolites participate in few reactions compared to the total number of reactions, and likewise most reactions involve only a few metabolites, most elements of $S$ are zero. That is, $S$ is a \textit{sparse matrix}. This has importance for the amount of work needed when performing computations using the matrix.
+
+A visual depiction of a stoichiometric matrix and its sparseness is shown in Figure \ref{fig:smatrix}.
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.5]{smatrix.png}
+\caption{Visual representation of the stoichiometric matrix of an \textit{E. coli} core metabolism model with 72 metabolites and 95 reactions, showing non-zero elements. The stoichiometric matrix S is a sparse matrix, most of its entries being zero.}
+\label{fig:smatrix}
+\end{figure}
+
+
+The stoichiometric matrix only describes what reactions are possible in the system - it contains no information about the rates at which those reactions proceed. This information can be encoded as a flux vector: 
+
+\begin{equation}
+{\text{v}}\, = \,\left( {{v_1},\,{v_2},...,{v_n}} \right)
+\end{equation}
+
+Obtaining a flux vector from a stoichiometric matrix, a set of constraints and a biologically  relevant objective function is the goal of Flux Balance Analysis. Also of relevance is a description of the change in concentrations of all metabolites. We write the concentration vector as
+
+\begin{equation}
+x = \left( {{x_1},{x_2},...{x_m}} \right)
+\end{equation}
+
+As seen above, in a metabolic network with m metabolites and n reactions, the dimensions of the stoichiometric matrix is m x n.
+
+ \begin{equation} \dim (x) = m\end{equation}
+  \begin{equation}\dim (v) = n\end{equation}
+  \begin{equation}\dim (S) = m \times n\end{equation}
+
+The stoichiometric matrix can be considered a linear transformation of the flux vector to a vector of concentration time derivatives.\cite{ReconstructedNetworks} Using compact matrix notation, we write
+
+\begin{equation}
+\frac{{d{\text{x}}}}{{dt}} = {\text{Sv}}
+\end{equation}
+
+For each metabolite $i$, summing the products of the element $S_{i,k}$ of the stoichiometric $S$ multiplied by element $k$ of the flux vector for all values of $k$, gives the change in concentration for that metabolite with respect to time.
+
+\begin{equation}
+\frac{{d{{\text{x}}_i}}}{{dt}} = \sum\limits_k {{s_{ik}}{v_k}}
+\end{equation}
+
+
+\iffalse
+\textbf{General properties of the stoichiometric matrix: }
+%Null space
+%Monte Carlo sampling can be used to study the null space \cite{MonteCarlo}. \cite{Schellenberger2009}
+
+%Markov chain Monte Carlo (MCMC) = "hit an run"
+Monte Carlo sampling can be used to investigate the global properties of metabolic networks. \cite{Schellenberger2009} This method was used in the discovery of a high-flux backbone in E. coli metabolism. \cite{Almaas2003} 
+
+%The Geometry of the Flux Cone \cite{Wagner2005}
+\fi
+
+\textbf{Extreme pathways and elementary modes:} %\cite{Schilling2000} \cite{Schuster1999}
+Extreme pathways and elementary modes are two closely related concepts which find use in the analysis of metabolic pathways.
+%see \cite{Papin2004} for an explanation of the difference between extreme pathways and elementary modes}
+
+The elementary modes of a network are a set of vectors mathematically derived from the stoichiometric matrix, and have the following properties \cite{Papin2004}:
+\begin{itemize}
+
+\item Each given network has a unique set of elementary modes.
+\item Each elementary mode consists of the minimum number of reactions that it needs to exist as a functional unit allowing a steady state flux.
+\item The elementary modes are the set of all paths through the metabolic network consistent with the previous property.
+\end{itemize}
+
+If some reactions in the network are irreversible, the set of flux vectors allowable under the steady-state requirement is reduced to a subset of the null space.\cite{Schuster2002} A (general) flux mode is defined as a steady-state flux pattern in which the proportions of fluxes are fixed while their absolute magnitudes are indeterminate \cite{Schuster2002}. Elementary flux modes have the further property of being unique and it can be shown that the set of elementary flux modes is a linearly independent basis for the steady state solution space.\cite{Schuster2002}    %What does this mean?!
+
+Biologically, elementary modes can be considered as minimal sets of enzymes capable of generating steady state fluxes.\cite{Schuster1999} Elementary modes can be used to determine maximal yields for biotransformations \cite{Schuster2002} and to determine the calculability of fluxes when performing Metabolic Flux Analysis (MFA) to determine \textit{in vivo} flux distributions.\cite{Klamt2002}
+
+The extreme pathways represent the edges of the steady state solution space. Any flux distribution achievable by the metabolic network can thus be represented by a linear combination of one or more extreme pathways.\cite{Schilling2000} Formally, an extreme pathway is a set of convex basis vectors derived from the stoichiometric matrix with the following properties \cite{Papin2004}:
+
+\begin{itemize}
+\item Each given network has a unique set of extreme pathways.
+\item Each extreme pathway consists of the minimum number of reactions needed to exist as a. functional unit %what does this mean?!
+\item The extreme pathways are the linearly independent subset of elementary nodes. %SJEKK! Spør Eivind.
+\end{itemize}
+
+The set of elementary modes is a superset of the extreme pathways, and the number of extreme pathways is less than or equal to the number of elementary modes.\cite{Papin2004}
+
+Any steady state flux vector $v$ can be represented by a non-negative linear combination of extreme pathways or elementary modes.\cite{Papin2004} If $P$ is a matrix with the set of extreme  pathways or elementary modes contained in its columns and $\alpha$ is a weighing vector with its elements being weighing factors on the columns in $P$, the relationship is described by the following equation:
+
+\begin{equation}
+P\alpha  = v;\,\,\,\,{\alpha _i} \geqslant 0
+\end{equation}
+
+Elementary mode and extreme pathway analysis does not scale well to genome-scale networks, and the concept of elementary flux patterns has been introduced to allow the application of elementary-mode tools to genome-scale networks.\cite{Kaleta2009}
+
+%Finite number of basis vectors: \cite{Schilling1998}
+
+Elementary Flux Mode (EFM) and Extreme Pathway (ExPa) analysis belong to the class of \textit{unbiased} methods which describe all allowable steady state flux distributions.\cite{Lewis2012} Analysis using extreme pathways can be combined with Flux Balance Analysis in studying metabolic function.\cite{Schilling2000b} For example, change in metabolic behavior can be calculated using the optimization principles of FBA and interpreted by the resulting change in the use of extreme pathways. Elementary flux modes and extreme pathways are not considered further in this report. %citation needed? Håper dette ble riktig.
+
+
+%Various procedures exist for studying genome-scale networks and their properties. For reviews of these, see \cite{Pallson2004}, \cite{Raman2009} and \cite{Park2009}. The choice of method can be made depending on the goal of the simulation.
+
+
+\subsection{Flux Balance Analysis}
+\subsubsection{General concepts}
+Flux Balance Analysis (FBA) is one of several methods associated with metabolic models. It is a mathematical method for analysing metabolism, based on linear optimization theory.\cite{WhatisFBA} A linear programming algorithm is used to find a flux profile (a vector specifying the fluxes of all reactions in the network) which optimizes a specified \textit{objective function}. It should be noted that the term ''flux balance analysis'' does not always refer strictly to this optimization-based process. Written without capital letters, the term flux balance analysis may refer to any procedure that seeks to determine a flux profile under the basic assumption of metabolic steady state, while Flux Balance Analysis or FBA \textit{today} usually refers to the specific method described below. In general, there has been some confusion of terms in the field, so due attention should be paid to the terms used to avoid misunderstanding.
+
+Using the stoichiometric matrix as the mathematical representation of the reaction network, the goal of FBA is to find a biologically relevant steady state flux distribution. A calculated flux distribution is a solution of the stated FBA ''problem''. Mathematically, a steady state is an invariant solution where the variables under scrutiny do not change with time. In this case, the variables in question are the concentrations of metabolites in the modelled system. The fundamental constraint in FBA is that of mass balance, and at steady state the net change in concentration of all metabolites should be zero. 
+
+Keeping in mind the view of the stoichiometric matrix S as a linear transformation of the flux vector to a vector of time derivatives of the concentrations, a mathematical formulation of this requirement is
+
+\begin{equation}
+%\label{eq:Sv}
+Sv = 0
+\end{equation}
+
+By solving this equation, the requirement that the change in concentration for all metabolites should be zero can be fulfilled without considering the actual concentrations.
+
+When a cell is growing clearly it is acquiring mass, and as such is not in a static steady state. The problem is solved by including a reaction describing the production of biomass in the model. The stoichiometric coefficients for this reaction are based on experimental determinations of the overall biomass composition of the organism in question. Typically, the right hand side of the biomass reaction equation is empty - the biomass reaction presents a 'drain' for the metabolites used to produce biomass, allowing the flux balance to hold. By appropriate scaling of the stoichiometric coefficients in the biomass reactions, a unit of flux through the biomass reaction can be made equal to a unit of growth rate. This scaling is dependent on the units used to describe the fluxes in the model - note that the stoichiometric matrix represents an inherently dimensionless network. Typically, model fluxes are given units of mmol/gDW$\cdot{}h$. One mmol is $10^{-3}$ mole, where $1$ mole = $6.0\times{}10^{23}$ molecules, gDW is the dry weight of cell mass in grams and $h$ is the reaction time in hours. The biomass reaction is scaled so that a flux of one through the biomass reaction equals a growth rate of 1 $h^{-1}$, or a cell doubling time of one hour.\cite{WhatisFBA}
+
+
+The prediction of growth rates without much interest in the global flux distribution has been one of the main uses of FBA so far. More recently, the use of FBA as a means of predicting the actual intracellular fluxes has received attention.\cite{Schuetz2007} The use of FBA for this purpose is complicated by the fact that there are typically many solutions of a single FBA problem that are equivalent with respect to biomass production/growth rate - the solutions of the FBA problem are said to be degenerate. Flux vectors that give the same value of the objective function are also called alternate optimal solutions or equivalent phenotypic states.\cite{Reed2004} While growth rates are comparatively simple to measure, intracellular fluxes require more advanced methods, and the availability of experimentally determined values is limited. This poses a problem for the evaluation of the predictive value of FBA and related approaches.
+
+FBA is a \textit{constraint-based} approach to metabolic modelling. Without specific constraints, there is a very large number of steady state solutions of the flux balance equation system. Most of these are biologically unrealistic or meaningless. To achieve a biologically relevant result, the solution-space must be reduced to those solutions which are biologically achievable by applying biologically relevant constrains.These are applied as bounds on the reaction rates at the upper, lower or both ends. Constraints can be set based on thermodynamics, knowledge about enzyme activities, and data from high-throughput experiments in transcriptomics, etc.\cite{Park2009} It is an important point that constraints can only reduce the solution space, not increase it. Identification and incorporation of new constraints will be important for the future of constraint-based modelling by allowing more accurate description of cellular behaviour.\cite{Covert2003}
+
+It is important to keep in mind that FBA gives the maximal theoretical performance with respect to any objective as subject only to mass balance and the explicitly stated constraints. In the real biological system, numerous biological limitations apply which are not captured by the model. Other evidence lacking, FBA results should therefore be viewed as performance limits to which a cell may or may not approach.
+
+\textbf{Thermodynamic considerations:}
+Nigam and Liang presented an algorithm for removing thermodynamically infeasible loops in flux distributions determined by FBA while still maintaining the optimality of the computed solutions.\cite{Nigam2007} Automatic assignment of thermodynamic constraints is also a possibility.\cite{Kummel2006} At the same time, inclusion of irreversibility constraints based on a priori knowledge can capture the limits imposed by thermodynamics.\cite{Price2002} However, pre-set definitions of reversibility do not take into account the dependence of reversibility on the intracellular conditions.\cite{Raman2009} Thus, curation by hand and algorithmically designated irreversibility of reactions are approaches that can complement each other. Other examples of research in the area include methods for investigating the Gibbs free energy landscape of a metabolic network at steady state and the computation of feasible reaction directions directly from the stoichiometric matrix.\cite{Martino2012}\cite{Yanga2005} Thermodynamics-based metabolic flux analysis (TMFA) was described by Henry et al.\cite{Henry2007}
+
+\textbf{Extensions of FBA:}
+In its basic form, FBA does not take into account the transcriptional state and genetic regulation of the model system. The term regulatory FBA (rFBA) is applied to the analysis of combined metabolic/regulatory networks using FBA.\cite{Covert2002} Integration of FBA with transcriptional regulatory networks and ordinary differential equations (ODEs) for predicting metabolite concentrations and phenotypes has been called integrated FBA (iFBA) and was found to be an improvement over rFBA or ODEs alone.\cite{Covert2008} Furthermore, FBA has been used as one of several modules in whole-cell computational modelling.\cite{Karr2012389} Lewis, Nagarajan and Palsson list over 100 methods in their review of the ''phylogeny'' of constraints-based modelling methods.\cite{Lewis2012}
+
+\textbf{Alternatives to FBA:}
+One of the advantages of FBA, the low number of parameters required, is also a reason for its limitations. Other techniques for metabolic network analysis which employ more empirically determined parameters include kinetic modelling \cite{Teusink2000} and Metabolic Control Analysis (MCA).\cite{Kell2000}\cite{MCA_Nutshell} However, these are hard to apply at the genome-scale level because of the large number of parameters involved.\cite{Price2003} Energy Balance Analysis \cite{Beard2002} is an extension of FBA taking thermodynamic rules into account, while Feasability Analysis (FA), a method inspired by FBA and incorporating kinetic interactions, has been suggested as an approach to understanding regulation of metabolism.\cite{Nikerel2012} A framework based on cybernetic theory has recently been employed to make predictions about the dynamic behavior of mutant strains from limited data gathered from wild-type organisms.\cite{Ramkrishna2012}
+
+\subsubsection{Mathematical formulation}
+
+The environmental factors of nutrient availability is accounted for by restricting nutrient uptake rates. This is done by specifying bounds on the transport and/or exchange reactions in the model. Transport reactions are those reactions which model the movement of metabolites into or out of the cell, while exchange reactions model the exchange of metabolites between the 'immediate' extracellular environment, which is considered a part of the model system, and the larger environment which is not part of the system. The same metabolite is modelled as separate species in the intracellular and extracellular compartments - transport is modelled by inter-converting these species. 
+
+The definition of extracellular metabolites should not be considered an attempt to actually describe events in the immediate vicinity of the cell, but rather a mathematical abstraction. This abstraction is necessary because a single metabolite may have several transport reactions. By constraining the exchange reaction for a metabolite, the totality of the transport reactions for that metabolite is simultaneously constrained. Exchange reactions are typically defined as going in the positive direction when a metabolite is removed from the model. When a cell is consuming a metabolite taken up from the environment, the flux through the exchange reaction for that metabolite would then have a negative value. To simulate growth in an environment where a specific nutrient is unavailable, the exchange reaction for that nutrient is constrained to zero, or to positive values only if excretion of the metabolite is possible. Non-uptake reactions can likewise be constrained based on information about their plausible limits. Mathematically, we write
+
+\begin{equation}
+L{B_i} \leqslant {v_i} \leqslant U{B_i}
+\end{equation}
+where ${v_i}$ is the reaction rate,  $L{B_i}$ and $U{B_i}$ represent the lower and upper bounds for each specific reaction.
+
+%Relative rates
+
+
+%ATP maintenance flux
+
+
+A solution of an FBA problem is a flux vector describing the reaction rates for all the reactions included in the model.
+
+\begin{equation}
+{\text{Z = }}{{\text{c}}^{\text{T}}}{\text{v}}
+\end{equation}
+The most commonly used objective function for genome-scale models  optimizes the model with respect to the reaction flux in a reaction corresponding to the production of biomass. This artifical reaction is based on experimentally determined values for the biomass composition of the organism in question, and can be considered a ''catch-all'' intended to capture the effect of all reactions leading to growth and cell division. Other objective functions have also been proposed and used. For a review of the biomass objective function, see \cite{Feist2010}.
+
+To summarize, a standard FBA problem can be formulated as follows 
+\cite{VarmaPalsson1994}:
+
+Find a flux vector
+
+\begin{equation}
+{\text{f   =  }}\left[ {{v_1},\,{v_2},...,{v_n}} \right]
+\end{equation}
+that maximizes the objective function:
+
+\[\begin{gathered}
+  {\text{Z = }}{{\text{c}}^{\text{T}}}{\text{v}}\\
+  {\text{subject}}\,{\text{to:}}\,\,{Sv = b =  0} \hfill \\
+  \text{and: }L{B_i} \leqslant {v_i} \leqslant U{B_i} \hfill \\ 
+\end{gathered} \]
+ 
+
+\subsubsection{Applications}
+In this section some common methods used in conjunction with or related to FBA are briefly described. This is intended to give an overview of some of the applications of metabolic models and flux balance analysis. Most attention has been focused on the problem of \textit{strain design} - identifying genetic modifications that would allow the overproduction of a desired metabolite - and a variety of algorithms has been designed for this purpose.
+
+\textbf{Flux Variability Analysis (FVA):}
+Often, there exists many solutions to a given FBA optimization problem which all are equally optimal. While the value of the objective function remains constant, the flux through any given reaction may vary between these degenerate solutions. In Flux Variability Analysis, the range of possible values for specific fluxes is determined. Thus, the maximum and minimum values of each flux that allows the optimal objective function value can be determined.\cite{MahadevanRFAUSchilling} 
+
+\begin{comment}
+Mathematically, the problem can be formulated as
+\[{\text{Min/Max}}\,\,\,\,{v_i}\,\,\,\,s.t.\,\,\,\,\,S\overrightarrow v  = 0,\,\,\overrightarrow c \overrightarrow { \cdot v}  = {Z_{obj}},\,\,{v_{\min }} \leqslant {v_i} \leqslant {v_{\max }}\,for\,i = 1...n\]
+\end{comment}
+
+\textbf{Phenotypic phase planes (PhPP):} %\cite{Varma1993}
+When performing a regular FBA analysis, the solution obtained is generally valid for only a single set of constraints and does not give an immediate impression of how varying those constraints would change the solution. Phase plane analysis can be used to consider the effect of variations in two constraining reactions, such as uptake fluxes of nutrients.\cite{Edwards2002}
+
+To make a two-dimensional phenotypic phase plane plot, the flux values of two reactions are  used as the axes of the two-dimensional plot, and the FBA algorithm is run a number of times, each run constraining the reaction rates to a single point in the plane. 
+
+Using a procedure known as shadow price analysis, the plane can be divided into a finite number of distinct ''phases', where the shadow price for the reactions is constant. The shadow price relates the change in availability of a nutrient (or more generally, a change in the constraint on a reaction) to the change in the maximal value of the objective function. Changes in shadow prices can be related to metabolic behavior, which is distinct in each phase, for example giving different excretion products.\cite{Edwards2002} For the explanation below, it will be assumed that phase plane analysis is applied to the uptake rates of two nutrients.
+
+The definition of the shadow price of a metabolite is the negative of the partial derivative of the objective function with respect to the corresponding element in the right hand side vector:
+\begin{equation}
+{\gamma _i} =  - \frac{{\partial{}Z}}{{\partial{}b_i}}
+\end{equation}
+
+More information can be added to the plot by drawing isoclines for the value of the objective function. The isoclines are lines where the maximal objective function value is constant. The slope of the isoclines can be calculated from the ratio of the shadow prices of the two metabolites used in the plot, and is denoted $\alpha$. 
+
+\begin{equation}
+\alpha  =  - \frac{{{\gamma _A}}}{{{\gamma _B}}} = \frac{{\partial{}Z/\partial{}{b_A}}}{{\partial{}Z/\partial{}{b_B}}}
+\end{equation}
+
+
+\begin{figure}[h!t]
+\centering
+    \includegraphics[scale=0.5]{PhPP.png}
+\caption{Phase plane plot of oxygen and glucose uptake in a model of \textit{E. coli} core metabolism. Generated using the COBRA Toolbox.}
+\label{fig:phaseplane}
+\end{figure}
+
+
+As the shadow prices are constant within each phase, the value of $\alpha$ and the slope of all isoclines drawn through a phase will also be constant. In the case of single substrate limitation, the shadow price of one of the metabolites will be zero, and the slope of the isocline will be either zero or infinite, corresponding to a horizontal or vertical line. A negative value of $\alpha$ implies dual substrate limitation: increasing the availability of either nutrient will increase the objective function. Phases with a positive $\alpha$ value are called \textit{futile} regions because increasing the uptake of one of the nutrients will decrease the objective function. That nutrient can then be considered to exist in excess and has a net negative value for the cell. A phenotype phase plane may also contain infeasible regions where no growth is possible. 
+
+A three-dimensional representation can be made with the values of the selected fluxes mapped to the two axes of the horizontal plane, and the growth rate mapped to height in the third dimension. This makes it possible to form an immediate impression of the optimal combination of uptake rates for two nutrients, all other conditions being equal.
+
+\iffalse
+In a phenotype phase plane, the \textit{line of optimality} (LO) is defined as the line where the relationship between the two fluxes under consideration is optimal, and the objective value is maximized. The line of optimality will generally lie on the boundary between two phases. %CITATION NEEDED!
+Operationally, the LO is determined by performing a series of calculation for different values of the flux on the x-axis of the plot. For each value, the objective value is calculated as a function of the y-value, and the y-value giving the highest value is used to plot the LO.%\cite{PhasePlanes}
+\fi
+
+
+\textbf{Minimization Of Metabolic Adjustment (MOMA):} 
+Much of the application of FBA has been aimed towards predicting the phenotypes of gene deletion mutants. In a simple manner, this may be attempted by removing all reactions associated with one or more genes in a model of the ''wildtype'' organism before running an FBA optimization. However, it has been noted that while an assumption of metabolic optimality might be justified for wildtype organisms exposed to long-term evolutionary pressure, the assumption might not hold in newly created strains.\cite{MOMA} The minimization of metabolic adjustment (MOMA) algorithm is based on the hypothesis that after a perturbation of the metabolic network by way of one or several gene knock outs, the flux distribution immediately afterwards will tend not towards optimality, but towards a \textit{minimal redistribution} of the fluxes with respect to the wildtype flux distribution.\cite{MOMA}
+ 
+%\iffalse
+\begin{figure}[h!t]
+\centering
+    \includegraphics[scale=0.5]{MOMAgraph.jpg}
+    \caption{Graphical presentation of the MOMA principle. The point C on the edge of the feasible mutant flux space is closest to the wildtype flux profile at A, and is therefore chosen as the mutant flux prediction, even though point B gives a higher value for the objective function.}
+\label{fig:MOMA}
+\end{figure}
+%\fi
+
+In accordance with this hypothesis, the MOMA algorithm searches for a point in the feasible flux space of the mutant strain which minimizes the euclidean distance between the flux distributions for the wildtype and mutant strains. The wild-type flux distribution can be based on experimental data or an FBA solution. If an experimentally determined flux is used, the MOMA result does not depend on a cellular objective as in regular FBA. Mathematically, the mutant flux distribution minimizing the sum 
+
+\begin{equation}
+D(w,x) = \sqrt {\sum\limits_{i = 1}^N {{{({w_i} - {x_i})}^2}} }
+\end{equation}
+
+is sought, where $w$ and $x$ are the wild type and mutant fluxes respectively, summing over all N reactions in the model.
+
+The MOMA algorithm was found to give better predictions of gene essentiality compared to regular FBA as determined by mutant growth experiments.\cite{MOMA}. 
+
+%A graphical presentation of the MOMA concept is shown in Figure \ref{test}.
+%Ting brekker seg her, referansen funker ikke.
+
+\textbf{Regulatory on/off minimization (ROOM)}
+A drawback of the MOMA approach is that large modification of single fluxes incurs a large penalty, but may be necessary for re-routing of fluxes through alternative pathways. This point is adressed by the more recent ROOM algorithm.\cite{Shlomi2005} Like MOMA, ROOM does not attempt to maximize the growth rate or another conventional objective. In ROOM, the aim is to minimize not the total flux change, but rather the number of fluxes that are significantly changed. This requires the solution of a Mixed-Integer Linear Programming (MILP) problem.
+
+The ROOM authors suggest that MOMA is appropriate for predicting transient growth rates, while ROOM and FBA is better suited for determining final growth rates following a perturbation and adapation. \cite{Shlomi2005} %Check these claims if time allows!
+
+\textbf{Dynamic FBA (DFBA):}
+Regular FBA is used to calculate a system-wide steady state, while in reality the behavior of the system may change with time. Dynamic FBA is used to simulate such situations.
+
+Two approaches for dynamic FBA were presented by Mahadevan et al, who applied DFBA to model the diauxic batch growth of \textit{E. coli} on glucose and acetate, where the depletion of one substrate at a faster rate than the other leads to a change in the flux profile with time.\cite{Mahadevan2002} The dynamic optimization approach  (DOA) involves optimizing the system behavior over a complete time course by solving one non-linear programming (NLP) problem. The static optimization approach (SOA) divides the time course into intervals, solving one linear optimization problem for each interval based on the system state at the beginning of the interval to obtain the flux values used for the whole interval. Because of the lower computational complexity, the SOA approach scales better than DOA to large networks.
+
+
+\textbf{Gene knockout screening (OptKnock):} 
+OptKnock is one of several computational strain optimization methods based on Flux Balance Analysis and was one of the earliest published. The OptKnock algorithm suggests gene deletions which lead to overproduction of a metabolite by coupling production of the metabolite to reactions necessary to growth.\cite{OptKnock} The usefulness of the OptKnock method was demonstrated by applying it to production of lactic acid in \textit{E. coli}.\cite{Fong2005} One limitation of the OptKnock approach is that the suggested gene deletions may result in a metabolic network where the flux solution giving maximal growth rate and maximal product excretion is accompanied by solutions with equivalent growth rates but lower yields of the desired products. If mutant strains were selected for growth rate and thus subjected to evolutionary pressure towards the maximum achievable growth rates, the mutants might evolve to their maximal growth rate without overproducing the desired product. To avoid this problem, the objective function can be modified by adding the desired product, in a process called ''objective tilting''.\cite{Feist2010a}
+
+OptKnock has been used as a basis and inspiration for further development, resulting in several more recent algorithms such as OptStrain, OptGene, RobustKnock and OptForce
+
+\textbf{RobustKnock:}
+RobustKnock adresses the problem of alternate optima in use of the OptKnock algorithm by searching for the set of gene knockouts which maximizes the \textit{minimum} production rate of the desired metabolite.\cite{Tepper2010} In this way, over-optimistic results are avoided.
+
+\textbf{OptReg:}
+OptReg extends Optknock by also considering over-expression and down-regulation of reactions. The regulation of genes is implemented by constraining the corresponding reactions to reaction rates significantly higher or lower than their default values.\cite{OptReg}
+
+\textbf{OptStrain:}
+OptStrain extends previous strain design methods by considering both reaction additions and deletions, a database of known reactions to suggest gene ''knock-ins''.\cite{Pharkya2004} The cited database currently appears to be unavailable.
+
+\textbf{OptGene:}
+OptGene is a Genetic Algorithm (GA) extending the application of the OptKnock approach by using the principle of Darwinian evolution to find the global optimal solution in less computational time.\cite{Patil2005} OptGene allows for optimization of a non-linear objective function. However, this method is not guaranteed to converge to a global optimal solution.
+
+\textbf{OptForce:}
+The OptForce algorithm for strain design applies flux variability analysis to compare the observed flux ranges in a wildtype organism and the computed fluxes in a model of the same organism overproducing a desired metabolite.\cite{Ranganathan2010} A list of reactions whose flux must be either increased or decreased to reach the production target is then computed. OptForce has been applied to the overproduction of fatty acids in \textit{E. coli}.\cite{Ranganathan2012}
+
+
+\textbf{Genetic Design through Local Search (GDSL)}
+The GDSL algorithm uses a random search procedure to explore genetic manipulation strategies with a larger number of simultaneous gene deletions than can feasibly be evaluated in an exhaustive search. This represents a tradeoff between the conflicting algorithmic properties of low complexity and high optimality.\cite{Lun2009}
+
+\textbf{Flux Coupling Analysis:}  
+Flux Coupling Analysis (FCA) is the study of correlation between fluxes. The method was originally described by Burgard et al.\cite{Burgard2004}, and an alternative computational approach was detailed by Larhlimi and Bockmayr.\cite{Larhlimi2006} Feasability-based Flux Coupling Analysis (FFCA) is a third implementation.\cite{David2011}
+
+Flux coupling is of biological interest because functionally related fluxes tend to be coupled to each other. As an example, flux coupling outperforms network distance - the minimum number of nodes that must be passed when moving from one node to another - as a metric for predicting co-regulation of genes.\cite{Notebaart2008} It has been noted that flux coupling analysis is sensitive to missing reactions: two reactions that are uncoupled in a metabolic network may be identified as coupled reactions in an incomplete version of the network.\cite{Marashi2011} As it is hard to guarantee the completeness of genome-scale metabolic networks, this suggests some caution in the interpretation of FCA results. When subsystems of a network is analyzed, the opposite behavior is observed. That is, coupled reactions in a complete system may be uncoupled in the subsystem.\cite{Marashi2012}
+
+FCA has found application in improving methods for Metabolic Flux Analysis (MFA), which is described later.\cite{Suthers2010}
+
+\textbf{High-Flux Backbones:}
+Almaas et al described an algorithm for uncovering the ''High-Flux Backbone'' (HFB) of a metabolic network state, describing a connected structure of reactions.\cite{Almaas2003} In the HFB subnetwork, two metabolites are connected if the reaction that is the largest consuming flux for one of the metabolites is also the largest producing flux for the other metabolite. The structure of the HFB in a network arises from heterogeneous local organization of flux magnitudes, where each metabolite tends to have a dominant producing and consuming reaction, respectively. This was found to be the case for flux distributions obtained through FBA using the genome-scale \textit{E. coli} metabolic network.\cite{Almaas2003} The HFB is thus a simple way to describe which reactions are important in the network.
+
+
+%Illustrating figure? See HFB.pdf.
+
+\iffalse
+\begin{table}
+\caption{Algorithms used with FBA}
+\small
+\label{table:algorithms}
+    \begin{tabularx}{\linewidth}{|X|X|X|}
+        \hline
+        Algorithm                                   & Use                                                                                                            & Publication                                            \\ \hline
+        OptKnock                                    & Strain design by gene deletion                                          & Burgard, Pharkya and Maranas, 2003. \cite{OptKnock}    \\ 
+        OptReg                                      & Strain design by gene deletion and regulations                                                                     & Pharkya and Maranas, 2006. \cite{OptReg}               \\ 
+        OptStrain                                   & Strain design by gene deletion, regulation and addition & Pharkya, Burgard and Maranas, 2004. \cite{Pharkya2004} \\ 
+        ROOM      & Estimating new flux state after gene knockout                                      & Shlomi et al., 2005. \cite{Shlomi2005}                 \\ 
+        OptCom                                      & Extension of FBA to microbial communities                                                                      & Zomorrodi and Maranas, 2012. \cite{OptCom}          \\ 
+        MOMA & Estimating new flux states after gene knockout & Segre, Vitkup and Church, 2002. \cite{MOMA}            \\ 
+        fastFVA         & Flux Variability Analysis & Gudmundsson and Thiele, 2010.\cite{Gudmundsson2010}    \\
+        Flux Coupling Finder & Flux Coupling Analysis                                               & \cite{Burgard2004} \\ 
+        OptForce             & Strain design &  \cite{Ranganathan2010}     \\
+        OptGene             & Strain design &  \cite{Patil2005}     \\
+        \hline
+    \end{tabularx}
+    \normalsize
+\end{table}
+\fi
+
+\textbf{FBA as a tool for biological discovery:}
+FBA can be used for discovering previously undescribed reactions which necessarily are not accounted for in metabolic models. Nakahigashi et al. used comparison of growth rates resulting from FBA gene-knockout simulations and \textit{in vivo} double gene knock-out experiments to discover new reactions in central carbon metabolism.\cite{Nakahigashi2009} A limitation of gene-knockout simulations using FBA, pointed out in the same article, is that the effect of isozyme deletions may not be captured. If a reaction can be catalyzed by two different enzymes, deleting the gene for one of the enzymes will not have an effect for that reaction when performing FBA, while an \textit{in vivo} deletion may result in partial or total loss of reaction activity. 
+
+
+\textbf{Recent advances:} More recent advances include Comprehensive Polyhedra Enumeration Flux Balance Analysis (CoPE-FBA) as a method for topological characterization of the solution space in a given FBA problem \cite{CoPE-FBA} and a hybrid method combining the Bees Algorithm and Flux Balance Analysis (BAFBA) to avoid local minima and find optimal gene deletion sets in knockout studies.\cite{Choon2012}
+
+
+\subsubsection{Software}
+Flux Balance Analysis and related methods are facilitated by general computing software such as MATLAB and specialized software packages. The COnstraint Based Reconstruction and Analysis (COBRA) Toolbox is a popular plugin for MATLAB containing functions enabling easy calculations using FBA and other methods.\cite{COBRA} It can use metabolic models supplied in the SBML format among others. A list of software for constraint-based modelling is shown in Table \ref{table:CBMsoftware}. Computational tools in systems biology, not limited to metabolic networks, have been reviewed by Copeland et al. \cite{Copeland2012} while mathematical optimization applications in metabolic networks have been reviewed by Zomorrodi et al.\cite{Zomorrodi2012}
+
+\begin{table}[h!]
+\begin{onehalfsize}
+\small
+\caption{Software for constraint-based modelling}
+\label{table:CBMsoftware}
+    \begin{tabular}{|p{3.5cm}|p{10cm}|}
+        \hline
+        Program         & Main features                                                                           \\ \hline
+        COBRA           & FBA, FVA, gene knockout. MOMA. Runs under MATLAB.                                       \\ 
+        FAME            & FBA, FVA and network visualization. Web interface.                                      \\ 
+        CellNetAnalyser & Metabolic and signalling network analysis. Network visualization. Runs under MATLAB.    \\ 
+        SBRT            & Includes 35 methods for stoichiometric analysis.                                        \\ 
+        OptFlux         & Simulation of mutant strains, optimization for metabolic engiineering.                  \\ 
+        FASIMU          & Command line interface, batch processing of simulations.                                \\ 
+        Acorn           & Grid computing system for constraint-based simulations                                  \\ 
+        CycSim          & In silico knockout experiments and comparison with experimental results. Web interface. \\ 
+        SurreyFBA       & Network map visualization, analysis of minimal substrate and product sets               \\
+        \hline
+    \end{tabular}
+\normalsize
+\end{onehalfsize}
+\end{table}
+%\end{comment}
+
+\clearpage
+\subsection{Metabolic Flux Analysis}
+\subsubsection{General concepts} 
+Metabolic Flux Analysis (MFA), also called metabolomics or fluxomics, is the study and determination of metabolic fluxes \textit{in vivo}.\cite{Stephanopoulos1999} Not all authors adhere to this definition; in some cases Flux Balance Analysis and related computational methods have been included under this term. For the purposes of this report, MFA refers exclusively to the \textit{experimental} study of metabolic fluxes. MFA has significant applications in metabolic engineering, the genetic modification of organisms to enable or increase the production of desired metabolites.\cite{Wiechert2001}
+ 
+With few exceptions, it is currently infeasible to measure a significant number of \textit{in vivo} reaction rates directly. In MFA, mass balance equations are therefore used together with experimental measurements allowing the calculation of a limited number of fluxes or flux ratios. This data is then used to calculate the remaining fluxes in a network of reactions. This approach has been limited largely to steady state scenarios, as in FBA, but dynamic MFA (DMFA)  has recently been introduced as a framework allowing the determination of metabolic flues at non-steady state.\cite{Leighty2011}. MFA is based on both experimental measurements and computational routines for ''deciphering'' the actual fluxes from the measured data, as a mathematical model relates the experimental data and the fluxes to be calculated.\cite{Feng2010} As with FBA, specialized software is available for the computational work.\cite{OpenFLUX} Most models have been limited to describing fluxes in the central carbon metabolism, covering about 25 to 50 reactions, due to the computational challenges involved in flux mapping.\cite{Suthers2010} One of the largest models to date covered 350 fluxes and 184 metabolites  in \textit{E. coli}.\cite{Suthers2007}
+
+
+If a limited number of fluxes is known, the complete flux vector and can be separated to known and unknown fluxes, with a corresponding stoichiometric matrix for each.\cite{Stephanopoulos1998} At metabolic steady state, the following equation then holds:
+
+\begin{equation}
+ - {S_m}{v_m} = {S_c}{v_c}
+\end{equation}
+
+Here, $m$ and $c$ refers to known (measured) and unknown (computed) fluxes, respectively. To determine all the fluxes in a network with $N$ fluxes and $M$ metabolites, at least $N-M$ fluxes must be known. Additionally, the stoichiometric matrix of the unknown fluxes must have the mathematical property of \textit{full rank}. If this is the case, the system is called \textit{observable}.\cite{Stephanopoulos1998}. 
+%\fi
+
+If more fluxes have been calculated than is necessary to determine all the rest of the fluxes, the system is \textit{overdetermined}. Then, in addition to calculating the remaining fluxes, the excess information can be used to increase the accuracy in the estimates of the measured and calculated fluxes, to check for internal consistency in the data set and/or identify the measured fluxes most likely to be in error.\cite{Stephanopoulos1999} %Se p. 130
+If fewer fluxes are measured, the system is underdetermined and the remaining fluxes can be calculated only by applying further constraints or by applying an optimization principle, as in FBA.
+
+\textbf{Sensitivity to measurement errors:}
+A basic sensitivity analysis may be useful in assessing the trustworthiness of calculated flux values. Ideally, the mathematical system should be \textit{well posed} and the stoichiometric matrix \textit{well conditioned}.\cite{Stephanopoulos1998} Round-off errors during flux calculations may be amplified if the matrix is ill-conditioned.  A measure of this sensitivity is the \textit{condition number} of the stoichiometric matrix. The condition number is always larger than 1, and a large condition number means that that the matrix is ill-conditioned. As a rule, measurements should be carried out with the same number of significant digits as the number of digits in the condition number.\cite{Stephanopoulos1998} Based on the current achievable precision in measurements from fermentation experiments, the condition number should be between 1 and 100. 
+
+The conditioning number may be useful in an initial consideration of model sensitivity, but does not give any concrete information. The following equation can be used to calculate the sensitivity of each calculated reaction with respect to a measured reaction:
+\begin{equation}
+\frac{{\partial {v_c}}}{{\partial {v_m}}} =  - {(S_c^T)^{ - 1}}S_m^T
+\end{equation}
+
+Here, element $(j,i)$ of the resulting matrix gives the sensitivity of calculated flux $j$ with respect to measured flux $i$.\cite{Stephanopoulos1998}
+
+
+\textbf{Statistical analysis of results:}
+A limitation of much previously published flux data from MFA is a lack of reliable uncertainty estimates. Antoniewicz, Kelleher and Stephanopoulos pointed out the lack of rigorous statistical analysis and published an algorithm for determining confidence interval of the calculated fluxes. The authors pointed out common misconceptions about issues relating to uncertainty estimates in  Metabolic Flux Analysis, which in its then current state was described as ''a black box whose inner workings are hard to decipher''.\cite{Antoniewicz2006} As an example, it is often assumed that the errors in the measured fluxes are independent of each other, which simplifies the statistical treatment, but this may assumption may not hold, as the fluxes are not measured directly but calculated from several raw measurements. If several fluxes are calculated using the same raw measurement, this will introduce a correlation in their errors.
+
+\subsubsection{Stoichiometric MFA}
+Early approaches to MFA used primarily the stoichiometry of the biochemical reaction network and externally measurable reaction rates  (nutrient uptake and product secretion rates) in order to determine the flux distribution. A number of assumptions about the operation of the network, especially relating to energy metabolism, had to be made and several of these have later been shown to be invalid. Furthermore, the number of externally measurable fluxes, and thus the number of constrains which could be obtained, is small. A number of other limitations also apply - parallel metabolic pathways and bidirectional reactions are among the network features in whose presence stoichiometric MFA fails. For this reason, stoichiometric MFA has largely been superceded by \textsuperscript{13}C-based methods.\cite{Wiechert2001}
+
+Note that stoichiometric MFA is similar to standard optimization-based flux balance analysis (FBA) in that no experimentally determined constraints are made on the internal fluxes from the outset, while experimental data on externally measured rates may also be used as constraints in performing regular FBA. However, models used in FBA are typically larger than those used in stoichiometric MFA, and thus no longer determined by the same number of fluxes. Stoichiometric MFA can be regarded as a use of flux balance analysis limited to small networks, while the use of an objective becomes necessary to apply the flux balance approach to larger networks in the absence of further constraints. FBA can in theory be performed with constraints derived from \textsuperscript{13}C-MFA experiments as described below. However, the purpose of MFA is generally to obtain experimental data which constrain the system in such a way as to completely define the flux distribution, avoiding the need to apply a hypothetical objective function.
+
+\subsubsection{\textsuperscript{13}C-MFA}
+\textsuperscript{13}C-based labelling of metabolites is the current main approach to \textit{in vivo} flux determination. Carbon-labelling experiments (CLE) form the experimental basis of \textsuperscript{13}C-MFA. In a CLE, an organism is grown in a minimal, chemically defined growth medium containing a single carbon source, typically glucose. The labelled carbon source contains one or more atoms of \textsuperscript{13}C. \textsuperscript{13}C is a stable isotope of carbon having one more neutron than \textsuperscript{12}C, the most abundant carbon isotope. Labelled and unlabelled molecules are assumed to be chemically identical, but considered different \textit{isotopomers}. The assumption of chemical identity is important for carbon labelling experiments, as it implies that reaction rates are unaffected by the isotopomer of a given metabolite. Isotopomer is a term combining the terms isotope and isomer, the latter denoting different configurations of the same molecule. A metabolite with $n$ carbons can be labelled or unlabelled at each carbon position, and thus can exist as 2$^n$ different isotopomers when a single labelling isotope is used.\cite{Wiechert2001} During a CLE, each metabolite will display an isotopomer distribution characterised by the fraction each isotopomer makes up of the total amount of that metabolite.
+
+\begin{figure}[h!t]
+\centering
+    \includegraphics[scale=0.5]{13C.png}
+\caption{Illustration of carbon labelling patterns exploited in \textsuperscript{13}C-MFA. From Wikimedia Commons.}
+\label{fig:13C}
+\end{figure}
+
+\textbf{Carbon labelling experiments:}
+Carbon labelling experiments present a number of challenges, perhaps explaining the relative small number of studies published in fluxomics compared to the other ''omics'' fields.\cite{Tang2009} Primarily, the metabolic system must be kept at steady state throughout the experiment to allow the isotopomer distribution to also reach steady state. The steady state isotopomer distribution for each metabolite depends both on the ratios of the fluxes and the isotopomer distribution in the carbon source. As a fully labelled or unlabelled carbon source would yield no information, a mixture of labelled and unlabelled carbon substrate is used. The decision of which mixture to use must take into account both the cost of the \textsuperscript{13}C-labelled carbon source (\textsuperscript{13}C-labelled glucose costs in excess of 100\$ per gram) and the information obtainable given the planned measurements. The process of determining whether information about the unknown fluxes will be contained in the measured isotope ratios is called identifiability analysis.\cite{Wiechert2001}
+
+After a time sufficient for the isotopomer distribution to reach equilibrium, the biomass is analyzed to determine the isotope ratios. Nuclear Magnetic Resonance (NMR) or Mass Spectroscopy (MS) is used for this analysis. An isotopomer balancing model is then used which predicts the steady state isotopomer distribution as a function of the flux distribution. To estimate the flux distribution, a non-linear optimization algorithm is employed which simulates the experiment. Starting from an initial guess, various flux distributions are tried, and the flux distribution which minimizes the difference between the predicted and observed isotopomer distribution is sought.\cite{Wiechert2001} Due to the large number of possible labelling patterns, the isotopomer modelling process is mathematically complex - the evaluation of CLEs has been called one of the most complicated mathematical methods ever applied to biological systems.\cite{Wiechert2001} As an alternative to the comprehensive isotopomer balancing approach, the isotopomer distribution data on a small number of proteinogenic amino acids can be used directly. In this way a smaller number of local flux ratios of central carbon metabolism reactions linked to the production of amino acids can be determined. These flux ratios can then be used as constraints to solve the complete system of fluxes. Both methods can be applied to the same experimental data.\cite{Fischer2003}
+
+In both methods outline above, the estimated flux distribution is dependent on a model of the possible reactions in the system. This is an important point, as it raises some possible concerns in the use of MFA-derived flux values as a reference for flux distributions predicted using a different model.
+
+A major, often unstated, assumption of MFA is that the flux distributions at steady state are equal for all cells in the reactor system.  
+
+%Calculability analysis: \cite{Klamt2002}
+\subsection{Network optimization}
+The solution of a standard Flux Balance Analysis problem is found by the application of \textit{linear programming}. A linear programming problem is an optimization problem which can be expressed on the form:
+
+\[\begin{gathered}
+  {\text{maximize }}{{\text{c}}^T}x \hfill \\
+  {\text{subject}}\,{\text{to Ax}} \leqslant {\text{b}} \hfill \\
+  {\text{and }}\,\,\,\,\,\,\,\,\,\,\,\,\,{\text{x}} \geqslant 0 \hfill \\ 
+\end{gathered} \]
+
+This is the \textit{standard form} of linear programming problems. Here, $x$ represents the vector of variables to be determined, $c$ and $b$ are objective and constraints coefficient vectors, respectively, and $A$ is a matrix of constraint coefficients. In FBA, the vector $x$ is the \textit{flux vector}, denoted $v$, $A$ is the stoichiometric matrix $S$, and $b$ is set equal to zero, constraining the system to steady state. The expression ${c^T}v$ is the \textit{objective function} whose value should be optimized.
+
+The constrained solution space of a metabolic model is often called the ''flux cone''. The flux cone has the mathematical property of being \textit{convex}. The consequence of this is that the optimal solution(s) to an FBA problem will always be found at the edge of the flux cone, and application of linear programming is guaranteed to identify an optimal solution, if one exists. Several algorithms are available for solving linear programming problems, but the \textit{simplex} algorithm is typically used. The use of the simplex algorithm requires that the FBA problem is converted to standard form. This conversion, entailing the decomposition of each reversible reactions into two separate reactions, is handled automatically by FBA software such as the COBRA Toolbox.
+
+The time needed for computing the solution to an FBA problem with linear programming is short, on the order of one second even for genome-scale models. This is especially an advantage when evaluating combinations of simultaneous gene-knockouts, a major application of FBA, as the number of combinations grows rapidly with the number of simultaneous knock-outs.
+
+\begin{figure}[h]
+\centering
+    \includegraphics[scale=0.5]{FBAcropped.png}
+    \caption{A visual representation of the ''flux cone'' explored in FBA. The optimal solution to a standard FBA problem is found at one edge of the solution space and the solution is found through the application of linear programming. Figure reproduced from \cite{WhatisFBA}.}
+\label{fig:fluxcone}
+\end{figure}
+
+Non-linear objective functions requiring the use of other optimization methods have also been proposed for use in FBA, but for these it is generally not possible to guarantee that a global optimal solution will be found.
+
+\textbf{Cellular objectives:}
+To have predictive value, a model should ideally reproduce experimentally acquired data as closely as possible. To achieve this the parameters used in the model are selected to match the physical realities and environmental circumstances. These parameters will generally be based on abstraction or simplification of the actual process to be modelled. The objective function specified in Flux Balance Analysis can be considered one such simplification.
+In using linear programming, the objective function vector assigns an objective function coefficient to each reaction:
+
+\begin{equation}
+c = \,[{c_1},\,{c_2},...,{c_n}]\,
+\end{equation}
+
+The value of the objection function is then the sum of each reaction multiplied by the objective coefficient of that reaction. Clearly, the cell itself is not directly evaluating the value of any objective function and directing its biochemical reactions to maximize it. Rather, it is our assumption that the flux states maximizing an appropriate objective function present an advantageous mode of operation for the cell, and that cells which fail to achieve these states will be selected against in the course of evolution. As evolutionary pressures depend on environmental circumstances, different objective functions may be appropriate for different models. Selecting and evaluating the effect of the objective functions thus becomes important for ensuring validity of the modelling process. 
+
+The objective function optimization approach is simple and convenient, but should not be used uncritically. Not all cells show optimal metabolic behaviour.\cite{Bacillus_suboptimal} The biomass objective function is most appropriate when the organism is under evolutionary pressure to reproduce quickly. In such cases adaptive evolution may lead to growth rates close to the maximum predicted by FBA. \cite{Ibarra2002} Other objective functions may be suited for simulation of growth in some environments but not other \cite{Schuetz2007} - data-mining algorithms may be used to attempt to identify suitable cellular objectives.\cite{Uygun2007} The important question of "what is the optimal operation of metabolic networks?" was reviewed by Nielsen. \cite{Nielsen2007} %Mentions many relevant articles. Read this again!
+
+Implementation of a biological objective as an objective function requires both identification of the objective, and a precise description of it.\cite{Raman2009} One issue with using a pre-determined composition for the biomass reaction is that the composition may vary with the environmental circumstances and growth conditions - computational and experimental fluxes may be better reconciled if appropriate modifications are applied.\cite{GrowMatch} In any case, if objective functions are to be central in metabolic analysis in the future, the ability to select and evaluate them will be important. 
+
+%"Is maximization of molar yield in metabolic networks favoured by evolution?" \cite{Shuster2008}
+\textbf{The biomass objective function:}
+The starting point for the formulation of the biomass reaction is the empirically determined values for the macromolecular content of the cell in question, together with the amount of the different building blocks making up the different classes of molecules.\cite{Feist2010} For example, the total protein content of a type of cell can be measured, and the average amino acid composition of the proteins determined. Similar procedures can be applied to the other major classes of molecules making up the cell. This information is used to describe the amount of the various metabolites required for producing biomass. Energy requirements for the production of said metabolites can also be taken into account, when known. 
+
+The biomass objective vector is generally perpendicular to one of the surfaces limiting the solution space of the FBA problem and therefore biomass-maximizing flux states are most often degenerate.\cite{OptimalStates} Calculations on a network simulating growth of \textit{E. coli} in minimal glucose medium found a 26-dimensional space of growth-maximizing solutions.\cite{OptimalStates} There are several issues inherent in the use of a static biomass production/pseudo growth reaction as commonly employed in FBA, related to the fact that the biomass composition varies and that biomass precursors metabolites typically are not included in the biomass model reaction. Metabolite dilution flux balance analysis (MD-FBA) has been introduced as a method to address the second issue.\cite{Benyamini2010}
+
+Lately, strategies of simultaneous optimization of multiple objectives have been considered. Multi-objective optimization may be more useful in exploring the potential of an organism to perform a specific task.\cite{Park2009} They may also be useful in descriptions of mutualism between two organisms where Flux Balance Analysis has been extended to modelling of microbial communities. \cite{Park2009}\cite{OptCom}. 
+
+\textbf{Quadratic minimization of distance:}
+Flux distributions may be compared by using the \textit{euclidean distance} as a measurement of their deviation from each other. The euclidean distance between two vectors $x$ and $y$ is defined by the following equation:
+
+\begin{equation}
+D(x,y) = \sqrt {\sum\limits_{i = 1}^N {{{({x_i} - {y_i})}^2}} }
+\end{equation}
+Several flux distributions may give the same value for the same objective function in an FBA problem, while the euclidean distance to an experimentally determined flux distribution may differ. It may therefore be of interest to perform optimization not only with respect to the objective function value, but also the distance to an experimentally determined flux distribution. This optimization can be posed as a quadratic programming (QP) problem, with the objective being minimization of the sum
+
+\begin{equation}
+\sum\limits_i {x_i^2 - 2{y_i}{x_i} + y_i^2}
+\end{equation}
+
+Using vector and matrix notation, this sum can be written as:
+
+\begin{equation}
+{x^T}Fx +Cx + \alpha
+\end{equation}
+
+here, F is a coefficient matrix, $C=-2Y$ is a vector and $\alpha$ is a number equal to $\sum\limits_i {y_i^2}$. F is a diagonal matrix, with ${F_{i,i}} = 1$, all other elements being equal to zero. This applies to minimization of the unweighed sum. By multiplying each element in the matrix F and the vector C with a weighing factor, it is possible to minimize a weighed sum of the individual flux differences or exclude some fluxes from the analysis.
+
+\section{Evaluating objective functions}
+The problem of choosing an appropriate objective function contains at least two questions:
+What objective function gives the best solution? And: What defines the ''best'' solution?
+Thus we must ask: How can we evaluate objective functions, and how should objective functions be rated?  What are the most relevant criteria that can be used? Some possible considerations are listed below:
+
+\begin{itemize}
+\item If seeking solutions optimizing an objective function, can we trust that the cells investigated in experiments are behaving optimally? How much do we have to relax the optimality requirement to recreate the experimental flux? 
+\item Sensitivity to objective function coefficients. This is especially relevant for the biomass objective function. The biomass composition changes with growth rate and growth conditions. How does changing the biomass and/or objective function coefficients affect results?
+\item Robustness analysis/FVA: How much are fluxes allowed to change while maintaining the optimal solution for a given objective function? How much does the objective value change if the fluxes change?
+%\item Optimal states have fewer active reactions if there are irreversible reactions present in the network. \cite{OptimalStates} What is the significance of this? 
+\end{itemize}
+
+The above items are only a few  of many possible angles from which the topic of objective functions in metabolic analysis can be approached. Some notable publications in the area are briefly described below: 
+
+\textbf{ObjFind:}
+Burgard and Maranas introduced an optimization-based framework (ObjFind) for inferring and testing hypothesized objective functions.\cite{Burgard2003} The method is based on calculating ''coefficients of importance'' (CoI) for every considered reaction, which measure how much the flux of each reaction contributes to the objective function which would minimize the distance between computed fluxes and experimental fluxes. The CoIs are empirical estimates of the objective function coefficients, and scaled so that they sum to 1 and a high CoI for a given flux implies that the experimental data is consistent with an hypothesis of maximization of that flux as part of the objective. The vector of all CoI values thus suggests an objective function for the system based only on the model and experimental data, without any a priori assumptions about biological relevance.
+
+Mathematically, ObjFind attempts to find a set of coefficients ${c_j}$ which is consistent with the experimental fluxes 
+${v^{\exp }}$ being an optimal solution of the maximization of the sum
+
+\begin{equation}
+\sum\limits_j {{c_j}{v_j}}
+\end{equation}
+
+That is, if the values of ${c_j}$ are used to define the objective function, an optimal solution set of values $c_j^*$ exists such that the distance:
+
+\begin{equation}
+\sum\limits_j {(v_j^*}  - {v_{\exp }}{)^2}
+\end{equation}
+
+is minimized while adhering to the FBA constraints.
+
+Using a model of \textit{E. coli} central carbon metabolism with 68 reactions and 48 metabolites together with experimental data from growth of \textit{E. coli} on glucose, Burgard and Maranas found the maximal CoI values for the biomass production reaction to be 0.58 and 0.68 for aerobic and anaerobic growth respectively. This suggests that biomass production is important in determining the observed flux distributions. Burgard and Maranas noted that while in their study the range of allowable CoI values for a given flux distribution was narrow, many flux distributions are consistent with a set of CoI values. In that case, the identified objective function has several optimal solutions. As ObjFind requires solving a bi-level optimization problem, the algorithm may be computationally expensive, which becomes a larger concern when working with genome-scale models.
+
+\textbf{Bayesian-based selection:}
+Knorr, Jain and Srivasta introduced a framework based on bayesian probability for selecting the most probable objective function among a set of candidates by comparing their predictions with experimental flux values.\cite{Knorr2007} For a genome-scale model of \textit{E. coli} growing on succinate, the procedure suggested minimization of redox potential production as the best objective among five candidates including maximation of growth rate. A limitation of this approach is that it only attempts to answer which of the objective functions chosen which appears most relevant, and does not give an independent evaluation of any one objective function.
+
+%Method  is based on this article: Discrimination and goodness of fit of multiresponse mechanistic models: \cite{Stewart1998}
+					
+
+
+\textbf{Schuetz. et al - ''Systematic evaluation of objective functions for predicting intracellular fluxes in Escherichia coli:''}
+
+One of the most cited articles dealing with evaluation of objective functions was published by Schuetz, Kuepfer and Sauer in 2007.\cite{Schuetz2007} In their article, the results of applying 11 objective functions in combination with 8 adjustable constraints to a model of \textit{E. coli} core carbon metabolism were evaluated. The model contained 98 reactions and 60  metabolites. Experimental data for six conditions were used when comparing the results obtained applying different objective functions and constraints. Table \ref{table:objfunctions} shows a list of the objective functions used in the study, while Figure \ref{fig:CCM} shows the main reactions included in the model.
+
+\begin{table}[h!t]
+\begin{center}
+\caption{List of objective functions considered in the study by Schuetz et al.}
+\label{table:objfunctions}
+    \begin{doublespace}
+    \begin{tabular}{|l|l|}
+        \hline
+        Objective function                  & Definition                                                                          \\ \hline
+        Maximum biomass yield               & \[\max \frac{{{v_{biomass}}}}{{{v_{glu\cos e}}}}\]                                  \\ 
+        Maximum ATP yield                   & \[\max \frac{{{v_{ATP}}}}{{{v_{glu\cos e}}}}\]                                      \\ 
+        Minimization of overall flux        & \[\min \sum\limits_{i = 1}^n {v_i^2} \]                                             \\ 
+        Maximal ATP yield per flux unit     & \[\max \frac{{{v_{ATP}}}}{{\sum\limits_{i = 1}^n {v_i^2} }}\]                       \\ 
+        Minimum glucose consumption         & \[\min \frac{{{v_{glu\cos e}}}}{{{v_{biomass}}}}\]                                  \\ 
+        Minimum number of reaction steps    & \[\min \sum\limits_{i = 1}^n {y_i^2,\,\,{y_i} \in \{ 0,1\} } \]                     \\ 
+        Maximal ATP yield per reaction step & \[\max \frac{{{v_{ATP}}}}{{\sum\limits_{i = 1}^n {y_i^2} }},\,{y_i} \in \{ 0,1\} \] \\ 
+        Minimal redox potential production & \[\min \frac{{\sum\limits_n {{v_{NADH}}} }}{{{v_{glu\cos e}}}}\]                    \\ 
+        Minimal ATP production              & \[\min \frac{{\sum\limits_n {{v_{ATP}}} }}{{{v_{glu\cos e}}}}\]                     \\ 
+        Maximal ATP production              & \[\max \frac{{\sum\limits_n {{v_{ATP}}} }}{{{v_{glu\cos e}}}}\]                     \\ 
+        Maximal biomass per flux unit       & \[\max \frac{{{v_{Biomass}}}}{{\sum\limits_{i = 1}^n {v_i^2} }}\]                   \\
+        \hline
+    \end{tabular}
+    \end{doublespace}
+   \end{center}
+\end{table}
+
+\begin{figure}[t]
+\centering
+    \includegraphics[scale=0.5]{CCM.jpg}
+    \caption{The central carbon metabolism of \textit{E. coli}, as modelled in the study by Schuetz et al. Not all reactions in the network are shown in the figure. The labels R1 to R10 show the placement in the network of the split ratios used in their analysis. Figure reproduced from \cite{Schuetz2007}.}
+\label{fig:CCM}
+\end{figure}
+
+
+To measure the overall agreement between a set of experimental and computed split ratios, the euclidean distance between the computed and experimental solutions was computed, weighed by the experimental uncertainty of each split ratio. This  measure was termed \textit{predictive fidelity}, and denoted ${D^S}$. Somewhat counter-intuitively, a low value for the predictive fidelity indicates good agreement between the FBA results and experiments, contrasting with the common usage of the term ''high fidelity''.
+
+The predictive fidelity was calculated based on computed \textit{split ratios}. Ten split ratios were defined, based on a calculability analysis showing that those ten split ratios would define the system of fluxes completely. For the cases where the FBA problem had multiple optimal solutions, a range of values for  ${D^S}$ was determined. The minimal and maximal predictive fidelity for each scenario was found through an optimization algorithm described by the following equations:
+
+\[\begin{gathered}
+  \max /\min \,\,{D^S} \hfill \\
+  {\text{subject}}\,{\text{to:}} \hfill \\
+  S \cdot \overrightarrow v  = 0 \hfill \\
+  v_j^{lb} \leqslant {v_j} \leqslant v_j^{ub} \hfill \\
+  {D^S} = {\varepsilon ^T}W\varepsilon  \hfill \\
+  {\varepsilon _i} = R_i^{comp} - R_i^{\exp } \hfill \\
+  {W_{i,i}} = \frac{1}{{\sigma _i^{\exp }}}{\left( {\sum\limits_i {\frac{1}{{\sigma _i^{\exp }}}} } \right)^{ - 1}} \hfill \\
+  {R_i} = f(v) \hfill \\ 
+\end{gathered} \]
+
+Here, $\varepsilon$ is the difference between the computed and experimentally determined split ratios, and $W$ is a weighing matrix incorporating the experimental uncertainties represented by $\sigma _i^{\exp }$. In the last equation, $R_i$ is split ratio no. $i$. The reactions being used in computing the split ratios were as shown in Table \ref{table:splitratios}. However, this table may be misleading. The definition of the split ratios as explained in the article is the sum of one or more fluxes consuming a metabolite divided by the sum of the fluxes producing that metabolite. However, many reactions are reversible and can be either producing or consuming. This is not reflected in Table \ref{table:splitratios}. For example, the split ratio R1 is defined there as:
+
+\begin{equation}
+R_{1} = \text{pgi/(Glk+Pts+Zwf+Pgi)}
+\end{equation}
+
+Here, \textit{pgi} is a reaction consuming the metabolite in question, Glucose 6-phosphate (G6P), while \textit{Pts} and \textit{Glk} are producing reactions, and \textit{zwf} is a reversible reaction either consuming or producing G6P. However, when the \textit{zwf} flux is positive (consuming G6P), it should not be included in the denominator. Neither should pgi, as it is also a consuming reaction, and the calculation simplifies to $R_1$ = pgi/(glk+pts). In the model by Schuetz et al., the zwf reaction is directly linked to the pgl reaction, which is irreversible. In practice, \textit{zwf} is therefore also irreversible. In short, a reaction should only be present in the denominator of the split ratio if it is a producing reaction for that metabolite (in MATLAB this can be achieved  by using the function \textit{subplus}, which returns the value of a number if it is positive, and else zero).
+
+It is possible to question some of the choices made in the definition and use of the split ratios. Consider for example split ratio R3. It is described as the flux through reaction \textit{mgsA} divided by the flux through reactions \textit{FbaA/FbaB} and \textit{TpiA}. However, when considering the experimental data (shown as absolute fluxes in Table \ref{table:expdata}) from which the reference experimental split ratios are calculated, it is worth noting that there is no reaction corresponding neither directly to reaction \textit{TpiA}, nor to reaction \textit{FbaA/FbaB}. Rather, the two are combined into experimental reaction \#6. Additionally, a corresponding reaction for \textit{MgsA} is not included in the experimental data set at all. Rather, it is assigned as experimental reaction \#{}27 by Schuetz et al., with a flux relative to the glucose uptake flux (experimental reaction \#{}1) equal to 0$\pm$10\%.
+
+Put one way, the value of split ratio R3 being zero is not a result from the reference experiment, rather it was an \textit{assumption} (or simplification) of the experiment. It then becomes an interesting question if a split ratio deviating from that assumption should be considered contrary to the experimental result. This is strictly speaking not an issue with the split ratios themselves, but rather with the Metabolic Flux Analysis that produced the data. However, the use of split ratios does somewhat hide the facts of the case, making the calculations less transparent. 
+
+The use of split ratios also is potentially troublesome with respect to optimization. Schuetz et al. used the general non-linear solver \textit{fmincon} in MATLAB to minimize the euclidean distance between the experimental and computed split ratio vectors, but this required generation of random starting points and multiple runs to check for convergence, as the approach is not guaranteed to identify the global minimum point. For larger models, solving time may quickly become prohibitive.
+
+
+\begin{table}
+\caption{Definition and explanation of split ratios used in the study by Schuetz et al. Reproduced from \cite{Schuetz2007}.}    
+\label{table:splitratios}
+\begin{doublespace}
+\scriptsize
+ \begin{tabular}{|l|l|}
+        \hline
+Definition & Explanation\\ \hline                                                                                                                                                                                      
+\[{R_1} = \frac{{{v_{Pgi}}}}{{{v_{Glk}} + {v_{Pts}} + {v_{Zwf} + v_{Pgi} }}}}\]                                                                                 & Flux to glycolysis               \\ 
+        \[{R_2} = \frac{{{v_{Edd}}}}{{{v_{Pgl}}}}\]                                                                                                                                             & Flux to Entner-Doudoroff pathway \\ 
+        \[{R_3} = \frac{{{v_{MgsA}}}}{{{v_{FbaA}} + {v_{FbaB}} + {v_{TpiA}}}}\]                                                                                                                 & Flux to methylglyoxal pathway    \\ 
+        \[{R_4} = \frac{{{v_{PykA}} + {v_{PykF}} + {v_{Pts}}}}{{{v_{Eno}} + {v_{Pps}} + {v_{PckA}}}}\]                                                                                          & Flux of PEP to pyruvate          \\ 
+        \[\scriptsize{R_5} = \frac{{{v_{AcE}} + {v_{flB}} + {v_{TdcE}}}}{{{v_{PykA}} + {v_{PykF}} + {v_{MaeB}} + {v_{Dld}} + {v_{LdhA}} + {v_{ldhA}} + {v_{Eda}} + {v_{Pts}} + {v_{PflB}} + {v_{TdcE}}}}\] & Flux of pyruvate to acetyl-CoA   \\ 
+        \[{R_6} = \frac{{{v_{GltA}} + {v_{\Pr pC}}}}{{{v_{AcE}} + {v_{PflB}} + {v_{TdcE}} + {v_{Acs}} + {v_{AdhE}} + {v_{MhpF}}}}\]                                                             & Flux to citric acid cycle        \\ 
+        \[{R_7} = \frac{{{v_{AceA}}}}{{{v_{AcnA}} + {v_{AcnB}}}}\]                                                                                                                              & Flux to glyxocylate shunt        \\ 
+        \[{R_8} = \frac{{{v_{PckA}}}}{{{v_{Mdh}} + {v_{Mqo}} + {v_{Ppc}}}}\]                                                                                                                    & Flux of oxcaloacetate to PEP     \\ 
+        \[{R_9} = \frac{{{v_{Pta}}}}{{{v_{AcE}} + {v_{PflB}} + {v_{TdcE}} + {v_{Acs}} + {v_{AdhE}} + {v_{MhpF}}}}\]                                                                             & Acetate secretion                \\ 
+        \[{R_{10}} = \frac{{{v_{AdhE}} + {v_{MhpF}}}}{{{v_{AcE}} + {v_{PflB}} + {v_{TdcE}} + {v_{Acs}} + {v_{AdhE}} + {v_{MhpF}}}}\]                                                            & Ethanol secretion                \\ 
+     \hline 
+    \end{tabular}
+\normalsize
+\end{doublespace}
+\end{table}
+
+
+%\end{landscape}
+
+As seen, there are several potential issues both regarding the definition and optimization of split ratios. However, the euclidean distance measure is easy to interpret, and can be minimized using quadratic programming if calculated on basis of the raw fluxes. For these reasons, it was decided to focus on the euclidean distance between raw flux vectors as the main metric in this project.
+
+\section{Methods}
+\subsection{Model setup}
+Three metabolic models were chosen for use in the study. The metabolic model of \textit{E. coli} central carbon metabolism used by Schuetz et al. and the \textit{E. coli} genome-scale metabolic model iJO1366 was downloaded from the supplementary materials sections of the online versions of the respective papers.\cite{Schuetz2007}\cite{Orth2011} The \textit{E. coli} core model was downloaded from \url{http://systemsbiology.ucsd.edu/Downloads/EcoliCore}.
+
+The .xml file containing the model by Schuetz et al. was edited by by changing metabolite and reaction identifiers to the format expected by the COBRA toolbox, to allow the model to be processed by the program. In addition, identical duplicate reactions were removed to simplify the computational work and reduce the potential for flux loops in the solutions. In the following, the edited version of the model used in the calculations will be referred to as the ''Schuetz Revised'' or SCHUETZR model. The \textit{E. coli} core model was  edited to add reactions present in the SCHUETZR model and the experimental data set but missing in that model. In the following, the edited version of the \textit{E. coli} core model will be referred to as the \textit{E. coli} Core Expanded or ''ECME'' model. A full list of changes made to the two models is shown in Appendix \ref{Appendix:modeldetails}. In addition to the above changes, for those experimental reactions which had several corresponding model reactions, token metabolites and reactions were added so that the flux through each 'token' reaction would give the sum of the model reactions. This was done to allow those sums to be used directly during optimization. The addition of token metabolites and reactions does not otherwise affect the behaviour of the model. The iJO1366 model was used unchanged except for the addition of token reactions. Being so changed it is referred to as iJO1366b. iJO1366 contains two biomass reactions using either a ''wildtype'' or ''core'' biomass composition. The ''core'' biomass reaction is the default defined in the model file and was used for all calculations. 
+
+\textbf{Pairing of model and experimental reactions:}
+As there was not always a one to one correspondence between the available model and experimental reactions, all three models were reviewed to decide which model reactions should be considered equivalent to a given experimental reaction.
+A list of all 28 experimental reactions and their corresponding reactions in the three models is shown in Appendix \ref{Appendix:modeldetails}.
+
+\subsection{Experimental data}
+The experimental data, also used by Schuetz et al.\cite{Schuetz2007}, was originally published by Perrenoud and Sauer.\cite{Perrenoud2005} The experimental data was collected for exponential growth of \textit{E. coli} strain BW25113, a derivate of \textit{E. coli} K-12, on glucose. The intracellular fluxes were determined by \textsuperscript{13}C-based MFA using a stoichiometric model published by Fischer et al.\cite{Fischer2004} The model consisted of a reaction network with 25 fluxes to be determined and 21 metabolite balances. The latter included three experimentally determined rates - glucose uptake, acetate production and biomass production. The resulting under-determined system having four degrees of freedom was solved by using seven experimentally determined flux ratios as constraints. The biomass composition used was based on data published by Emmerling et al.\cite{Emmerling2002}
+
+%BW25113 contains several deletion mutations, including deletions of the genes \textit{RhaA}, \textit{RhaB}, \textit{RhaD}, \textit{araB} and \textit{araD}.
+\textbf{Calculation of absolute experimental fluxes:}
+The study by Schuetz et al. \cite{Schuetz2007} used ratios between fluxes when comparing experimental and computational results, and the experimental fluxes were reported relative to the glucose uptake flux. However, when using quadratic programming it is necessary to use absolute flux values. As the experimental data cited by Schuetz et al. includes the growth rate, and biomass production as a experimental flux, it is possible to scale the other fluxes using these values in the following equation. 
+
+\begin{equation}
+{v_{abs}} = \frac{{{v_{rel}} \times \mu }}{{{v_{biomass}}}}
+\end{equation}
+
+The coefficients of the biomass reaction are scaled so that a flux of one unit through the biomass reaction equals the growth rate in $h^{-1}$ when the fluxes are expressed in units of mmol/gDW$\cdot$h.\cite{WhatisFBA} From the set of relative fluxes, including the biomass flux, and the reported growth rate, the values of all the fluxes in mmol/gDW$\cdot$h can then be calculated. However, the data as published by Perrenoud and Sauer is given as absolute fluxes, and so using the data as presented by Schuetz et al. would introduce a needless decrease in accuracy. The data for anaerobic batch culture used by Schuetz et al. is given with reference to the same article, but only the data for aerobic batch culture is available in the supplementary information for that article. Therefore, the results presented are limited to analysis using the data for aerobic batch culture.
+
+
+\subsection{Model analysis}
+\label{sec:modelanalysis}
+\textbf{MATLAB workflow:}
+To facilitate the analytical procedures, a collection of MATLAB functions and scripts was produced. The workflow of the main functions utilized is shown in Figure \ref{fig:MATLAB}.
+
+\begin{figure}[ht]
+\centering
+    \includegraphics[scale=1]{workflow2cropped.png}
+    \caption{Graphical presentation of the MATLAB workflow of model analysis.}
+\label{fig:MATLAB}
+\end{figure}
+
+The function runsim.m was created to perform rapid analysis using various combinations of models, objectives and constraints by specifying these through the input parameters. A list of the MATLAB functions used and a closer description of their operation is shown in Appendix \ref{Appendix:software}. All computations were carried out using MATLAB R2012a and COBRA Toolbox v. 2.04 running under Windows 7 on a 64-bit Intel Core 2.1 Ghz processor. The necessary software is detailed in Appendix \ref{Appendix:software}.
+
+\textbf{Optimization solvers:}
+Initial solutions to FBA problems were computed using the COBRA Toolbox called through \textit{runsim}. For minimization of distance problems, the MATLAB function \textit{fmincon} and the Gurobi 5 optimization solver (used through MATLAB) were used. When \textit{fmincon} was used, the initial FBA solution was used as the starting point in all cases. Unless otherwise noted, solutions of quadratic minimization of distance problems were produced using Gurobi. 
+
+\textbf{Objective functions:}
+Four linear objectives are currently supported in \textit{runsim}, and have been used in the analyses presented under Results and Discussion. These are maximization of biomass flux (\verb+max BM+), maximization of ATP producing fluxes (\verb+max ATP+), minimization of glucose uptake (\verb+min glucose+) and minimization of ATP producing fluxes (\verb+min ATP+). Adenosine triphosphate (ATP) is a high-energy molecule vital to cell growth and maintenance. Maximization of ATP producing fluxes would imply high availability of energy for cellular processes including growth, while minimization of ATP producing fluxes suggest an energy-conserving mode. Note that when glucose is the limiting nutrient, maximization of biomass flux (growth rate) is equivalent to maximization of biomass yield. Likewise, minimization of glucose uptake is equivalent to maximization of biomass yield when the biomass production is fixed. The definitions of the objectives are given in Appendix \ref{Appendix:modeldetails}.
+
+\textbf{Model constraints:}
+The model constraints implemented in \textit{runsim} are the same as used by Schuetz et al.\cite{Schuetz2007} The  constraints P/O ratio $=1$,glucose/\ce{O2} uptake $=3/2$ and global reaction bounds (All reactions $<200\%$ of glucose uptake rate) are supported only for the SCHUETZR model.
+
+\textbf{Weighing of fluxes:} All distances presented and all optimizations use the unweighed fluxes. The option to use fluxes weighted by their experimental uncertainty is implemented in \textit{runsim} but untested.
+
+\section{Results and discussion}
+\textbf{Software:} Much of the project time was spent developing the MATLAB framework for model analysis based around the top-level function \textit{runsim}. It was a goal that the framework should be extendable to analysis using other models, objectives and constraints than used here. To facilitate this, the programs should load all problem-specific data - specifying the model(s), objectives, constraints etc. - from external files. In accordance with this principle, the experimental data and reaction maps relating the model and experimental reactions are loaded from external .mat files. Another design principle was modularity. The different operations being carried out through \textit{runsim} are divided between separate function files, most of which share a common input format and can be used alone. This allows parameters to be easily passed from one function to the next, and makes it easy to switch between using one function as a stand-alone or running a complete analysis through \textit{runsim}. There is still a fair amount of hard-coded relations and model-specific operations in the code, but with the basic framework and logical structure in place a moderate effort should be sufficient to achieve the generalization of the programs to handle any model.
+
+\textbf{Definitions:} In this section, the optimality of identified solutions are considered both with respect to their objective function values and their fit to experimental data. A definition of terms is thus needed to avoid confusion about the different references to optimality. In the following, ''objective-optimal'' will refer to optimality of the solution with respect to the objective function while a ''distance-optimal'' solution is a solution with minimal distance (however defined) to the experimental data. 
+
+The global distance-optimal solution in the solution space of an FBA problem must necessarily be equally or more distance-optimal than the maximally distance-optimal solution among the objective-optimal subset of solutions. Of special interest are those objective-optimal solutions which are distance-optimal within the set of objective-optimal solutions. As any objective is unlikely to describe or capture the metabolic behaviour of any cell perfectly, it is reasonable to expect the distance-optimal solution to be non-optimal with respect to the objective. For this reason, the distance-optimal solutions achievable when the requirement for optimality is relaxed are also considered.
+
+\textbf{Performance of \textit{fmincon} and Gurobi solvers:}
+The MATLAB function \textit{fmincon} is a general non-linear optimization solver function which can use several different optimization algorithms. \textit{fmincon} attempts find the input variables that minimizes the value of a specified function. However, it can not be guaranteed that \textit{fmincon} will find the global optimal solution. An initial starting point must be supplied, and the result may depend on this starting point. Using the initially computed FBA result as a starting point for \textit{fmincon}, \textit{fmincon} and Gurobi generally produced equivalent solutions. However, even allowing a run-time of several hours, \textit{fmincon} was not able to compute distance-optimal solutions for the iJO1366 genome-scale model. In comparison, Gurobi provided solutions to most quadratic optimization problems with a run-time of a few seconds. 
+
+\textbf{Feasibility analysis:}
+To determine if the flux distribution described by the experimental data was achievable by each model in their unconstrained states, a flux vector minimizing the distance to the experimental data was sought, not considering any objective and subject only to the constraints of the model. A non-zero minimal distance would indicate that the experimental flux state was outside the solution space of the model. Optimization was performed using both \textit{fmincon} and Gurobi 5 for the SCHUETZR and ECME models, and with Gurobi only for iJO1366b. The result for model iJO1366b is shown in Figure \ref{fig:FA1}. For SCHUETZR, ECME and iJO1366b, the minimal distances found were 0.43, 4.98 and 0.22 mmol/g$\cdot$h, respectively. For iJO1366, only the biomass reaction (experimental reaction \#{}25) was outside the bounds defined by the experimental uncertainty. The flux through the biomass reaction was  0.46 mmol/g$\cdot$h in the distance-minimizing solution, versus an experimentally determined value of 0.64$\pm{}$0.01. In the SCHUETZR model, the biomass flux was closer (0.65) to the experimental, while the fluxes through experimental reactions 10 and 11 deviated by 0.25 and -0.30  mmol/g$\cdot$h, giving in each case a deviation relative to the experimental uncertainty equalling 1.24 and -1.46, respectively. The ECME model showed largest inconsistencies, with 16 of 28 fluxes outside the uncertainty limits, and a minimal euclidean distance of 4.98  mmol/g$\cdot$h.
+
+\begin{figure}[ht]
+\centering
+    \includegraphics[scale=0.75]{Final/FAiJO1366.png}
+    \caption{Results of quadratic minimization of distance to experimental flux values for the model iJO1366b. Default model constraints apply, but no requirement with respect to the value of the objective function is made. Only the biomass flux is outside the bounds defined by the experimental uncertainty.}
+\label{fig:FA1}
+\end{figure}
+\textbf{Calculation of best-fitting objective-optimal flux distributions:} The above analysis was repeated, now with requirement to objective-optimality. The distance-optimal solution among the objective-optimal solutions for model iJO1366 using the optimization of biomass objective and default constraints is shown in Figure \ref{fig:QPMIN1}. 21 of 28 reactions are now outside the experimental uncertainty bounds. The euclidean distance to the experimental flux distribution is 12.39 mmol/g$\cdot{}h$. The flux through the biomass reaction is 0.76 and the glucose uptake rate, having been constrained to the experimental range, is 7.80 mmol/g$\cdot{}h$. Most fluxes are above their experimentally determined levels. This can be interpreted as a general scaling-up of the flux pattern, due to the requirement of maximal flux through the biomass reaction for the solution to be optimal with respect to the objective. The biomass flux in turn is limited by the glucose uptake rate.
+
+
+\begin{figure}[ht]
+\centering
+    \includegraphics[scale=0.75]{Final/QPminiJO1366.png}
+    \caption{Results of quadratic minimization of distance to experimental flux values while maintaining objective-optimality, for model iJO1366b. Maximization of biomass objective and default model constraints apply. 21 of 28 fluxes are outside the bounds defined by the experimental uncertainty, and the euclidean distance is 12.39 mmol/g$\cdot$h.}
+\label{fig:QPMIN1}
+\end{figure}
+
+\textbf{Minimal distance vs. requirement for optimality:}
+To evaluate to what degree the hypothesis of optimization of the selected objective agrees with the experimental data, the minimal achievable distance to the experimental data was calculated while varying the requirement for optimality with respect to the objective. This was performed using the script \verb+optreqanalysis.m.+ Results using the maximization of biomass and maximization of ATP production objectives on all three models with default constraints are shown in Figure \ref{fig:optreq}. For the SCHUETZR and iJO1366b models, the minimal achievable distance approaches zero with the optimality requirement, as expected. For the ECME model, the minimal distance shows a higher baseline, pointing to a basic inconsistency as found in the feasibility analysis. The minimal distance for the ATP and biomass objectives in the ECME model differ even at a relative optimality requirement at zero, due to the flux through the biomass reaction being constrained to the experimentally determined range when using the ATP objective. It is worth noting that above an optimality requirement of 0.5, the ranking of the objectives with respect to the minimal distance does not change. This suggests that reducing the relative optimality requirement slightly from unity does not affect the ranking of objectives by this measure. A thorough analysis covering more objectives would reveal if this is a generally valid observation.
+
+\begin{figure}[ht]
+\centering
+    \includegraphics[scale=0.75]{Final/OPTREQ.png}
+    \caption{Results of quadratic minimization of distance to experimental flux values, for varying objective-optimality requirements. Note that for the ECME model, a larger minimal distance is found when using the Max ATP objective than when using the Max BM objective, even when the optimality requirement is zero. This is likely because the experimentally determined biomass is applied as a constraint on the model in the former case, possibly increasing the minimum inconsistency.}
+\label{fig:optreq}
+\end{figure}
+
+\textbf{Effect of different constraints:} To observe the effect of different constraints, minimization of distance subject to objective-optimality was performed for 20 combinations of objective and constraints with the SCHUETZR model. The results are shown in Figure \ref{fig:schuetzrcross}. The tested constraints appear to have little effect, except when using the maximization of ATP objective and in causing a convergence of the results when applying the constraints in combination. 
+
+\begin{figure}[ht]
+\centering
+    \includegraphics[scale=0.75]{Final/SCHUETZRCROSS2.png}
+    \caption{Results of quadratic minimization of distance to experimental flux values, under requirement of objective-optimality, using different model constraints on the SCHUETZR central carbon-metabolism model. Using the maximization of biomass objective with a combined set of constraints gives the best fit to the experimental result. The oxygen uptake and ATP maintenance constraints have no effect except when using the maximization of ATP objective, while the use of the combined set of constraints (''all'') causes a convergence of the results for three of the objectives.}
+\label{fig:schuetzrcross}
+\end{figure}
+
+\textbf{Multi-model comparison of objectives:} Minimal achievable distances under objective-optimality requirement for four objectives used with the SCHUETZR central carbon metabolism and iJO1366 genome-scale models are shown in Figure \ref{fig:OBJCOMP1}. Results for the ECME model are not shown, as use of this model gave highly increased distances, especially for the maximization of ATP production objective. This could possibly indicate an issue with the definition of this objective in that model. The SCHUETZR model gives the shortest distance for three of four objectives, but the between-model variability for SCHUETZR and iJO1366b is on the same order as the effect of changing the objective, except for the maximization of ATP objective. A comparison using several more objectives would be desirable to determine what the general pattern is.
+
+\begin{figure}[ht]
+\centering
+    \includegraphics[scale=0.75]{Final/OBJCOMP1.png}
+    \caption{Comparison of minimal distances to experimental fluxes achievable under requirement of objective-optimality for different objectives using the SCHUETZR and iJO1366 models. The SCHUETZR model gives the shortest distance for three of the four objectives shown, but for those same objectives the between-model and between-objective variability is on the same order.}
+\label{fig:OBJCOMP1}
+\end{figure}
+
+\clearpage
+\section{Conclusion}
+A program for investigating the effect of cellular objectives and model constraints on metabolic models has been implemented in MATLAB. The program was applied to analysis using three models of \textit{E. coli} metabolism, including iJO1366, the most recent genome-scale model. Using the euclidean distance between the vectors of corresponding computed and experimentally determined fluxes as the metric, the achievable flux states closest to an experimentally determined flux distribution were determined by application of quadratic programming. Initial results suggest that decreasing slightly the requirement to the optimality of  the computed flux solutions with respect to the objective function does not affect the ranking of objectives by the euclidean distance metric. The effect of choice of model constraints appear to be secondary to the choice of objective, as reported by Schuetz et al. For comparison between models using default model constraints, between-model variability was on the order of between-objective variability for three of four investigated objectives. A fourth objective gave generally poorer solutions. Further program development including implementation of more selectable objectives and constraints would allow a fuller analysis to be performed. The experimental data used as reference were gathered through \textsuperscript{13}C-based metabolic flux analysis. How flux values determined by this method are used should be considered carefully, as these values are based on specific assumptions about the metabolic network structure. 
+
+
+\begin{doublespace}
+\begin{center}
+Trondheim, \today \\
+\end{center}
+\vspace{0.25cm}
+\begin{center}
+Jarle Magnus Ribe Pahr \\
+\end{center}
+\end{doublespace}
+
+\clearpage
+%\newpage
+\addcontentsline{toc}{section}{References}
+\footnotesize
+\bibliography{project_bibliography}
+%\printbibliography
+\normalsize
+%\renewcommand{\cftsecaftersnum}{:}
+%\appendix
+%\addcontentsline{toc}{chapter}{Appendices}
+% \mbox{text} Holder teksten på samme linje
+\begin{appendices}
+\newpage
+
+\numberwithin{table}{section}
+\numberwithin{figure}{section}
+\section{Model details}
+\label{Appendix:modeldetails}
+\textbf{Model format:} The metabolic models used in this project are formulated in the COBRA-compliant SBML format. SBML files are based on .xml markup language and can be viewed with a plain-text editor. The basic features of the COBRA SBML format are explained below. The central elements are species, reactions and compartments.  Compartments refer to a physical environment separate from that of other compartments. The most common compartments used in metabolic models are \verb+"cytosol"+ and \verb+"extracellular"+. The iJO1366 model also contains a \verb+"periplasm"+ compartment. The same metabolite is treated as separate species in each compartment, so a given metabolite may be described by several species. Compartments are defined first in the model file. In the SCHUETZR model, the two compartments are defined as follows: 
+\begin{center}
+\begin{BVerbatim}[boxwidth=auto]
+<listOfCompartments>
+	<compartment id="C_c" name="cytoplasm" />
+	<compartment id="C_e" name="external" />
+ </listOfCompartments>
+\end{BVerbatim}
+\end{center}
+Secondly, species are defined between the \verb+<listofspecies>+ and \verb+</listofspecies>+ tags.  In the SCHUETZR model, the following line defines the species glucose in the cytosolic compartment.
+\begin{center}
+\begin{BVerbatim}[boxwidth=auto]
+<species id="M_GLC_c" name="Glucose" compartment="C_c" />
+\end{BVerbatim}
+\end{center}
+Reactions which are defined later in the model file can then reference this species as a reactant or product of the reaction. According to the COBRA-compliant SBML format, all metabolite ID fields must begin with "M\_{}", and all reaction ID fields must begin with "R\_{}".
+Exchange reactions are those reactions which allow species to enter or leave the system independent from reactions with other species. By convention, the reaction ID of exchange reactions begin with "R\_{}EX". The environmental conditions such as growth media composition, oxygen availability are simulated by setting bounds on the exchange reactions.
+The essential elements of a model reaction are its reactants, products and upper and lower bounds. Gene associations, enzyme numbers and other additional information can be specified for use in gene-knockout and other analytical procedures but this has not been a concern here.
+The COBRA-compliant SBML file structure is described in detail at: \url{http://www.nature.com/protocolexchange/system/uploads/1808/original/Supplementary_Material.pdf}
+
+Validation of the SBML file structures was performed using the SBML validator at \url{http://sbml.org/Facilities/Validator/index.jsp}. After validation, error correction and re-validation, no errors were found in the final models used. One error was found in the model by Schuetz et al., relating to the definition of a species in the \textit{gnd} reaction. The impact of this, if any, on the results obtained using that model is unknown.
+
+Below is an example of a biotransformation reaction described in SBML. The phosphorylation of Fructose 6-Phosphate (F6P) by ATP producing Fructose diphosphate (FDP) is represented in the SCHUETZR model by the following code: 
+\begin{lstlisting}
+<reaction id="R_pfkAB" name="Phosphofructokinase (pfkA/B)" reversible="false">
+    <listOfReactants>	
+   	<speciesReference species="M_F6P_c" stoichiometry="1.0"/>
+    <speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    </listOfReactants>	
+    <listOfProducts>	
+    <speciesReference species="M_FDP_c" stoichiometry="1.0"/>
+    </listOfProducts>	
+    <kineticLaw>	
+	<math xmlns="http://www.w3.org/1998/Math/MathML">
+	<ci> FLUX_VALUE </ci>
+	</math>	
+	<listOfParameters>
+	<parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+	<parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+	<parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+	<parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+	</listOfParameters>
+     </kineticLaw>	
+</reaction> 		
+\end{lstlisting}
+Note that ATP simply disappears in this reaction. This is an obvious simplification as in reality ADP is produced when ATP gives up one phosphate group. However, the model by Schuetz et al.  does not contain ADP as a species. Thus in the SCHUETZR model the ATP synthesis reactions, which in reality consumes ADP and P$_{\textrm{i}}$ (inorganic phosphate) to produce ATP, likewise show ATP appearing ''from nothing''. The significance of this simplification for the quality of model predictions has not been investigated here, but for a fully rigorous analysis it would certainly warrant consideration. In the ECME and iJO1366 models, this simplification is not made, and the production and consumption of ADP and other ATP-related compounds are accounted for. 
+
+Below, an example of a transportation reaction is given. In the SCHUETZR model, the uptake/secretion of lactate is described by the following code. The reaction direction is defined with secretion of lactate giving positive flux values. Note that with the default settings (as defined by the SBML code), uptake of lactate is not allowed:
+\begin{lstlisting}
+<reaction id="R_lac" name="lactate transport" reversible="false">
+	<listOfReactants>	
+    <speciesReference species="M_LAC_c" stoichiometry="1.0"/>
+    </listOfReactants>	
+    <listOfProducts>	
+    <speciesReference species="M_LAC_e" stoichiometry="1.0"/>
+    </listOfProducts>	
+	<kineticLaw>	
+	<listOfParameters>
+	<parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+	<parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+	<parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+	<parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+	</listOfParameters>
+    </kineticLaw>      		    	
+</reaction>			
+\end{lstlisting}
+Below an example of an exchange reaction is given:	
+\begin{lstlisting}
+<reaction id="R_EX_GLC_e" name="Glucose exchange" reversible="true">
+	<notes>	
+  	<html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+	</notes>	
+	<listOfReactants>
+	<speciesReference species="M_GLC_e"/>
+	</listOfReactants>
+	<kineticLaw>	
+	<listOfParameters>		
+	<parameter id="UPPER_BOUND" value="-10" units="mmol_per_gDW_per_hr"/>
+	<parameter id="FLUX_VALUE" value="1000" units="mmol_per_gDW_per_hr"/>
+	 </listOfParameters>
+	 </kineticLaw>	
+</reaction>		
+\end{lstlisting}
+As a final example, the biomass reaction as defined in the SCHUETZR model is shown below:
+
+\begin{lstlisting}
+<reaction id="R_biomass" name="biomass" reversible="false">		
+	<listOfReactants>				
+	<speciesReference species="M_ATP_c" stoichiometry="40.2"/>
+	<speciesReference species="M_NADPH_c" stoichiometry="15.7"/>
+	<speciesReference species="M_G6P_c" stoichiometry="0.33"/>
+	<speciesReference species="M_F6P_c" stoichiometry="0.07"/>
+	<speciesReference species="M_R5P_c" stoichiometry="0.96"/>
+	<speciesReference species="M_E4P_c" stoichiometry="0.36"/>
+	<speciesReference species="M_GA3P_c" stoichiometry="0.12"/>
+	<speciesReference species="M_3PG_C" stoichiometry="0.86"/>
+	<speciesReference species="M_PEP_c" stoichiometry="0.77"/>
+	<speciesReference species="M_PYR_c" stoichiometry="2.94"/>
+	<speciesReference species="M_ACCOA_c" stoichiometry="2.41"/>
+	<speciesReference species="M_OA_c" stoichiometry="1.65"/>
+	<speciesReference species="M_AKG_c" stoichiometry="1.28"/>
+	</listOfReactants>				
+	<listOfProducts>				
+		<speciesReference species="M_BM_e" stoichiometry="1.0"/>
+		<speciesReference species="M_NADH_c" stoichiometry="3.0"/>
+		<speciesReference species="M_COA_c" stoichiometry="2.41"/>
+	</listOfProducts>				
+	<kineticLaw>				
+	 <math xmlns="http://www.w3.org/1998/Math/MathML">
+	 <ci> FLUX_VALUE </ci>			
+	 </math>				
+	 <listOfParameters>				
+ 	 <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+ 	 <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+ 	 <parameter id="OBJECTIVE_COEFFICIENT" value="1"/>	
+	 <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+	  </listOfParameters>				
+</kineticLaw>    					
+\end{lstlisting}
+
+\begin{table}
+\centering
+\caption{Definition of objective functions.}
+\label{table:objectives}
+\begin{onehalfspace}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Objective (ID)    & Model    & Reaction(s)                              \\ \hline
+  \multirow{3}{*}{Max BM (1)}& SCHUETZR & biomass                                  \\ 
+            & ECME     & Biomass\_{}Ecoli\_{}core\_{}w\_{}GAM 	\\   
+               & iJO1366b & Ec\_{}biomass\_{}iJO1366\_{}core\_{}53p95M\\ \hline
+  \multirow{3}{*}{Max/Min ATP (2/6)} & SCHUETZR & pgk,pykAF,sucCD,atp,ackAB\_{}tdcD\_{}purT \\   
+              			  & ECME     & ATPS4r,Pyk                            \\ 
+                  		  & iJO1366b & AP5AH,ATPS4rpp,PYK                   	\\ \hline 
+        \multirow{3}{*}{Min glucose (4)}   & SCHUETZR & EX\_{}GLC(e)            \\ 
+               			  & ECME     & EX\_{}glc(e)                             \\ 
+                          & iJO1366b & EX\_{}glc(e)                             \\
+        \hline
+    \end{tabular}
+    \end{onehalfspace}
+\end{table}
+
+
+
+\begin{table}
+\centering
+\caption{Definition of model constraints}
+\label{table:constraints}
+\begin{onehalfspace}
+\begin{tabular}{|p{4cm}|p{1cm}|p{8cm}|}
+        \hline   
+        Constraint      & ID & Definition                                                     		\\ \hline
+        P/O = 1         & 1             & nuo = cydAB = 0 (SCHUETZR only)                            \\ 
+        Glc/O2 = 3/2    & 2             & Coupled Glc/\ce{O2} reaction (SCHUETZR only)                \\ 
+	    O2 max $<$ 11.5   & 3             & EX\_{}O2(e) $>$ -11.5                                     \\
+        O2 max $<$ 14.75  & 4             & EX\_{}O2(e) $>$ -14.75                                    \\       
+      \multirow{2}{*}{ATP maintenance}  & \multirow{2}{*}{5}& 'maint' = 7.6 (SCHUETZR)               \\
+      															& & 'ATPM' = 7.6 (ECME/iJO1366b) 	\\ 
+        Reaction bounds & 6             & $v_{i}\leq{}2\cdot{}v_{glc,max}$ (SCHUETZR only)          \\ 
+      	All             & 7             & Combination of above. (\ce{O2} max $<$ 11.5)              \\       
+        \hline
+    \end{tabular}
+    \end{onehalfspace}
+\end{table}
+
+\textbf{Changes to models:} The model used by Schuetz et al. was edited to remove duplicate reactions and to allow processing with the COBRA Toolbox. Table \ref{table:mergedrx} shows a list of the merged reactions in the SCHUETZR model. The \textit{E. coli} core model was edited to include reactions present in the Schuetz model but missing from that model. Table \ref{table:ECMEadd} shows a list of those reactions. In addition, an uptake reaction coupling glucose and oxygen uptake to a $2/3$ ratio was added to the SCHUETZR model to allow implementation of this ratio as a model constraint. This reaction is by default constrained to zero. 
+
+Table \ref{table:objectives} Shows the definition of the objective functions used. Table \ref{table:constraints} shows the definition of the model constraints. Table \ref{table:reactmap} shows the experimental reactions and the corresponding model reactions for all three models.
+
+
+\begin{table}[h]
+\centering
+\caption{Merged reactions in SCHUETZR model}
+\label{table:mergedrx}
+\begin{tabular}{|c|c|c|}
+\hline
+Original reaction ID &	Merged reaction ID &	Description \\
+\hline
+pykA/pykF 			 &R\_{}pykAF				&Pyruvate kinase\\
+AcnA/AcnB			&R\_{}acnAB			&Aconitase half-reaction A\\
+acnA\_{}r2/acnB\_{}r2		&R\_{}acnAB\_{}r2		    &Aconitase half-reaction B\\
+fbaA/fbaB			&R\_{}fbaAB			&Fructose bis-P aldolase\\
+gpmA/gpmB			&R\_{}gpmAB			&Phosphoglyceromutase\\
+fbP/glpX			&R\_{}fbp\_{}glpX			&Fructose-bisphosphatase\\
+rpiA/rpiB			&R\_{}rpiAB			&Ribose 5-phosphate isomerase\\
+tktA/tktB			&R\_{}tktAB			&Transketolase\\
+tktA\_{}R2/tktB\_{}R2		&R\_{}tktAB\_{}r2			&Transketolase\\
+talA/talB			&R\_{}talAB			&Transaldolase\\
+gltA/prpC			&R\_{}gltA\_{}prpC		&Citrate synthase\\
+frdABCD/sdhAB		&R\_{}frdABCD\_{}sdhAB	&Succinate dehydrogenase\\
+fumA/fumB/fumC		&R\_{}fumABC			&Fumarate hydratase\\
+pflB/tdcE			&R\_{}pflB\_{}tdcE		&Pyruvate formate lyase\\
+fdhF/fdoGHI/fdnGHI\_{}r2&R\_{}fdhF\_{}fdoGHI	&Formate dehydrogenase\\
+adhE/mhpF			&R\_{}adhE\_{}mhpF		&Acetaldehyde dehydrogenase\\
+ackA/ackB/tdcD/purT	&R\_{}ackAB\_{}tdcD\_{}purT	&Acetate kinase\\
+adhE\_{}r2/adhP/adhC	&R\_{}adhPC\_{}adhE\_{}r2	&Alcohol dehydrogenase\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{Reactions added to \textit{E. coli} core model.}
+\label{table:ECMEadd}
+\begin{tabular}{|c|c|}
+\hline
+Reaction ID & Description 					\\ \hline
+R\_{}glk		&Glucokinase					\\
+R\_{}mglABC	&Methyl-galactoside transporter \\
+R\_{}edd		&Entner-Douderoff dehydratase	\\	
+R\_{}mgsA		&Methylglyoxal synthase			\\
+R\_{}Eda		&Entner-Douderoff aldolase		\\
+R\_{}Acs		&Acetyl-CoA synthase			\\
+R\_{}Mqo		&Malate quinone oxidioreductase	\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h!t]
+\centering
+\caption{Corresponding experimental and model reactions}
+\label{table:reactmap}
+\scriptsize
+\begin{onehalfspace}
+    \makebox[\textwidth]{%
+    \begin{tabular}{|p{0.75cm}|c|c|c|c|c|c|c|}
+        \hline
+
+              
+\multirow{2}{*}{Rn. \#} &\multirow{2}{*}{Reaction} &  \multicolumn{3}{|c|}{Reaction ID} \\  \cline{3-5}
+                        &                          &  SCHUETZR & ECME      &  iJO1366b\\  \hline
+1&GLC$+$ATP$\rightarrow$G6P&glk$+$pts&glk$+$GLCpts& HEX1$+$GLCptspp\\
+2&G6P$\rightarrow$6PG$+$NADPH&zwf&G6PDH2r& G6PDH2r\\
+3&6PG$\rightarrow$P5P + CO2 $+$ NADPH& gnd &gnd& gnd\\
+4&G6P$\rightarrow$F6P& pgi&pgi& PGI\\ 
+5& 6PG $\rightarrow$ T3P + PYR& edd &edd & edd\\
+6& F6P + ATP $\rightarrow$ 2T3P& fbaAB&  FBA& fba\\
+7& 2P5P $\rightarrow$ S7P $+$ T3P& tktAB&TKT1& TKT1\\
+8& P5P + E4P $\rightarrow$ F6P + T3P    & tktAB\_{}r2     &  TKT2       & TKT2\\
+9& S7P + T3P $\rightarrow$ E4P + F6P            & talAB             &  talA  & tala\\
+10&T3P $\rightarrow$ PGA + ATP + NADH  & gapA    &  GAPD  & GAPD \\
+11& PGA $\rightarrow$ PEP   & gpmAB  &pgm      & pgm  \\
+12& PEP $\rightarrow$ PYR + ATP  & pykAF - pps  & pyk-pps  & pyk- pps\\
+13& PYR $\rightarrow$ AcCoA + CO2 + NADH   & aceEF &  PDH   & PDH \\
+14& OAA + AcCoA $\rightarrow$ ICT& gltA/prpC &  CS         & CS\\
+15& ICT $\rightarrow$ OGA + CO2 + NADPH  & ICD & ICDHyr         & ICDHyr\\
+16& OGA $\rightarrow$ FUM + CO2 + 1.5ATP + 2NADH & sucAB &  AKGDH& akGDH\\ 
+17& FUM $\rightarrow$ MAL& fumABC&   FUM      & FUM \\
+18& MAL $\rightarrow$ OAA + NADH & mdh+mqo&  MDH  & MDH 1-3\\
+19& MAL $\rightarrow$ PYR + CO2 + NADH& maeB+maeA& ME1+ME2     & ME1+ME2\\
+20& OAA + ATP $\rightarrow$ PEP + CO2& pck&ppck    & ppck \\
+21& PEP + CO2 $\rightarrow$ OAA& ppc& ppc& ppc\\ 
+22& AcCoA $\rightarrow$ Acetate  + ATP + CoA& pta-acs& PTAr - acs & PTAr - ACS\\
+23& NADPH $\rightarrow$ NADH& udhA-pntAB& NADTRHD,THD2    & NADTRHD,THD2PP\\
+24& O2 + 2NADH $\rightarrow$ 2P/OxATP& O2& O2t& CYTBD(2)pp,CYTBO3\_{}4pp\\
+25& biomass& biomass&Biomass\_{}Ecoli & Ec\_{}biomass(...)\\
+26& ICT + AcCoA $\rightarrow$ MAL + FUM + NADH   & aceA&ICL & ICL\\
+27& DHAP $\rightarrow$ PYR& mgsA& mgsA& mgsA\\
+28& ETH $\rightarrow$ ETHxt & eth &EX\_{}etoh\_{}(e)& EX\_{}etoh(e)\\
+        \hline
+    \end{tabular}}
+\end{onehalfspace}
+    \normalsize
+    
+\end{table}
+
+
+
+\clearpage
+\section{Experimental data}
+Table \ref{table:expdata} shows the experimental flux data for growth of \textit{E. coli} strain BW25113 on glucose in aerobic batch culture, published by Perrenoud and Sauer.\cite{Perrenoud2005} The fluxes were determined by \textsuperscript{13}C-based MFA.
+
+\begin{table}[h!t]
+\caption{Experimental flux data.\cite{Perrenoud2005}}
+\label{table:expdata}
+\small
+    \begin{tabular}{|p{2cm}|c|c|c|}
+        \hline
+        Reaction \#& Reaction equation                  & Flux (mmol/g$\cdot$h) & Error \\ \hline
+        1          & GLC $+$ ATP $\rightarrow$ G6P                   & 7,7  & 0,1   \\ 
+        2          & G6P $\rightarrow$ 6PG $+$ NADPH                 & 2,3  & 0,1   \\ 
+        3          & 6PG $\rightarrow$ P5P $+$ CO2 + NADPH           & 2,0  & 0,1   \\ 
+        4          & G6P $\rightarrow$ F6P                         & 5,4  & 0,1   \\ 
+        5          & 6PG $\rightarrow$ T3P $+$ PYR                   & 0,3  & 0,1   \\ 
+        6          & F6P $+$ ATP $\rightarrow$ 2T3P                  & 6,2  & 0,1   \\ 
+        7          & 2P5P $\rightarrow$ S7P $+$ T3P                  & 0,5  & 0,0   \\ 
+        8          & P5P $+$ E4P $\rightarrow$ F6P $+$ T3P             & 0,3  & 0,0   \\ 
+        9          & S7P $+$ T3P $\rightarrow$ E4P $+$ F6P             & 0,5  & 0,0   \\ 
+        10         & T3P $\rightarrow$ PGA $+$ ATP $+$ NADH            & 12,9 & 0,2   \\ 
+        11         & PGA $\rightarrow$ PEP                         & 11,8 & 0,2   \\ 
+        12         & PEP $\rightarrow$ PYR $+$ ATP                   & 9,2  & 0,2   \\ 
+        13         & PYR $\rightarrow$ AcCoA $+$ CO2 $+$ NADH          & 7,9  & 0,2   \\ 
+        14         & OAA $+$ AcCoA $\rightarrow$ ICT                 & 1,9  & 0,2   \\ 
+        15         & ICT $\rightarrow$ OGA $+$ CO2 $+$ NADPH           & 1,9  & 0,2   \\ 
+        16         & OGA $\rightarrow$ FUM $+$ CO2 $+$ 1.5$\cdot${}ATP + 2NADH & 1,1  & 0,2   \\ 
+        17         & FUM $\rightarrow$ MAL                         & 1,1  & 0,2   \\ 
+        18         & MAL $\rightarrow$ OAA $+$ NADH                  & 0,8  & 0,2   \\ 
+        19         & MAL $\rightarrow$ PYR $+$ CO2 $+$ NADH            & 0,2  & 0,1   \\ 
+        20         & OAA + ATP $\rightarrow$ PEP $+$ CO2             & 0,0  & 0,0   \\ 
+        21         & PEP + CO2 $\rightarrow$ OAA                   & 2,1  & 0,1   \\ 
+        22         & AcCoA $\rightarrow$ Acetate $+$ ATP             & 4,6  & 0,2   \\ 
+        23         & NADPH $\rightarrow$ NADH                      & -4,0 & 0,7   \\ 
+        24         & O2 + 2NADH $\rightarrow$ 2P/O$\times$ATP           & 10,9 & 0,7   \\ 
+        25         & Biomass production                            & 0,64 & 0,01  \\
+        \hline
+    \end{tabular}
+    \normalsize
+\end{table}
+
+\clearpage
+\section{Software}
+\label{Appendix:software}
+All computations were carried out using MATLAB R2012a and COBRA Toolbox v. 2.04 running under Windows 7 on a 64-bit Intel Core 2.1 Ghz processor. MATLAB is a product of The MathWorks, Inc (\url{https://www.mathworks.com/}). The COBRA Toolbox is a MATLAB plugin available free of charge at \url{http://opencobra.sourceforge.net}. The COBRA Toolbox requires the installation of LibSBML, available at \url{http://sbml.org/Software/libSBML}. The Gnu Linear Programming Kit (GLPK) with MATLAB interface (GLPKMEX) and Gurobi 5.01 optimization solvers were used for solving linear and quadratic problems. GLPK is available at \url{http://www.gnu.org/software/glpk/} and GLPKMEX can be downloaded from \url{http://sourceforge.net/projects/glpkmex}.  Gurobi 5 is available for academic use under a free license at \url{www.gurobi.com}.
+
+To install the Gurobi 5 MATLAB interface, navigate to the folder ''matlab'' under the Gurobi 5 installation directory and run the gurobi\_{}setup.m file. The latest version of the COBRA Toolbox, v. 2.05, supports Gurobi 5 natively, using it as the default solver for both LP and QP problems. If COBRA version v. 2.05 and Gurobi 5 are both installed, GLPK is thus not needed. Installation files for COBRA Toolbox v. 2.04 & v. 2.05, LibSBML 5.6.0 (MATLAB Windows 64-bit version) and GLPK v. 4.47, are attached with this report. Each time after starting MATLAB, the COBRA Toolbox must be initiated with the command \verb+initCobraToolbox+.
+
+
+The following section explains the operation and use of the supplied MATLAB files. For each file, the input, output and options are described.
+
+\textbf{runsim.m:} \textit{runsim} is the main function facilitating the study of the effect of combinations of model constraints and objectives on different models. Three models and four objectives are currently supported. \textit{runsim} calls a number of other functions to perform analysis and report the results. The syntax for using the function is:
+
+\begin{center}
+\begin{BVerbatim}[boxwidth=auto]
+result = runsim(options)
+\end{BVerbatim}
+\end{center}
+
+\verb+options+ is a MATLAB variable structure,  where different options are specified in separate fields. Most fields have a default value, and the program will run even if some fields do not exist. This input format is used for many of the functions described. In many cases, several of the options are the same, and one function may pass the options structure received as input for that function as input to another function.
+The output, here named result, is another structure containing flux vectors, distance measures and other produced information.
+The following main options are available:
+
+\verb+model_id+: Default value is 1. Used to specify which model to use. Supported values are 1, 2 and 3, corresponding to SCHUETZR, ECME and iJO1366b models. 
+
+
+\verb+constraints+: Used to specify which set of constraints to use. Default value is 0, signifying default model constraints. Valid values are 0-7 for SCHUETZR. Unless overwritten by the specified constraints, the default model constraints always apply.
+
+\verb+objective+: Used to specify the objective function. Default value is 1, corresponding to maximization of biomass reaction. Currently supported values are 1, 2 (max ATP), 4 (min glucose) and 6 (min ATP).
+
+\verb+optreq+: Objective optimality requirement. Default value is 1. When seeking a distance-optimal solution, only solutions satisfying the objective-optimality requirement specified by optreq are considered. Valid values are 0-1.
+
+\verb+usefmincon+: Use the MATLAB function \textit{fmincon} to seek a distance-optimal solution. Default is 1, except when the iJO1366 model is used.
+
+\verb+usegurobi+: Use the Gurobi quadratic optimization program to seek a distance-optimal solution. Default is 1.
+
+\verb+preloadmodels+: Valid values are 0, 1. Specify whether the COBRA models used should be generated from SBML source files (.xml format) or loaded from a saved MATLAB file. Default is 1 (use preloaded model files).
+
+\verb+makeplots+: If set to 1, a plot comparing experimental and computed flux values will be generated. Default is 0.
+
+\verb+fluxreport+: Default is 1. If set to 1, a report will be printed (on screen and/or to file) with details about the produced flux solution.
+
+\verb+printfile+: If set to 1, the flux report will be written to a file in the working directory, the default file name being fluxreport.txt. Use the parameter options.filename to specify a different file name. If a file with the same name already exists, it will be appended.
+
+Example: To use \textit{runsim} with the ECME model, and leave all other settings at their default values, enter the following at  the MATLAB command line:
+\begin{center}
+\begin{BVerbatim}[boxwidth=auto]
+options = struct;
+options.model_id = 2;
+result = runsim(options)
+\end{BVerbatim}
+\end{center}
+
+\textbf{Supporting functions:}
+
+The function \textit{extractflux} takes as input a flux vector from FBA result and returns a vector with 28 fluxes corresponding to the experimental reactions. As with runsim.m, the model is specified through the field \verb+options.model_id+ in the input parameter options.
+
+Syntax: \verb+fluxes = extractflux(fluxvector,options)+
+
+The function \textit{fluxreport} takes as input a vector of fluxes corresponding to the set of experimental reaction rates, and returns both sets of fluxes, the difference between each corresponding flux, the uncertainty in the experimental fluxes and the difference between the fluxes divided by that uncertainty.
+
+Syntax: \verb+report = fluxreport(fluxresult,expvalues,options)+
+
+The function \textit{compdist} takes as input a complete flux vector containing all the reactions in the model, a model identifier, and an experiment identifier. It then returns a distance between the experimental data and the corresponding model fluxes. The distance measure output can be the euclidean or the manhattan norm, and based on raw flux values or split ratios.
+
+Syntax: \verb+ds = compdist(fluxvector,options,sense)+
+
+The function \textit{fmindist} uses the MATLAB function \textit{fmincon} to seek a solution of a given FBA problem which
+minimizes (or maximizes) the distance between the computed and experimental flux distribution as reported by \textit{compdist}. 
+
+Syntax: \verb+solution = fmindist(result,model,options,sense)+
+
+The function \textit{QPmindist} use the Gurobi 5 optimization solver to find a solution minimizing the euclidean distance between the computed and experimental flux distribution.
+
+Syntax: \verb+solution = QPmindist(model,result,options,sense)+
+
+The function \textit{constrainfluxes} takes as input a COBRA model and constrains one or more reactions with a defined corresponding experimental reaction to limits specified by the experimental value and by a tolerance relative to the experimental uncertainty.
+
+Syntax: \verb+ model = constrainfluxes(model,options)+
+
+The function \textit{computesplits} calculates split ratios from experimental or computed flux distributions.
+
+Syntax: \verb+splitratios = computesplits(fluxvector,model_id)+
+
+To view additional information about each function, enter \verb+ help function+ - where \verb+function+ is the name of the function - at the MATLAB command line.
+
+\textbf{Known bugs:} Setting the parameter \textit{verbflag} to 0 currently causes the Gurobi optimization routine to fail. \textit{Fmincon} fails to produce correct solutions for objectives 5 (minimization of redox potential production) and 6 (minimization of ATP production).
+
+
+\textbf{Guide to reproducing figures:}
+To reproduce Figure \ref{fig:FA1}, enter the following at the MATLAB command line after installing all necessary software and extracting the function files to the MATLAB working directory:
+\begin{center}
+\begin{BVerbatim}[boxwidth=auto]
+options = struct;
+options.model_id=1;
+options.optreq = 0;
+options.makeplots = 1;
+options.usefmincon = 0;
+result = runsim(options)
+\end{BVerbatim}
+\end{center}
+
+To reproduce Figure \ref{fig:QPMIN1}, enter the following:
+\begin{center}
+\begin{BVerbatim}[boxwidth=auto]
+options = struct;
+options.model_id=3;
+options.makeplots = 1;
+options.optreq = 1;
+result = runsim(options)
+\end{BVerbatim}
+\end{center}
+
+To reproduce Figure \ref{fig:optreq}, execute the function \verb+optreqanalysis+ by entering the function name at the MATLAB command line. Receiving no input arguments, the function will use default settings to produce the graph.
+
+To reproduce Figure \ref{fig:schuetzrcross}, likewise execute the function \verb+bar3Dplot+. Estimated run time is about five minutes.
+
+To reproduce Figure \ref{fig:OBJCOMP1}, run the script \verb+barplot2.m+.
+
+%\input{ekstern fil}
+%\include{insertberegninger} <-alternativ
+
+%\newpage
+
+\end{appendices}
+\end{document}

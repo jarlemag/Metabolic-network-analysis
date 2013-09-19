@@ -1,0 +1,36 @@
+runsim test checklist
+
+
+Experimental reaction #1 = glk
+
+SCHUETZR:
+
+
+
+Default constraints:
+BM Objective:
+No input: Fmincon & Gurobi OK
+	Optreq = 1:
+		Contrainglucose = 0: Gurobi fails.
+		Constrainglucose = 1; Fmincon & Gurobi OK. FBA Dist: 12.37. QP dist: 12.37
+		Constrainglucose = 2: Gurobi fails.Fmincon OK.
+
+
+	Optreq = 0:
+
+		Constrainglucose = 2: Gurobi & Fmincon OK.
+		Constrainglucose = 1: Gurobi & Fmincon OK 
+		Constrainglucose = 0: Gurobi & Fmincon OK
+		
+ECME model:
+
+	Optreq = 1:
+		Constrainglucose = 0: Critical error. Gurobi fails. Fmincon worse than FBA.
+		Constrainglucose = 1: Critical error. Gurobi fails. Fmincon worse than FBA.
+		Constrainglucose = 2: Critical error. Gurobi fails. Fmincon worse than FBA.
+	
+	Optreq = 0: 
+		
+		Constrainglucose = 2
+	
+		

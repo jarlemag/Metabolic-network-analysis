@@ -1,0 +1,30 @@
+;;SCHUETZR;;ECME;;iJO1366b;
+Reaction #;Reaction equation;Model reaction(s);Reaction #;Model flux;Reaction #;Model flux;Reaction #
+1;GLC + ATP \rightarrow G6P;glk + pts;12 + 72;glk+GLCpts;96+50;HEX1+GLCptspp;1500,1353
+2;G6P \rightarrow 6PG + NADPH;zwf;28;G6PDH2r;48;G6PDH2r;1283
+3;6PG \rightarrow P5P + CO2 + NADPH;gnd;30;gnd;57;gnd;1423
+4;G6P \rightarrow F6P;pgi;13;pgi;74;PGI;2077
+5;6PG \rightarrow T3P + PYR;edd;69;edd;98;edd;1095
+6;F6P + ATP \rightarrow 2T3P;fbaAB;15;FBA;40;fba;1151
+7;2P5P \rightarrow S7P + T3P;tktAB;33;TKT1;93;TKT1;2442
+8;P5P + E4P \rightarrow F6P + T3P;tktAB_r2;34;TKT2;94;TKT2;2443
+9;S7P + T3P \rightarrow E4P + F6P;talAB;35;talA;91;tala;2398
+10;T3P \rightarrow PGA + ATP + NADH;gapA;17;GAPD;49;GAPD;1315
+11;PGA \rightarrow PEP;gpmAB;19;pgm;-77;pgm;-2081
+12;PEP \rightarrow PYR + ATP;pykAF - pps;21 - 27;pyk-pps;83+81;pyk- pps;2266 - 2198
+13;PYR \rightarrow AcCoA + CO2 + NADH;aceEF;22;PDH;71;PDH;2047
+14;OAA + AcCoA \rightarrow ICT;gltA/prpC;36;CS;15;CS;878
+15;ICT \rightarrow OGA + CO2 + NADPH;ICD;39;ICDHyr;59;ICDHyr;1548
+16;OGA \rightarrow FUM + CO2 + 1.5ATP + 2NADH;sucAB;40;AKGDH;8;akGDH;608
+17;FUM \rightarrow MAL;fumABC;43;FUM;46;FUM;1245
+18;MAL \rightarrow OAA + NADH;mdh+mqo;44 +45;MDH;64;MDH 1-3;1758 + 1759 + 1760
+19;MAL \rightarrow PYR + CO2 + NADH;maeB+maeA;23 + 24;ME1+ME2;65 +66;ME1+ME2;1761 +1762
+20;OAA + ATP \rightarrow PEP + CO2;pck;25;ppck;80;ppck;2183
+21;PEP + CO2 \rightarrow OAA;ppc;48;ppc;79;ppc;2181
+22;AcCoA \rightarrow Acetate  + ATP + CoA;pta-acs;64 -66;PTAr - acs;82 - ;PTAr - ACS;2240 - 512
+23;NADPH \rightarrow NADH;udhA-pntAB;50 -49;NADTRHD,THD2;68 - 92;NADTRHD,THD2PP;1871 - 2418
+24;O2 + 2NADH \rightarrow 2P/OxATP;O2;74;O2t;70;CYTBD(2)pp,CYTBO3_4pp;914:916
+25;biomass;biomass;85;Biomass_Ecoli(…);13;Ec_biomass(…)';8
+26;ICT + AcCoA \rightarrow MAL + FUM + NADH;aceA;46;ICL;60;ICL;1552
+27;DHAP \rightarrow PYR;mgsA;71;mgsA;100;mgsA;1790
+28;ETH \rightarrow ETHxt;eth;6;R_EX_etoh_e;24;'EX_etoh(e);124

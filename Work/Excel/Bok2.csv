@@ -1,0 +1,26 @@
+Reaction #;Reaction equation;Flux;Error
+1;GLC + ATP -> G6P;7,7;0,1
+2;G6P -> 6PG + NADPH;2,3;0,1
+3;6PG -> P5P + CO2 + NADPH;2,0;0,1
+4;G6P -> F6P;5,4;0,1
+5;6PG -> T3P + PYR;0,3;0,1
+6;F6P + ATP -> 2T3P;6,2;0,1
+7;2P5P -> S7P + T3P;0,5;0,0
+8;P5P + E4P -> F6P + T3P;0,3;0,0
+9;S7P + T3P -> E4P + F6P;0,5;0,0
+10;T3P -> PGA + ATP + NADH;12,9;0,2
+11;PGA -> PEP;11,8;0,2
+12;PEP -> PYR + ATP;9,2;0,2
+13;PYR -> AcCoA + CO2 + NADH;7,9;0,2
+14;OAA + AcCoA -> ICT;1,9;0,2
+15;ICT -> OGA + CO2 + NADPH;1,9;0,2
+16;OGA -> FUM + CO2 + 1.5*ATP + 2NADH;1,1;0,2
+17;FUM -> MAL;1,1;0,2
+18;MAL -> OAA + NADH;0,8;0,2
+19;MAL -> PYR + CO2 + NADH;0,2;0,1
+20;OAA + ATP -> PEP + CO2;0,0;0,0
+21;PEP + CO2 -> OAA;2,1;0,1
+22;AcCoA -> Acetate + ATP;4,6;0,2
+23;NADPH -> NADH;-4,0;0,7
+24;O2 + 2NADH -> 2P/O x ATP;10,9;0,7
+25;Biomass;0,64;0,01
