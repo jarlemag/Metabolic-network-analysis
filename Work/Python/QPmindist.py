@@ -65,10 +65,16 @@ for metabolite in cobramodel.metabolites:
     reactions = metabolite.get_reaction()
     newconstr = gurobi.LinExpr([rxn.get_coefficient(metabolite.id) for rxn in reactions],[gurobimodel.getVarByName(rxn.id) for rxn in reactions])
     gurobimodel.addConstr(newconstr, gurobi.GRB.EQUAL, 0, metabolite.id)
+gurobimodel.modelsense = 1 #Set model sense to minimize
 gurobimodel.update()
 
 gurobimodel.optimize()
 gurobimodel.update()
+
+for v in gurobimodel.getVars():
+    print v.varName, v.x 
+
+
 
 #Sanity check:
 # terms[1] = -10.8 pgi -> experimental pgi flux should be 5.4
@@ -82,3 +88,6 @@ f = [i for i in range(len(cobramodel.reactions)) if cobramodel.reactions[i].id =
 #cobramodel.reaction[14]= fbaAB -> fbaAB is reaction #15 in models
 #Look in reactionmap, the reaction corresponding to modelreaction  is experimental reaction 6
 #Check experimental fluxvalues. fluxvalues[5] = 6.2 -> OK!
+
+
+print gurobimodel.ObjVal
