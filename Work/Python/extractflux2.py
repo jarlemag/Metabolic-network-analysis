@@ -3,7 +3,7 @@
 
 import numpy as np
 
-def extractflux2(fluxvector,reactionmap):
+def extractflux(fluxvector,reactionmap):
     
     fluxes = []
 
