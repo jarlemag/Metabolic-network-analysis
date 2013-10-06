@@ -85,17 +85,17 @@ gurobimodel.update()
 #Perform FBA to determine the target objective function value to inform the optimality requirement constraint:
 
 print 'FBAobjective variable:',FBAobjective
-FBAmodel = gurobimodel.copy()
-print 'FBA model objective before update:',str(FBAmodel.getObjective())
-FBAmodel.setObjective(FBAobjective, gurobi.GRB.MAXIMIZE)
-FBAmodel.update()
-print 'FBA model objective after update:',str(FBAmodel.getObjective())
+#FBAmodel = gurobimodel.copy()
+print 'gurobimodel objective before update:',str(gurobimodel.getObjective())
+gurobimodel.setObjective(FBAobjective, gurobi.GRB.MAXIMIZE)
+gurobimodel.update()
+print 'gurobimodel objective after update:',str(gurobimodel.getObjective())
 #Set sense to maximize:
-FBAmodel.modelsense = -1
-FBAmodel.update()
-FBAmodel.optimize()
+#FBAmodel.modelsense = -1
+gurobimodel.update()
+gurobimodel.optimize()
 
-FBAobjval = FBAmodel.Objval
+FBAobjval = gurobimodel.Objval
 print "FBA objective value:",FBAobjval
 
 #Add optimality requirement constraint to original model:
@@ -122,7 +122,7 @@ for i in range(len(Y)):
         #Add the term to the objective function:
         QPobjective.add(newterm)
         #Apply the objective function to the Gurobi model:
-        gurobimodel.setObjective(QPobjective)
+        gurobimodel.setObjective(QPobjective, gurobi.GRB.MINIMIZE)
         #Update the Gurobi model
         gurobimodel.update()
         terms.append(newterm)
@@ -130,8 +130,8 @@ print reactlist #For debugging/verbosity
 print (len(reactlist)) #For debugging/verbosity
 
 #Check the objective:
-theobjective = gurobimodel.getObjective()
-print str(theobjective)
+#theobjective = gurobimodel.getObjective()
+#print str(theobjective)
 
 
 
