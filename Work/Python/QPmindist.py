@@ -95,6 +95,7 @@ print 'gurobimodel objective after update:',str(gurobimodel.getObjective())
 gurobimodel.update()
 gurobimodel.optimize()
 
+FBAsolution = [v.x for v in gurobimodel.getVars()]
 FBAobjval = gurobimodel.Objval
 print "FBA objective value:",FBAobjval
 
@@ -174,7 +175,7 @@ print 'dist:',dist
 
 #terms[2] = -12.4 fbaAb, experimental fbaAb flux should be 6.2
 #How to find index of a certain element:
-f = [i for i in range(len(cobramodel.reactions)) if cobramodel.reactions[i].id == "fbaAB"]
+#f = [i for i in range(len(cobramodel.reactions)) if cobramodel.reactions[i].id == "fbaAB"]
 #cobramodel.reaction[14]= fbaAB -> fbaAB is reaction #15 in models
 #Look in reactionmap, the reaction corresponding to modelreaction  is experimental reaction 6
 #Check experimental fluxvalues. fluxvalues[5] = 6.2 -> OK!
@@ -185,3 +186,11 @@ print gurobimodel.ObjVal
 def getgurobisolution(model):
     sol = [v.x for v in gurobimodel.getVars()]
     return sol
+
+def computeFBAobjval(fluxsolution,model):
+    #Assumes that reactions are in the same order in the fluxsolution vector and the model reactions list!
+    objval = 0
+    for i in range(len(fluxsolution)):
+        objval += fluxsolution[i]*model.reactions[i].objective_coefficient
+    return objval
+
