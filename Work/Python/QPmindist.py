@@ -33,37 +33,67 @@ fluxvalues = [row[0] for row in fluxvalarray] #expdata.perrenoud.abs.batch.aerob
 
 n = len(cobramodel.reactions)
 Y = np.zeros(n)
+#Create a vector to hold the experimental flux values:
 Y[:] = np.NAN
 
 
+#For every entry in the reaction map:
 for entry in reactionmap:
     #print entry[0]
+    #Update the experimental flux values vector based on the entries in the reaction map and the flux values vector
     Y[entry[1]-1] = fluxvalues[entry[0]-1]
 
 print Y
 
-
+#Create a new Gurobi model
 gurobimodel =gurobi.Model("QP")
+#Create a new QuadExpr object to store the objective function.
 objective = gurobi.QuadExpr()
+
+#For every reaction in the Cobra model:
 for reaction in cobramodel.reactions:
+    #Create a new decision variable in the Gurobi model, with upper and lower bounds as specified in the Cobra model:
     newvar = gurobimodel.addVar(lb = reaction.lower_bound, ub = reaction.upper_bound, name = reaction.id)
+    #Update the Gurobi model
     gurobimodel.update()
 reactlist = []
 terms = []
+
+#Construct the objective:
+
+#For every element in the vector of experimental flux values:
 for i in range(len(Y)):
+    #If an experimental flux value is given (the value is not "not a number")
     if ~np.isnan(Y[i]):
-        reactlist.append(cobramodel.reactions[i])
+        reactlist.append(cobramodel.reactions[i]) #For debugging/verbosity
+        #Set the current decision variable to the corresponding model reaction
         x = gurobimodel.getVarByName(cobramodel.reactions[i].id)
+        #Create an objective function term for the reaction:
         newterm = x * x - 2*Y[i]*x
+        #linterm = gurobi.LinExpr(float(Y[i]**2)) #Y[i]**2 is numpy float. Must convert to regular float before passing to LinExpr.
+        newterm.addConstant((Y[i]**2)) #More succint than the above line
+        #Note: Adding constant terms to the objective changes the computed solution slightly in at least some cases.
+        #Add the term to the objective function:
         objective.add(newterm)
+        #Apply the objective function to the Gurobi model:
+        gurobimodel.setObjective(objective)
+        #Update the Gurobi model
         gurobimodel.update()
         terms.append(newterm)
-print reactlist
-print (len(reactlist))
+print reactlist #For debugging/verbosity
+print (len(reactlist)) #For debugging/verbosity
 
+#Check the objective:
+theobjective = gurobimodel.getObjective()
+print str(theobjective)
+
+#For every metabolite:
 for metabolite in cobramodel.metabolites:
+    #Get the list of reactions in which the metabolite partakes:
     reactions = metabolite.get_reaction()
+    #Make a new constraint in the Gurobi model, such that the fluxes of the metabolite are balanced:
     newconstr = gurobi.LinExpr([rxn.get_coefficient(metabolite.id) for rxn in reactions],[gurobimodel.getVarByName(rxn.id) for rxn in reactions])
+    #Add the new constraint to the Gurobi model
     gurobimodel.addConstr(newconstr, gurobi.GRB.EQUAL, 0, metabolite.id)
 gurobimodel.modelsense = 1 #Set model sense to minimize
 gurobimodel.update()
@@ -71,10 +101,25 @@ gurobimodel.update()
 gurobimodel.optimize()
 gurobimodel.update()
 
+'''
 for v in gurobimodel.getVars():
     print v.varName, v.x 
+'''
 
+solvec =[v.getAttr("x") for v in gurobimodel.getVars()]
 
+import extractflux2
+
+extractedfluxes = extractflux2.extractflux(solvec,Fmap)
+
+import fluxreport
+
+fluxreport.fluxreport(extractedfluxes,fluxvalarray)
+
+import compdist2
+
+dist = compdist2.compdist2(extractedfluxes)
+print 'dist:',dist
 
 #Sanity check:
 # terms[1] = -10.8 pgi -> experimental pgi flux should be 5.4

@@ -5,7 +5,7 @@
 import numpy as np
 import scipy.io
 
-def compdist2(fluxvector,options = None,sense = None):
+def compdist2(fluxvector,vector2 = None,options = None,sense = None):
 
     expdata = scipy.io.loadmat('expdata.mat')
 
