@@ -24,9 +24,9 @@ Stop messing around with numerical indexes.
 '''
 
 #Define FBA-objective-optimality requirement
-optreq = 1.0
+optreq = 0.8
 
-useoptreq = False
+useoptreq = True
 debug = False
 
 #test code END
@@ -152,11 +152,26 @@ for v in gurobimodel.getVars():
     print v.varName, v.x 
 '''
 
-solvec =[v.getAttr("x") for v in gurobimodel.getVars()]
+def getgurobisolution(model):
+    sol = [v.x for v in model.getVars()]
+    return sol
+
+def computeFBAobjval(fluxsolution,model):
+    #Assumes that reactions are in the same order in the fluxsolution vector and the model reactions list!
+    objval = 0
+    for i in range(len(fluxsolution)):
+        objval += fluxsolution[i]*model.reactions[i].objective_coefficient
+    return objval
+
+
+#solvec =[v.getAttr("x") for v in gurobimodel.getVars()]
+QPsolution = getgurobisolution(gurobimodel)
+
+QPFBAobjval = computeFBAobjval(QPsolution,cobramodel)
 
 import extractflux2
 
-extractedfluxes = extractflux2.extractflux(solvec,Fmap)
+extractedfluxes = extractflux2.extractflux(QPsolution,reactionmap)
 
 import fluxreport
 
@@ -165,7 +180,8 @@ fluxreport.fluxreport(extractedfluxes,fluxvalarray)
 import compdist2
 
 dist = compdist2.compdist2(extractedfluxes)
-print 'dist:',dist
+print 'Optimality requirement:',optreq
+print 'compdist2 distance:',dist
 
 #Sanity check:
 # terms[1] = -10.8 pgi -> experimental pgi flux should be 5.4
@@ -181,16 +197,11 @@ print 'dist:',dist
 #Check experimental fluxvalues. fluxvalues[5] = 6.2 -> OK!
 
 
-print gurobimodel.ObjVal
+print 'gurobimomdel gurobi objective value:',gurobimodel.ObjVal
+import math
+print 'square root of gurobi objective value:',math.sqrt(gurobimodel.ObjVal)
 
-def getgurobisolution(model):
-    sol = [v.x for v in gurobimodel.getVars()]
-    return sol
 
-def computeFBAobjval(fluxsolution,model):
-    #Assumes that reactions are in the same order in the fluxsolution vector and the model reactions list!
-    objval = 0
-    for i in range(len(fluxsolution)):
-        objval += fluxsolution[i]*model.reactions[i].objective_coefficient
-    return objval
+print "QP solution FBA objective value:",QPFBAobjval
+
 
