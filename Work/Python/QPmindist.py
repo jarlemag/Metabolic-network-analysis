@@ -23,6 +23,12 @@ TO DO: Change reaction maps to work solely with reaction IDs (Mapping between ex
 Stop messing around with numerical indexes.
 '''
 
+#Define FBA-objective-optimality requirement
+optreq = 1.0
+
+useoptreq = False
+debug = False
+
 #test code END
 
 
@@ -48,19 +54,59 @@ print Y
 #Create a new Gurobi model
 gurobimodel =gurobi.Model("QP")
 #Create a new QuadExpr object to store the objective function.
-objective = gurobi.QuadExpr()
+QPobjective = gurobi.QuadExpr()
 
+#Add decision variables (reaction fluxes) to the Gurobi model, and construct the FBA objective function:
+
+FBAobjective = gurobi.LinExpr() #Create a new Gurobi linear expression for the FBA objective function
 #For every reaction in the Cobra model:
 for reaction in cobramodel.reactions:
     #Create a new decision variable in the Gurobi model, with upper and lower bounds as specified in the Cobra model:
     newvar = gurobimodel.addVar(lb = reaction.lower_bound, ub = reaction.upper_bound, name = reaction.id)
-    #Update the Gurobi model
     gurobimodel.update()
+    FBAobjective.add(reaction.objective_coefficient * newvar) #Construct the FBA objective
+    gurobimodel.update()
+    if debug:
+        print FBAobjective
+        z = raw_input('Press enter to continue.')
+    #Update the Gurobi model
+    
+
+#Add steady-state constraints for every metabolite:
+for metabolite in cobramodel.metabolites:
+    #Get the list of reactions in which the metabolite partakes:
+    reactions = metabolite.get_reaction()
+    newconstr = gurobi.LinExpr([rxn.get_coefficient(metabolite.id) for rxn in reactions],[gurobimodel.getVarByName(rxn.id) for rxn in reactions])
+    gurobimodel.addConstr(newconstr, gurobi.GRB.EQUAL, 0, metabolite.id)
+gurobimodel.update()
+
+
+
+#Perform FBA to determine the target objective function value to inform the optimality requirement constraint:
+
+print 'FBAobjective variable:',FBAobjective
+FBAmodel = gurobimodel.copy()
+print 'FBA model objective before update:',str(FBAmodel.getObjective())
+FBAmodel.setObjective(FBAobjective, gurobi.GRB.MAXIMIZE)
+FBAmodel.update()
+print 'FBA model objective after update:',str(FBAmodel.getObjective())
+#Set sense to maximize:
+FBAmodel.modelsense = -1
+FBAmodel.update()
+FBAmodel.optimize()
+
+FBAobjval = FBAmodel.Objval
+print "FBA objective value:",FBAobjval
+
+#Add optimality requirement constraint to original model:
+if useoptreq:
+    gurobimodel.addConstr(FBAobjective, gurobi.GRB.GREATER_EQUAL,FBAobjval*optreq)
+    gurobimodel.update()    
+
+#Construct the QP objective:
+
 reactlist = []
 terms = []
-
-#Construct the objective:
-
 #For every element in the vector of experimental flux values:
 for i in range(len(Y)):
     #If an experimental flux value is given (the value is not "not a number")
@@ -74,9 +120,9 @@ for i in range(len(Y)):
         newterm.addConstant((Y[i]**2)) #More succint than the above line
         #Note: Adding constant terms to the objective changes the computed solution slightly in at least some cases.
         #Add the term to the objective function:
-        objective.add(newterm)
+        QPobjective.add(newterm)
         #Apply the objective function to the Gurobi model:
-        gurobimodel.setObjective(objective)
+        gurobimodel.setObjective(QPobjective)
         #Update the Gurobi model
         gurobimodel.update()
         terms.append(newterm)
@@ -87,19 +133,18 @@ print (len(reactlist)) #For debugging/verbosity
 theobjective = gurobimodel.getObjective()
 print str(theobjective)
 
-#For every metabolite:
-for metabolite in cobramodel.metabolites:
-    #Get the list of reactions in which the metabolite partakes:
-    reactions = metabolite.get_reaction()
-    #Make a new constraint in the Gurobi model, such that the fluxes of the metabolite are balanced:
-    newconstr = gurobi.LinExpr([rxn.get_coefficient(metabolite.id) for rxn in reactions],[gurobimodel.getVarByName(rxn.id) for rxn in reactions])
-    #Add the new constraint to the Gurobi model
-    gurobimodel.addConstr(newconstr, gurobi.GRB.EQUAL, 0, metabolite.id)
-gurobimodel.modelsense = 1 #Set model sense to minimize
-gurobimodel.update()
+
+
+
+#Perform QP optimization:
 
 gurobimodel.optimize()
 gurobimodel.update()
+
+
+#Check the value of the FBA objection function for the QP solution:
+
+#gurobiFBAobjval = 
 
 '''
 for v in gurobimodel.getVars():
@@ -136,3 +181,7 @@ f = [i for i in range(len(cobramodel.reactions)) if cobramodel.reactions[i].id =
 
 
 print gurobimodel.ObjVal
+
+def getgurobisolution(model):
+    sol = [v.x for v in gurobimodel.getVars()]
+    return sol
