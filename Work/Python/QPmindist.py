@@ -17,7 +17,7 @@ def computeFBAobjval(fluxsolution,model):
             objval += fluxsolution[i]*model.reactions[i].objective_coefficient
         return objval
 
-def QPmindist(cobramodel,expdata,reactionmap,optreq,useoptreq = True,debug = False):
+def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = False):
    
     n = len(cobramodel.reactions)
     Y = np.zeros(n)
@@ -136,7 +136,7 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
     fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0]
     fluxvalues = [row[0] for row in fluxvalarray] #expdata.perrenoud.abs.batch.aerobe.fluxvalues
 
-    gurobimodel = QPmindist(cobramodel,expdata,reactionmap,optreq)
+    gurobimodel = QPmindist(cobramodel,fluxvalues,reactionmap,optreq)
     QPsolution = getgurobisolution(gurobimodel)
     QPFBAobjval = computeFBAobjval(QPsolution,cobramodel)
 
