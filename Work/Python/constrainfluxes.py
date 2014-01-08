@@ -1,7 +1,11 @@
 #constrainfluxes.py
 
 def constrainfluxes(model,*args):
-
+'''
+Takes as input a COBRA model and constrains one or more reactions with a
+defined corresponding experimental reaction to limits specified by the
+experimental value and by a tolerance relative to the experimental uncertainty.
+'''
     if len(args) < 1:
         options = {}
     else:

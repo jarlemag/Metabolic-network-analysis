@@ -1,0 +1,47 @@
+<experimentgroup = "Perrenoud">
+	<reactortype = "Batch">
+		<experiment conditions = "aerobe" growthrate = "0.64" strain = "BW25113" >
+			<reactiondata>
+			<reaction id ="GLC + ATP -> G6P" flux = "7.7" error = "0.1" />
+			<reaction id = "G6P -> 6PG + NADPH" flux = "2.3" error = "0.1" />
+			<reaction id = "6PG -> P5P + CO2 + NADPH" flux = 2.0 error = "0.1" />						
+			<reaction id ="G6P -> F6P"	flux = "5.4"  error = "0,1" 	/> 
+			<reaction id ="6PG -> T3P + PYR"	flux = "0.3"  error ="0,1"	/>
+			<reaction id ="F6P + ATP -> 2T3P"	flux = "6.2"  error = "0,1"/>
+			<reaction id ="2P5P -> S7P + T3P"	flux = "0.5"  error = "0,0"/>
+			<reaction id ="P5P + E4P -> F6P + T3P"	flux = "0.3"  error = "0.0"	/>
+			<reaction id ="S7P + T3P -> E4P + F6P"	flux = "0.5"  error = "0.0"	/>
+			<reaction id ="T3P -> PGA + ATP + NADH"	flux = "12.9"  error = "0.2"	/>
+			<reaction id ="PGA -> PEP"		flux = "11.8"  error = "0.2"	/>
+			<reaction id ="PEP -> PYR + ATP" 	flux = "9.2" error = "0.2" />
+			<reaction id ="PYR -> AcCoA + CO2 + NADH" flux = "7.9"  error = "0.2" 	/>
+			<reaction id ="OAA + AcCoA -> ICT"	flux = "1.9" error = "0.2"	/>
+			<reaction id ="ICT -> OGA + CO2 + NADPH" flux = "1.9"  error = "0.2"	/>
+			<reaction id ="OGA -> FUM + CO2 + 1.5*ATP + 2NADH"	flux = "1.1"  error = "0.2"	/>
+			<reaction id ="FUM -> MAL"		flux = "1.1"  error = "0.2"	/>
+			<reaction id ="MAL -> OAA + NADH" flux = "0.8" error = "0.2" />
+			<reaction id ="MAL -> PYR + CO2 + NADH"	flux = "0.2"  error = "0.1"	/>
+			<reaction id ="OAA + ATP -> PEP + CO2"	flux = "0.0"  error = "0.0"	/>
+			<reaction id ="PEP + CO2 -> OAA"	flux = "2.1"  error = "0.1"	/>
+			<reaction id ="AcCoA -> Acetate + ATP"	flux = "4.6"  error = "0.2"	/>
+			<reaction id ="NADPH -> NADH" flux = "-4.0" error = "0.7" />
+			<reaction id ="O2 + 2NADH -> 2P/O x ATP" flux = "10.9"  error = "0.7"	/>
+			<reaction id ="Biomass" flux = "0.64" error = "0.01" />
+			</reactiondata>
+		<BM yield = "0.48" error = "0.01" />
+		<glucose consumption = "7.6" error = "0.2" />
+		<acetate production = "4.8" error = 0.2" />
+		</experiment>
+	</reactortype>
+</experimentgroup>
+
+
+
+0,1
+0,0
+0,1
+0,2
+0,7
+0,7
+0,01
+

@@ -39,8 +39,11 @@ pc        = 0;
 
 %First, find all largest consuming and producing reactions
 for i=1:mets
-    j    = find(model.S(i,:));
-    n    = size(j,2);
+    j    = find(model.S(i,:)); %# Find the indices of all non-zero elements in the stoichoimetric matrix row corresponding to the current metabolite.
+    disp('j') %#Corresponds to the reaction #s of all reactions that the metabolite is part of.
+    disp(j)
+    n    = size(j,2); %# The number of reactions that the current metabolite partakes in.
+    disp(n)
     bigp = +1e-7;   %Numerical cut-off for fluxes to be considered nonzero
     bign = -1e-7;
     indp = zeros(1,200);

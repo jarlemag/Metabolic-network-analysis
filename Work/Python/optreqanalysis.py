@@ -34,7 +34,7 @@ def optreqanalysis(modeldicts,objectives,experiments,steps = 10,makeplots = True
         pass #Placeholder
 
     if expfluxdict == "Default": #This section should be rewritten to use an "expflux" dict.
-            expdata = scipy.io.loadmat('expdata.mat')
+            expdata = scipy.io.loadmat('expdata.mat') #load experimentaldata
             perrenoud = expdata['expdata']['perrenoud']
             fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0]
             fluxvalues = [row[0] for row in fluxvalarray] #expdata.perrenoud.abs.batch.aerobe.fluxvalues

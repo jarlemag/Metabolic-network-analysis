@@ -1,0 +1,24 @@
+{
+"Experiments":{
+    "Perrenoud":{ 
+		"Batch": {
+		    "Aerobe": {
+		        "Reactions": {
+		            "GLC + ATP -> G6P": {
+		                "Flux": 7.7,
+		                "Error": 0.1
+		            },
+                	"G6P -> 6PG + NADPH": {
+                		"Flux": 2.3,
+                		"Error": 0.1
+                	},
+                		"6PG -> P5P + CO2 + NADPH": {
+                		    "Flux": 2.0,
+                		    "Error": 0.1
+                    }
+                }
+		    }
+		}
+    }
+}
+}
