@@ -18,7 +18,7 @@ root = tree.getroot()
 
 
 def getNodesByType(tree,typeID):
-    return root.findall(typeID) #Return all child nodes of type "publication"
+    return root.findall(typeID) #Return all child nodes of type typeID
     
 
 
@@ -73,10 +73,7 @@ def findNodeByAttribute(root,attributes,targetvalues):
                 newnode = currentnode[j]
                 print('New current node:',newnode.tag)
                 success = True
-                
-        
-        
-            
+                           
         if success == False:
             print('Failed to find matching node.')
             return
@@ -89,4 +86,16 @@ targetvalues = ['Perrenoud','Batch']
 
 z = findNodeByAttribute(root,'id',['Perrenoud','Batch','aerobe'])
 
-print(z)
+#print(z)
+
+
+#def getFluxValues(experiment):
+    
+
+reactiondata = root.findall('.//publication[@id="Perrenoud"]/reactor[@id="Batch"]/experiment[@id="aerobe"]/reactiondata')
+
+reactionlist = reactiondata[0].findall('reaction')
+
+expfluxlist = [reaction.get('flux') for reaction in reactionlist]
+
+expfluxdict = {reaction.get('id'):reaction.get('flux') for reaction in reactionlist}
