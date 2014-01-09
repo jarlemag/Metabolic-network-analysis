@@ -64,9 +64,12 @@ Returns the euclidean distance between the two vectors.
 
 
 	Dependencies:
-		
+	Experimental data.		
 
+	Reads from:
+	expdata.mat (currently), should change this to JSON, XML or .txt/csv.
 
+	Current issues: Experimental data is hard-coded to Perrenoud batch aerobe data set. Need to update script to accept arbitrary experimental data.
 
 constrainfluxes.py:
 
