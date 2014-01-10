@@ -23,11 +23,6 @@ def computeFBAobjval(fluxsolution,model):
 
 def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = False):
    
-    n = len(cobramodel.reactions)
-    Y = np.zeros(n)
-    #Create a vector to hold the experimental flux values:
-    Y[:] = np.NAN
-
     #Create a dictionary to hold the experimental flux values:
     Ydict = {}
 
@@ -42,8 +37,6 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
             if (exprxnid in fluxvalues):
                     Ydict[modrxnid] = fluxvalues[exprxnid]*modcoef
 
-
-#Note: 
 
     #Create a new Gurobi model
     gurobimodel =gurobi.Model("QP")
@@ -102,42 +95,14 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
 
     for key in Ydict:
             x = gurobimodel.getVarByName(key)
-            print(x)
-            print('key:',key)
-            print('Ydict[key]:',Ydict[key])
             fluxval = float(Ydict[key])
-            #print('multiplier:',multiplier)
             newterm = x * x - 2*fluxval*x
             newterm.addConstant((fluxval**2))
             QPobjective.add(newterm)
             gurobimodel.setObjective(QPobjective, gurobi.GRB.MINIMIZE)
             gurobimodel.update()
             terms.append(newterm)
-    '''
-    #For every element in the vector of experimental flux values:
-    for i in range(len(Y)):
-        #If an experimental flux value is given (the value is not "not a number")
-        if ~np.isnan(Y[i]):
-            reactlist.append(cobramodel.reactions[i]) #For debugging/verbosity
-            #Set the current decision variable to the corresponding model reaction
-            x = gurobimodel.getVarByName(cobramodel.reactions[i].id)
-            #Create an objective function term for the reaction:
-            newterm = x * x - 2*Y[i]*x
-            newterm.addConstant((Y[i]**2))
-            #Note: Adding constant terms to the objective changes the computed solution slightly in at least some cases.
-            #Add the term to the objective function:
-            QPobjective.add(newterm)
-            #Apply the objective function to the Gurobi model:
-            gurobimodel.setObjective(QPobjective, gurobi.GRB.MINIMIZE)
-            #Update the Gurobi model
-            gurobimodel.update()
-            terms.append(newterm)
-'''
             
-    if debug:
-        print reactlist 
-        print (len(reactlist))
-    
     #Perform QP optimization:
 
     gurobimodel.optimize()
@@ -150,43 +115,29 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
     from cobra.io.sbml import create_cobra_model_from_sbml_file
     cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
 
-    mat = scipy.io.loadmat('reactionmaps.mat')
-    rmaps = mat['reactionmaps']
-
-    Fmap = rmaps[0][0][0]
-    Fmap2 = rmaps[0][0][3]
-
-    reactionmap = Fmap2
     import loadData as load
     rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
     
-
     optreq = 1.0
 
-    expdata = scipy.io.loadmat('expdata.mat')
-    perrenoud = expdata['expdata']['perrenoud']
-    fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0]
-    fluxvalues = [row[0] for row in fluxvalarray] #expdata.perrenoud.abs.batch.aerobe.fluxvalues
     fluxvalues = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
-    #gurobimodel = QPmindist(cobramodel,fluxvalues,reactionmap,optreq)
     gurobimodel = QPmindist(cobramodel,fluxvalues,rmap,optreq)
     QPsolutionvector = getgurobisolutionvector(gurobimodel)
     QPsolutiondict = getgurobisolutiondict(gurobimodel)
     QPFBAobjval = computeFBAobjval(QPsolutionvector,cobramodel)
 
     import extractflux2
-    extractedfluxes = extractflux2.extractfluxvector(QPsolutionvector,reactionmap)
     extractfluxdict = extractflux2.extractfluxdict(QPsolutiondict,rmap)
 
     import fluxreport
-    fluxreport.fluxreport(extractedfluxes,fluxvalarray)
+    #fluxreport.fluxreport(extractedfluxes,fluxvalarray)
 
     import compdist2
 
-    dist = compdist2.compdist2(extractedfluxes)
-    print 'Optimality requirement:',optreq
-    print 'compdist2 distance:',dist
+    #dist = compdist2.compdist2(extractedfluxes)
+    #print 'Optimality requirement:',optreq
+    #print 'compdist2 distance:',dist
 
     #Sanity check:
     # terms[1] = -10.8 pgi -> experimental pgi flux should be 5.4
