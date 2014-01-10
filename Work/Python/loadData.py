@@ -15,7 +15,7 @@ root = tree.getroot()
 #for element in root:
 #    print(element)
 
-def loadExpFluxesfromXML(filename,publication_id,reactor_id,experiment_id):
+def ExpFluxesfromXML(filename,publication_id,reactor_id,experiment_id):
     tree = ET.parse(filename)
     root = tree.getroot()
     string = './/publication[@id="{pub_id}"]/reactor[@id="{react_id}"]/experiment[@id="{exp_id}"]/reactiondata'.format(pub_id = publication_id, react_id = reactor_id, exp_id = experiment_id)
@@ -26,7 +26,6 @@ def loadExpFluxesfromXML(filename,publication_id,reactor_id,experiment_id):
     expfluxdict = {reaction.get('id'):reaction.get('flux') for reaction in reactionlist}
     return expfluxdict
 
-
-expfluxes = loadExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
+expfluxes = ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
 
