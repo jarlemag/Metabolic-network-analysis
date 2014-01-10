@@ -39,9 +39,6 @@ def optreqanalysis(modeldicts,objectives,experiments,steps = 10,makeplots = True
             fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0]
             fluxvalues = [row[0] for row in fluxvalarray] #expdata.perrenoud.abs.batch.aerobe.fluxvalues
 
-    #if ~(type(models) == type([])):
-     #   models = [models]
-      #  print "TEST!"
     resultlist = []
     for modeldict in modeldicts:
             cobramodel = modeldict['modelobject']
@@ -83,10 +80,6 @@ if __name__ == "__main__":
     mat = scipy.io.loadmat('reactionmaps.mat')
     rmaps = mat['reactionmaps']
 
-    Fmap = rmaps[0][0][0]
-    Cmap = rmaps[0][0][1]
-    Gmap = rmaps[0][0][2]
-
     Fmap2 = rmaps[0][0][3]
     Cmap2 = rmaps[0][0][4]
     Gmap2 = rmaps[0][0][5]
@@ -94,8 +87,6 @@ if __name__ == "__main__":
     import loadData as load
     xmlmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
     
-
-
     SCHUETZRdict = {}
     SCHUETZRdict['modelobject'] = SCHUETZR
     SCHUETZRdict['reactionmap'] = Fmap2
