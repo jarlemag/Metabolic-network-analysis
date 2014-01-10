@@ -91,6 +91,10 @@ if __name__ == "__main__":
     Cmap2 = rmaps[0][0][4]
     Gmap2 = rmaps[0][0][5]
 
+    import loadData as load
+    xmlmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+    
+
 
     SCHUETZRdict = {}
     SCHUETZRdict['modelobject'] = SCHUETZR

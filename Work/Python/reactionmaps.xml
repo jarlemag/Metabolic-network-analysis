@@ -3,7 +3,7 @@
 	<model id = "SCHUETZR">
 	<link>
 		<exprxn id="1" />
-		<modelrxn id="R_t1"/>
+		<modelrxn id="t1"/>
 	</link>
 	<link>
 		<exprxn id="2" />
@@ -31,7 +31,7 @@
 	</link>
 	<link>
 		<exprxn id="8"/>
-		<modelrxn id="tktAB r2"/>
+		<modelrxn id="tktAB_r2"/>
 	</link>
 	<link>
 		<exprxn id="9"/>
@@ -67,7 +67,7 @@
 		<modelrxn id="icd"/>
 	</link>
 	<link>
-		<exprn id="16"/>
+		<exprxn id="16"/>
 		<modelrxn id="sucAB"/>
 	</link>
 	<link>

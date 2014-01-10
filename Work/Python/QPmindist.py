@@ -6,8 +6,12 @@ import scipy.io
 import gurobipy as gurobi
 
 
-def getgurobisolution(model):
+def getgurobisolutionvector(model):
         sol = [v.x for v in model.getVars()]
+        return sol
+
+def getgurobisolutiondict(model):
+        sol = {v.Varname:v.x for v in model.getVars()}
         return sol
 
 def computeFBAobjval(fluxsolution,model):

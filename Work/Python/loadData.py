@@ -43,17 +43,23 @@ def ReactionMapfromXML(filename,publication_id,model_id):
         modrxnlist = []
         for element in exprxn_ids:
             exprxn_id = element.get('id')
-            exprxn_coef = element.get('coef')
-            exprxntuple = (exprxn_id,exprxn_coef)
-            exprxnlist.append(exprxntuple)
+            if 'coef' in element.attrib:
+                exprxn_coef = element.get('coef')
+            else:
+                exprxn_coef = 1
+            exprxndict = {'rxid':exprxn_id,'coef':exprxn_coef}
+            exprxnlist.append(exprxndict)
         for element in modrxn_ids:
             modrxn_id = element.get('id')
-            modrxn_coef = element.get('coef')
-            modrxntuple = (modrxn_id,modrxn_coef)
-            modrxnlist.append(modrxntuple)
-        linkdict['expid'] =exprxnlist
-        linkdict['modit'] =modrxnlist
+            if 'coef' in element.attrib:
+                modrxn_coef = element.get('coef')
+            else:
+                modrxn_coef = 1
+            modrxndict = {'rxid':modrxn_id,'coef':modrxn_coef}
+            modrxnlist.append(modrxndict)
+        linkdict['exprxns'] =exprxnlist
+        linkdict['modrxns'] =modrxnlist
         reactionmap.append(linkdict)
     return reactionmap
     
-#rmap = ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+rmap = ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
