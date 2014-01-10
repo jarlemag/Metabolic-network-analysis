@@ -19,7 +19,6 @@ def ExpFluxesfromXML(filename,publication_id,reactor_id,experiment_id):
     tree = ET.parse(filename)
     root = tree.getroot()
     string = './/publication[@id="{pub_id}"]/reactor[@id="{react_id}"]/experiment[@id="{exp_id}"]/reactiondata'.format(pub_id = publication_id, react_id = reactor_id, exp_id = experiment_id)
-    print(string)
     reactiondata = root.findall(string)
     reactionlist = reactiondata[0].findall('reaction')
     expfluxlist = [reaction.get('flux') for reaction in reactionlist]
@@ -63,3 +62,6 @@ def ReactionMapfromXML(filename,publication_id,model_id):
     return reactionmap
     
 rmap = ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+
+
+

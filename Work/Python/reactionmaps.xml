@@ -47,8 +47,11 @@
 	</link>
 	<link>
 		<exprxn id ="12"/>
+		<!--
 		<modelrxn id="pykAF"/>
 		<modelrxn id="pps" coef="-1"/>
+		 -->
+		 <modelrxn id="t12"/>
 		<notes>
 		Listed as pykAF - pps/ token reaction 12 in report, but token reaction equals pykAF flux (forgot to subtract pps?).
 		In ECME model, token t12 correctly equals pykAF - pps.
@@ -76,13 +79,19 @@
 	</link>
 	<link>
 		<exprxn id="18"/>
+		<!--
 		<modelrxn id="mdh"/>
 		<modelrxn id="mqo"/>
+		-->
+		<modelrn id="t18"/>
 	</link>
 	<link>
 		<exprxn id="19"/>
+		<!--
 		<modelrxn id="maeA"/>
 		<modelrxn id="maeB"/>
+		-->
+		<modelrxn id="t19"/>
 	</link>
 	<link>
 		<exprxn id="20"/>
@@ -94,13 +103,19 @@
 	</link>
 	<link>
 		<exprxn id="22"/>
+		<!--
 		<modelrxn id="pta"/>
 		<modelrxn id="acs" coef="-1"/>
+		-->
+		<modelrxn id="t22"/>
 	</link>
 	<link>
 		<exprxn id="23"/>
+		<!--
 		<modelrxn id="udhA"/>
 		<modelrxn id="pntAB" coef="-1"/>
+		-->
+		<modelrxn id="t23"/>
 	</link>
 	<link>
 		<exprxn id="24"/>

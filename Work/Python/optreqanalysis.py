@@ -7,6 +7,7 @@ from extractflux2 import *
 import scitools.easyviz as ev
 import scipy.io
 import math
+import loadData as load
 import prettyplotlib as ppl
 # This is "import matplotlib.pyplot as plt" from the prettyplotlib library
 from prettyplotlib import plt
@@ -38,6 +39,8 @@ def optreqanalysis(modeldicts,objectives,experiments,steps = 10,makeplots = True
             perrenoud = expdata['expdata']['perrenoud']
             fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0]
             fluxvalues = [row[0] for row in fluxvalarray] #expdata.perrenoud.abs.batch.aerobe.fluxvalues
+
+            expfluxdict = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
     resultlist = []
     for modeldict in modeldicts:

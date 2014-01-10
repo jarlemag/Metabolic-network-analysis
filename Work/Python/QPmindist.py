@@ -28,14 +28,27 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
     #Create a vector to hold the experimental flux values:
     Y[:] = np.NAN
 
+    #Create a dictionary to hold the experimental flux values:
+    Ydict = {}
+
+    #For every entry in the reaction map:
+    for linkdict in reactionmap:
+            if ((len(linkdict['modrxns']) > 1) or (len(linkdict['exprxns']) >1)): 
+                    raise Exception('Model to experimental reaction mapping must be one to one.')
+            modrxnid = linkdict['modrxns'][0]['rxid']
+            exprxnid = linkdict['exprxns'][0]['rxid']
+            modcoef = linkdict['modrxns'][0]['coef']
+            Ydict[modrxnid] = fluxvalues['exprxnid']*modcoef
+            
+'''
     #For every entry in the reaction map:
     for entry in reactionmap:
         #print entry[0]
         #Update the experimental flux values vector based on the entries in the reaction map and the flux values vector
         Y[entry[1]-1] = fluxvalues[entry[0]-1]
-
+'''
     #Create a new Gurobi model
-    gurobimodel =gurobi.Model("QP")
+gurobimodel =gurobi.Model("QP")
     #Create a new QuadExpr object to store the objective function.
     QPobjective = gurobi.QuadExpr()
 
@@ -88,6 +101,16 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
 
     reactlist = []
     terms = []
+
+    for key in Ydict:
+            x = gurobimodel.getVarByName(key)
+            newterm = x * x - 2*Ydict[key]*x
+            newterm.addConstant((Ydict[key]**2))
+            QPobjective.add(newterm)
+            gurobimodel.setObjective(QPobjective, gurobi.GRB.MINIMIZE)
+            gurobimodel.update()
+            terms.append(newterm)
+    '''
     #For every element in the vector of experimental flux values:
     for i in range(len(Y)):
         #If an experimental flux value is given (the value is not "not a number")
@@ -106,9 +129,12 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
             #Update the Gurobi model
             gurobimodel.update()
             terms.append(newterm)
+'''
+            
     if debug:
         print reactlist 
-        print (len(reactlist)) 
+        print (len(reactlist))
+    
     #Perform QP optimization:
 
     gurobimodel.optimize()
@@ -128,10 +154,9 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
     Fmap2 = rmaps[0][0][3]
 
     reactionmap = Fmap2
-    '''
-    TO DO: Change reaction maps to work solely with reaction IDs (Mapping between experimental reaction IDs and model reaction IDs.
-    Stop messing around with numerical indexes.
-    '''
+    import loadData as load
+    rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+    
 
     optreq = 0.8
 
@@ -140,12 +165,14 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
     fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0]
     fluxvalues = [row[0] for row in fluxvalarray] #expdata.perrenoud.abs.batch.aerobe.fluxvalues
 
-    gurobimodel = QPmindist(cobramodel,fluxvalues,reactionmap,optreq)
+    #gurobimodel = QPmindist(cobramodel,fluxvalues,reactionmap,optreq)
+    gurobimodel = QPmindist(cobramodel,fluxvalues,rmap,optreq)
     QPsolution = getgurobisolution(gurobimodel)
     QPFBAobjval = computeFBAobjval(QPsolution,cobramodel)
 
     import extractflux2
     extractedfluxes = extractflux2.extractflux(QPsolution,reactionmap)
+    expfluxdict = extractflux2.extractfluxdict(expfluxdict,rmap)
 
     import fluxreport
     fluxreport.fluxreport(extractedfluxes,fluxvalarray)
