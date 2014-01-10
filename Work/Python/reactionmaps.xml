@@ -1,0 +1,127 @@
+<xml>
+<publication id = "Perrenoud">
+	<model id = "SCHUETZR">
+	<link>
+		<exprxn id="1" />
+		<modelrxn id="R_t1"/>
+	</link>
+	<link>
+		<exprxn id="2" />
+		<modelrxn id="zwf"/>
+	</link>
+	<link>
+		<exprxn id="3"/>
+		<modelrxn id="gnd"/>
+	</link>
+	<link>
+		<exprxn id ="4"/>
+		<modelrxn id ="pgi"/>
+	</link>
+	<link>
+		<exprxn id="5"/>
+		<modelrxn id ="edd"/>
+	</link>
+	<link>
+		<exprxn id="6"/>
+		<modelrxn id="fbaAB"/>
+	</link>
+	<link>
+		<exprxn id="7"/>
+		<modelrxn id="tktAB"/>
+	</link>
+	<link>
+		<exprxn id="8"/>
+		<modelrxn id="tktAB r2"/>
+	</link>
+	<link>
+		<exprxn id="9"/>
+		<momdelrxn id="talAB"/>
+	</link>
+	<link>
+		<exprxn id="10"/>
+		<modelrxn id="gapA"/>
+	</link>
+	<link>
+		<exprxn id="11"/>
+		<modelrxn id="gpmAB"/>
+	</link>
+	<link>
+		<exprxn id ="12"/>
+		<modelrxn id="pykAF"/>
+		<modelrxn id="pps" coef="-1"/>
+		<notes>
+		Listed as pykAF - pps/ token reaction 12 in report, but token reaction equals pykAF flux (forgot to subtract pps?).
+		In ECME model, token t12 correctly equals pykAF - pps.
+		</notes>
+	</link>
+	<link>
+		<exprxn id="13"/>
+		<modelrxn id="aceEF"/>
+	</link>
+	<link>
+		<exprxn id="14"/>
+		<modelrxn id="gltA_prpC"/>
+	</link>
+	<link>
+		<exprxn id="15"/>
+		<modelrxn id="icd"/>
+	</link>
+	<link>
+		<exprn id="16"/>
+		<modelrxn id="sucAB"/>
+	</link>
+	<link>
+		<exprxn id="17"/>
+		<modelrxn id="fumABC"/>
+	</link>
+	<link>
+		<exprxn id="18"/>
+		<modelrxn id="mdh"/>
+		<modelrxn id="mqo"/>
+	</link>
+	<link>
+		<exprxn id="19"/>
+		<modelrxn id="maeA"/>
+		<modelrxn id="maeB"/>
+	</link>
+	<link>
+		<exprxn id="20"/>
+		<modelrxn id="pck"/>
+	</link>
+	<link>
+		<exprxn id="21"/>
+		<modelrxn id="ppc"/>
+	</link>
+	<link>
+		<exprxn id="22"/>
+		<modelrxn id="pta"/>
+		<modelrxn id="acs" coef="-1"/>
+	</link>
+	<link>
+		<exprxn id="23"/>
+		<modelrxn id="udhA"/>
+		<modelrxn id="pntAB" coef="-1"/>
+	</link>
+	<link>
+		<exprxn id="24"/>
+		<modelrxn id="o2"/>
+	</link>
+	<link>
+		<exprxn id="25"/>
+		<modelrxn id="biomass"/>
+	</link>
+	<link>
+		<exprxn id="26"/>
+		<modelrxn id="aceA"/>
+	</link>
+	<link>
+		<exprxn id="27"/>
+		<modelrxn id="mgsA"/>
+	</link>
+	<link>
+		<exprxn id="28"/>
+		<modelrxn id="EX_ETH_e"/>
+	</link>
+	</model>
+</publication>
+</xml>
