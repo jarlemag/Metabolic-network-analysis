@@ -38,17 +38,15 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
             modrxnid = linkdict['modrxns'][0]['rxid']
             exprxnid = linkdict['exprxns'][0]['rxid']
             modcoef = linkdict['modrxns'][0]['coef']
-            Ydict[modrxnid] = fluxvalues['exprxnid']*modcoef
-            
-'''
-    #For every entry in the reaction map:
-    for entry in reactionmap:
-        #print entry[0]
-        #Update the experimental flux values vector based on the entries in the reaction map and the flux values vector
-        Y[entry[1]-1] = fluxvalues[entry[0]-1]
-'''
+            #print(linkdict)
+            if (exprxnid in fluxvalues):
+                    Ydict[modrxnid] = fluxvalues[exprxnid]*modcoef
+
+
+#Note: 
+
     #Create a new Gurobi model
-gurobimodel =gurobi.Model("QP")
+    gurobimodel =gurobi.Model("QP")
     #Create a new QuadExpr object to store the objective function.
     QPobjective = gurobi.QuadExpr()
 
@@ -104,8 +102,13 @@ gurobimodel =gurobi.Model("QP")
 
     for key in Ydict:
             x = gurobimodel.getVarByName(key)
-            newterm = x * x - 2*Ydict[key]*x
-            newterm.addConstant((Ydict[key]**2))
+            print(x)
+            print('key:',key)
+            print('Ydict[key]:',Ydict[key])
+            fluxval = float(Ydict[key])
+            #print('multiplier:',multiplier)
+            newterm = x * x - 2*fluxval*x
+            newterm.addConstant((fluxval**2))
             QPobjective.add(newterm)
             gurobimodel.setObjective(QPobjective, gurobi.GRB.MINIMIZE)
             gurobimodel.update()
@@ -158,21 +161,23 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
     rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
     
 
-    optreq = 0.8
+    optreq = 1.0
 
     expdata = scipy.io.loadmat('expdata.mat')
     perrenoud = expdata['expdata']['perrenoud']
     fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0]
     fluxvalues = [row[0] for row in fluxvalarray] #expdata.perrenoud.abs.batch.aerobe.fluxvalues
+    fluxvalues = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
     #gurobimodel = QPmindist(cobramodel,fluxvalues,reactionmap,optreq)
     gurobimodel = QPmindist(cobramodel,fluxvalues,rmap,optreq)
-    QPsolution = getgurobisolution(gurobimodel)
-    QPFBAobjval = computeFBAobjval(QPsolution,cobramodel)
+    QPsolutionvector = getgurobisolutionvector(gurobimodel)
+    QPsolutiondict = getgurobisolutiondict(gurobimodel)
+    QPFBAobjval = computeFBAobjval(QPsolutionvector,cobramodel)
 
     import extractflux2
-    extractedfluxes = extractflux2.extractflux(QPsolution,reactionmap)
-    expfluxdict = extractflux2.extractfluxdict(expfluxdict,rmap)
+    extractedfluxes = extractflux2.extractfluxvector(QPsolutionvector,reactionmap)
+    extractfluxdict = extractflux2.extractfluxdict(QPsolutiondict,rmap)
 
     import fluxreport
     fluxreport.fluxreport(extractedfluxes,fluxvalarray)

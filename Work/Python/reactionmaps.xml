@@ -35,7 +35,7 @@
 	</link>
 	<link>
 		<exprxn id="9"/>
-		<momdelrxn id="talAB"/>
+		<modelrxn id="talAB"/>
 	</link>
 	<link>
 		<exprxn id="10"/>
@@ -83,7 +83,7 @@
 		<modelrxn id="mdh"/>
 		<modelrxn id="mqo"/>
 		-->
-		<modelrn id="t18"/>
+		<modelrxn id="t18"/>
 	</link>
 	<link>
 		<exprxn id="19"/>
