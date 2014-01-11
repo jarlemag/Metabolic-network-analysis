@@ -20,6 +20,20 @@ def ratiolimit(model,reactionID,fraction):
     return
 
 
+def maximizeMetaboliteProduction(model,metabolite_id):
+    metabolite = model.metabolites.get_by_id(metabolite_id)
+    metabolitereactions = metabolite._reaction
+    for reaction in model.reactions:
+            reaction.objective_coefficient = 0
+    for reaction in metabolitereactions:
+        reaction.objective_coefficient = reaction.get_coefficient(metabolite)
+    return model
+
+
+def objective_coefficient_list(model):
+    for reaction in model.reactions:
+        print reaction.id, reaction.objective_coefficient
+
 
 def createTokens(model,reactionmap):
     from cobra import Reaction
