@@ -4,22 +4,54 @@
 
 import numpy as np
 import scipy.io
+import loadData as load
 
-def compdist2(fluxvector,vector2 = None,options = None,sense = None):
+def compdistdict(fluxdict,expdata = None,options = None,sense = None):
+    if expdata == None:
+        expdata = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
-    expdata = scipy.io.loadmat('expdata.mat')
+    fluxvector = []
+    fluxvalues = []
 
-
-#Fluxvalues = expdata.perrenoud.abs.batch.aerobe.fluxvalues
-# # fluxvalues is 4 levels below perrenoud.
-    perrenoud = expdata['expdata']['perrenoud']
-
-    fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0] #14 levels!    
-    #firstrow = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0][0]
-    fluxvalues = [row[0] for row in fluxvalarray]
-
-
+    
+    for key in fluxdict:
+        if (key in expdata):
+            fluxvector.append(fluxdict[key])
+            fluxvalues.append(float(expdata[key]))
+ 
     dist = np.linalg.norm(np.array(fluxvector)-np.array(fluxvalues))
     return dist
 
+def compdist2(fluxvector,expdata = None, options = None, sense = None):
+    if expdata == None:
+        expdata = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe', vector = True)
+    dist = np.linalg.norm(np.array(fluxvector)-np.array(expdata))
+    return dist
 
+if __name__ == "__main__": #If the module is executed as a program, run a test.
+    from cobra.io.sbml import create_cobra_model_from_sbml_file
+    cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    import loadData as load
+    fluxvalues = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
+    rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+
+    optreq = 1.0
+
+    import QPmindist as qp
+
+    gurobimodel = qp.QPmindist(cobramodel,fluxvalues,rmap,optreq)
+
+    QPsolutiondict = qp.getgurobisolutiondict(gurobimodel)
+
+    import extractflux2 as extract
+
+    extractfluxdict = extract.extractfluxdict(QPsolutiondict,rmap)
+
+
+    dictdist = compdistdict(extractfluxdict)
+
+    print('dist:',dictdist)
+
+    simple1 = {"A":1,"B":2,"C":3}
+    simple2 = {"A":1,"B":2,"C":4}
+    simpledist = compdistdict(simple1, expdata = simple2)

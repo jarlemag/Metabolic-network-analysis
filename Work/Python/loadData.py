@@ -15,14 +15,17 @@ root = tree.getroot()
 #for element in root:
 #    print(element)
 
-def ExpFluxesfromXML(filename,publication_id,reactor_id,experiment_id):
+def ExpFluxesfromXML(filename,publication_id,reactor_id,experiment_id,vector = False):
     tree = ET.parse(filename)
     root = tree.getroot()
     string = './/publication[@id="{pub_id}"]/reactor[@id="{react_id}"]/experiment[@id="{exp_id}"]/reactiondata'.format(pub_id = publication_id, react_id = reactor_id, exp_id = experiment_id)
     reactiondata = root.findall(string)
     reactionlist = reactiondata[0].findall('reaction')
     expfluxlist = [reaction.get('flux') for reaction in reactionlist]
-    expfluxdict = {reaction.get('id'):reaction.get('flux') for reaction in reactionlist}
+    if vector == True:
+        return expfluxlist
+    else:
+        expfluxdict = {reaction.get('id'):reaction.get('flux') for reaction in reactionlist}
     return expfluxdict
 
 expfluxes = ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
