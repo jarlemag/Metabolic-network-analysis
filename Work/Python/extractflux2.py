@@ -21,16 +21,16 @@ def extractfluxdict(fluxdict_in,reactionmap):
     for linkdict in reactionmap:
         if len(linkdict['exprxns']) > 1:
             raise Exception("Reaction map links one or more model reactions to more than one experimental reactions. A single model reaction or groups of model reactions may only map to one experimental reaction.")
-        print('linkdict:',linkdict)
+        #print('linkdict:',linkdict)
         expid = linkdict['exprxns'][0]['rxid']
         totflux = 0
         for rxndict in linkdict['modrxns']:
             rxid = rxndict['rxid']
             coef = rxndict['coef']
-            print('rxid:',rxid)
-            print(fluxdict_in[rxid])
-            print('coef:',coef)
-            print(rxndict)
+            #print('rxid:',rxid)
+            #print(fluxdict_in[rxid])
+            #print('coef:',coef)
+            #print(rxndict)
             totflux += fluxdict_in[rxid] * int(coef)
         fluxdict_out[expid] = totflux
     return fluxdict_out

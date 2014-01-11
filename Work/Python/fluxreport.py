@@ -1,23 +1,29 @@
 #fluxreport.py
 
 import numpy as np
+import loadData as load
+import copy
 
-def fluxreport(fluxresult,fluxvalarray):
 
-    expfluxes = fluxvalarray[:,0]
-    experrors = fluxvalarray[:,1]
+def fluxreport(fluxdict,expfluxdict = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe'), exp_errordict = load.ExpErrorsfromXML('expdata.xml','Perrenoud','Batch','aerobe')):
 
-    difference = expfluxes - fluxresult
+    fluxdictcopy = copy.deepcopy(fluxdict)
+    for key in fluxdictcopy:
+        if key not in expfluxdict:
+            del fluxdict[key]
 
-    uncertfraction = difference / experrors
+    diff_dict = {key:(expfluxdict[key] - fluxdict[key]) for key in fluxdict}
+    #bug here: KeyError: '26'
+    
 
-    number = range(len(fluxresult))
-
+    #uncertfraction = difference / experrors
+    uncertfrac_dict = {key:(np.divide(diff_dict[key],exp_errordict[key])) for key in fluxdict}
+    
     textheader = ["Ex rxn #", "Com. flux","Exp flux", "Diff.","Exp. uncert.", "Diff/uncert."]
     
     outsidefluxes = 0
-    for fraction in uncertfraction:
-        if (abs(fraction) > 1) and (~np.isinf(abs(fraction))):
+    for key in uncertfrac_dict:
+        if (abs(uncertfrac_dict[key]) > 1) and (~np.isinf(abs(uncertfrac_dict[key]))):
             outsidefluxes +=1
 
     import datetime
@@ -29,17 +35,25 @@ def fluxreport(fluxresult,fluxvalarray):
     print "Constraints:"
     print "Number of computed fluxes outside experimental uncertainty bounds:",outsidefluxes
 
+
+    #print 'fluxdict:',fluxdict #DEBUG
+    #print 'expfluxdict:',expfluxdict #DEBUG
+
     print "%15s %15s %15s %15s %15s %15s" % tuple(textheader)
-    for i in range(len(expfluxes)):
-        print "%15.1f %15.1f %15.1f %15.1f %15.1f %15.1f" % (number[i],fluxresult[i],expfluxes[i],difference[i],experrors[i],uncertfraction[i])
+
     
-    #for 
+    for key in fluxdict:
+        #print key #DEBUG
+        #print fluxdict[key]
+        #print expfluxdict[key]
+        #print diff_dict[key]
+        #print exp_errordict[key]
+        #print uncertfrac_dict[key]
+        #print uncertfrac_dict
+        print "%s %15.1f %15.1f %15.1f %15.1f %15.1f" % (key,float(fluxdict[key]),float(expfluxdict[key]),float(diff_dict[key]),float(exp_errordict[key]),float(uncertfrac_dict[key]))
 
-    return difference
+    return diff_dict
     
-
-
-
 
 #TEST CODE START:
 if __name__ == "__main__":
@@ -48,26 +62,17 @@ if __name__ == "__main__":
     SCHUETZR = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
     SCHUETZR.optimize(solver='gurobi')
 
-    FBAresult = SCHUETZR.solution.x
-
+    FBAresult = SCHUETZR.solution.x_dict
+    
     import extractflux2
 
-    import scipy.io
+    rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+    expfluxes = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
-    mat = scipy.io.loadmat('reactionmaps.mat')
-    rmaps = mat['reactionmaps']
-
-    Fmap = rmaps[0][0][0]
-
-    fluxresult = extractflux2.extractflux(FBAresult,Fmap)
+    fluxresult = extractflux2.extractfluxdict(FBAresult,rmap)
 
 
-    expdata = scipy.io.loadmat('expdata.mat')
-    perrenoud = expdata['expdata']['perrenoud']
-    fluxvalarray = perrenoud[0][0][0][0][0][0][0][0][0][0][0][0][0][0]
-
-
-    t = fluxreport(fluxresult,fluxvalarray)
+    t = fluxreport(fluxresult)
 
 #TEST CODE END.
 
