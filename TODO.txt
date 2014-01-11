@@ -1,9 +1,8 @@
 
-Update compdist2.py and reportfluxes.py to use dict format for fluxes.
+Update reportfluxes.py to use dict format for fluxes.
 
 
 createReactionmap.py
-compsplits.py
 constrainfluxes.py
 
 See also issue tracker.

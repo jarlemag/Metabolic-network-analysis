@@ -21,14 +21,24 @@ def ExpFluxesfromXML(filename,publication_id,reactor_id,experiment_id,vector = F
     string = './/publication[@id="{pub_id}"]/reactor[@id="{react_id}"]/experiment[@id="{exp_id}"]/reactiondata'.format(pub_id = publication_id, react_id = reactor_id, exp_id = experiment_id)
     reactiondata = root.findall(string)
     reactionlist = reactiondata[0].findall('reaction')
-    expfluxlist = [reaction.get('flux') for reaction in reactionlist]
     if vector == True:
+        expfluxlist = [reaction.get('flux') for reaction in reactionlist]
         return expfluxlist
     else:
-        expfluxdict = {reaction.get('id'):reaction.get('flux') for reaction in reactionlist}
+        expfluxdict = {reaction.get('id'):float(reaction.get('flux')) for reaction in reactionlist}
     return expfluxdict
 
 expfluxes = ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
+
+def ExpErrorsfromXML(filename,publication_id,reactor_id,experiment_id):
+    tree = ET.parse(filename)
+    root = tree.getroot()
+    string = './/publication[@id="{pub_id}"]/reactor[@id="{react_id}"]/experiment[@id="{exp_id}"]/reactiondata'.format(pub_id = publication_id, react_id = reactor_id, exp_id = experiment_id)
+    reactiondata = root.findall(string)
+    reactionlist = reactiondata[0].findall('reaction')
+    exp_errordict = {reaction.get('id'):float(reaction.get('error')) for reaction in reactionlist}
+    return exp_errordict
+    
 
 
 def ReactionMapfromXML(filename,publication_id,model_id):
@@ -63,8 +73,13 @@ def ReactionMapfromXML(filename,publication_id,model_id):
         linkdict['modrxns'] =modrxnlist
         reactionmap.append(linkdict)
     return reactionmap
+
+
+if __name__ == "__main__":
     
-rmap = ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+    rmap = ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+
+
 
 
 

@@ -135,22 +135,9 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
 
     import compdist2
 
-    #dist = compdist2.compdist2(extractedfluxes)
+    dist = compdist2.compdistdict(extractfluxdict)
     #print 'Optimality requirement:',optreq
-    #print 'compdist2 distance:',dist
-
-    #Sanity check:
-    # terms[1] = -10.8 pgi -> experimental pgi flux should be 5.4
-    #cobramodel.reactions[12] = pgi #pgi reaction is reaction # 13 in model
-    #Look in reactionmap, the reaction corresponding to model reaction 13 is experimental reaction 4.
-    #Check experimental fluxvalues. fluxvalues[3] = 5.4 --> OK!
-
-    #terms[2] = -12.4 fbaAb, experimental fbaAb flux should be 6.2
-    #How to find index of a certain element:
-    #f = [i for i in range(len(cobramodel.reactions)) if cobramodel.reactions[i].id == "fbaAB"]
-    #cobramodel.reaction[14]= fbaAB -> fbaAB is reaction #15 in models
-    #Look in reactionmap, the reaction corresponding to modelreaction  is experimental reaction 6
-    #Check experimental fluxvalues. fluxvalues[5] = 6.2 -> OK!
+    print 'compdist2 distance:',dist
 
     print 'gurobimomdel gurobi objective value:',gurobimodel.ObjVal
     import math

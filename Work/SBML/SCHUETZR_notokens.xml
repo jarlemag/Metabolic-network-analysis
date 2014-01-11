@@ -1,0 +1,1908 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level2" level="2" version="1">
+  <model id="Schuetz_fixed" name="Schuetz 2007 E. coli central carbon metabolism (edited)">
+    <notes>
+      <html xmlns="http://www.w3.org/1999/xhtml"><p>COBRA_Toolbox</p></html>
+    </notes>
+ <listOfUnitDefinitions>
+       <unitDefinition id="mmol_per_gDW_per_hr">
+         <listOfUnits>
+           <unit kind="mole" scale="-3" multiplier="1" offset="0"/>
+           <unit kind="gram" exponent="-1" multiplier="1" offset="0"/>
+           <unit kind="second" exponent="-1" multiplier="0.00027777" offset="0"/>
+         </listOfUnits>
+       </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+	<compartment id="C_c" name="cytoplasm" />
+	<compartment id="C_e" name="external" />
+    </listOfCompartments>
+    <listOfSpecies>
+    						<species id="M_GLC_c" name="Glucose" compartment="C_c" />
+			    			<species id="M_ATP_c" name="ATP" compartment="C_c" />
+			    			<species id="M_G6P_c" name="Glucose 6-Phosphate (G6P)" compartment="C_c" />
+			    			<species id="M_F6P_c" name="Fructose 6-Phosphate (F6P)" compartment="C_c" />
+			    			<species id="M_FDP_c" name="fructose-1,6-diphosphate (FDP/FBP)" compartment="C_c" />
+			    			<species id="M_DHAP_c" name="Dihydroxyacetone phosphate" compartment="C_c" />
+			    			<species id="M_GA3P_c" name="GA3P" compartment="C_c" />
+			    			<species id="M_NADH_c" name="NADH" compartment="C_c" />
+			    			<species id="M_13DPG_c" name="3-Phospho-D-glyceroyl phosphate (13DPG)" compartment="C_c" />
+			    			<species id="M_3PG_c" name="3-phoshoglycerate (3PG)" compartment="C_c" />
+			    			<species id="M_2PG_c" name="2-phosphoglycerate (2PG)" compartment="C_c" />
+			    			<species id="M_PEP_c" name="Phospho-Enol-Pyruvate (PEP)" compartment="C_c" />
+			    			<species id="M_PYR_c" name="Pyruvate" compartment="C_c" />
+			    			<species id="M_COA_c" name="Coenzyme A" compartment="C_c" />
+			    			<species id="M_ACCOA_c" name="Acetyl CoA" compartment="C_c" />
+			    			<species id="M_CO2_c" name="CO2" compartment="C_c" />
+			    			<species id="M_MAL_c" name="Malate" compartment="C_c" />
+			    			<species id="M_NADPH_c" name="NADPH" compartment="C_c" />
+			    			<species id="M_OA_c" name="Oxaloacetate" compartment="C_c" />
+			    			<species id="M_D6PGL_c" name="D6PGL" compartment="C_c" />
+			    			<species id="M_6PGC_c" name="6-phoshphogluconate" compartment="C_c" />
+			    			<species id="M_RL5P_c" name="D-Ribulose 5-Phosphate (RL5P)" compartment="C_c" />
+			    			<species id="M_R5P_c" name="Ribose 5-phosphate (R5P)" compartment="C_c" />
+			    			<species id="M_X5P_c" name="Xylulose 5-phosphate (X5P)" compartment="C_c" />
+			    			<species id="M_S7P_c" name="Sedoheptulose 7-phosphate (S7P)" compartment="C_c" />
+			    			<species id="M_E4P_c" name="E4P" compartment="C_c" />
+			    			<species id="M_CIT_c" name="Citrate" compartment="C_c" />
+			    			<species id="M_CAC_c" name="CAC (Cis-Aconitate)" compartment="C_c" />
+			    			<species id="M_ICIT_c" name="Isocitrate" compartment="C_c" />
+			    			<species id="M_AKG_c" name="alpha-Ketoglutarate (AKG)" compartment="C_c" />
+			    			<species id="M_SUCCOA_c" name="Succinyl-CoA" compartment="C_c" />
+			    			<species id="M_SUCC_c" name="Succinate" compartment="C_c" />
+			    			<species id="M_FUM_c" name="Fumarate" compartment="C_c" />
+			    			<species id="M_FADH_c" name="FADH" compartment="C_c" />
+			    			<species id="M_Q_c" name="Ubiquinone (Q)" compartment="C_c" />
+			    			<species id="M_QH2_c" name="Ubiquinol (QH2)" compartment="C_c" />
+			    			<species id="M_GLX_c" name="Glyxoxylate" compartment="C_c" />
+			    			<species id="M_H_e" name="H (external)" compartment="C_e" />
+			    			<species id="M_O2_c" name="O2" compartment="C_c" />
+			    			<species id="M_NO3_c" name="NO3" compartment="C_c" />
+			    			<species id="M_NO2_c" name="NO2" compartment="C_c" />
+			    			<species id="M_AC_c" name="Acetate" compartment="C_c" />
+			    			<species id="M_FOR_c" name="Formate" compartment="C_c" />
+			    			<species id="M_ACAL_c" name="Acetaldehyde" compartment="C_c" />
+			    			<species id="M_ETH_c" name="Ethanol" compartment="C_c" />
+			    			<species id="M_ACTP_c" name="ACTP" compartment="C_c" />
+			    			<species id="M_LAC_c" name="Lactate" compartment="C_c" />
+			    			<species id="M_2KD6PG_c" name="2-Keto-3-deoxy-6-phospho-gluconate" compartment="C_c" />
+			    			<!-- Exchange species below -->
+			    			<species id="M_GLC_e" name="Glucose (external)" compartment="C_e" />
+			    			<species id="M_CO2_e" name="CO2 (external)" compartment="C_e" />
+			    			<species id="M_O2_e" name="O2 (external)" compartment="C_e" />
+			    			<species id="M_NO3_e" name="NO3 (external)" compartment="C_e" />
+			    			<species id="M_NO2_e" name="NO2 (external)" compartment="C_e" />
+			    			<species id="M_ETH_e" name="Ethanol (external)" compartment="C_e" />
+			    			<species id="M_Ac_e" name="Acetate (external)" compartment="C_e" />
+			    			<species id="M_SUCC_e" name="Succinate (external)" compartment="C_e" />
+			    			<species id="M_LAC_e" name="Lactate (external)" compartment="C_e" />
+			    			<species id="M_PYR_e" name="Pyruvate (external)" compartment="C_e" />
+			    			<species id="M_FOR_e" name="Formate (external)" compartment="C_e" />
+			    			<!--Token species below-->
+			    		
+			    			
+			    			
+			    			
+    				
+    				
+    				
+</listOfSpecies>
+
+<listOfReactions>
+	
+	
+	<reaction id="R_EX_O2_e" name="O2 exchange" reversible="true">
+			        <notes>
+			          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+			        </notes>
+			        <listOfReactants>
+			          <speciesReference species="M_O2_e"/>
+			        </listOfReactants>
+			        
+			        <kineticLaw>
+			          <math xmlns="http://www.w3.org/1998/Math/MathML">
+			            <ci> FLUX_VALUE </ci>
+			          </math>
+			          <listOfParameters>
+			            <parameter id="LOWER_BOUND" value="-30" units="mmol_per_gDW_per_hr"/>
+			            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+			            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+			            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+			          </listOfParameters>
+			        </kineticLaw>
+	                        </reaction>
+    			
+    			<reaction id="R_EX_GLC_e" name="Glucose exchange" reversible="true">
+					        <notes>
+					          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+					        </notes>
+					        <listOfReactants>
+					          <speciesReference species="M_GLC_e"/>
+					        </listOfReactants>
+					        
+					        <kineticLaw>
+					          <math xmlns="http://www.w3.org/1998/Math/MathML">
+					            <ci> FLUX_VALUE </ci>
+					          </math>
+					          <listOfParameters>
+					            <parameter id="LOWER_BOUND" value="-10" units="mmol_per_gDW_per_hr"/>
+					            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+					            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+					            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+					          </listOfParameters>
+					        </kineticLaw>
+                        </reaction>
+<reaction id="R_EX_CO2_e" name="CO2 exchange" reversible="true">
+					        <notes>
+					          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+					        </notes>
+					        <listOfReactants>
+					          <speciesReference species="M_CO2_e"/>
+					        </listOfReactants>
+					        
+					        <kineticLaw>
+					          <math xmlns="http://www.w3.org/1998/Math/MathML">
+					            <ci> FLUX_VALUE </ci>
+					          </math>
+					          <listOfParameters>
+					            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+					            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+					            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+					            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+					          </listOfParameters>
+					        </kineticLaw>
+                        </reaction>
+                        <reaction id="R_EX_NO3_e" name="NO3 exchange" reversible="true">
+					        <notes>
+					          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+					        </notes>
+					        <listOfReactants>
+					          <speciesReference species="M_NO3_e"/>
+					        </listOfReactants>
+					        
+					       
+					        <kineticLaw>
+					          <math xmlns="http://www.w3.org/1998/Math/MathML">
+					            <ci> FLUX_VALUE </ci>
+					          </math>
+					          <listOfParameters>
+					            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+					            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+					            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+					            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+					          </listOfParameters>
+					        </kineticLaw>
+                        </reaction>
+    		 	<reaction id="R_EX_NO2_e" name="NO2 exchange" reversible="true">
+							        <notes>
+							          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+							        </notes>
+							        <listOfReactants>
+							          <speciesReference species="M_NO2_e"/>
+							        </listOfReactants>
+							       
+							        <kineticLaw>
+							          <math xmlns="http://www.w3.org/1998/Math/MathML">
+							            <ci> FLUX_VALUE </ci>
+							          </math>
+							          <listOfParameters>
+							            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+							            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+							            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+							            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+							          </listOfParameters>
+							        </kineticLaw>
+		                        </reaction>
+    		
+					<reaction id="R_EX_ETH_e" name="Ethanol exchange" reversible="true">
+							        <notes>
+							          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+							        </notes>
+							        <listOfReactants>
+							          <speciesReference species="M_ETH_e"/>
+							        </listOfReactants>
+							       
+							        <kineticLaw>
+							          <math xmlns="http://www.w3.org/1998/Math/MathML">
+							            <ci> FLUX_VALUE </ci>
+							          </math>
+							          <listOfParameters>
+							            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+							            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+							            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+							            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+							          </listOfParameters>
+							        </kineticLaw>
+		                        </reaction>
+    		    		
+	<reaction id="R_EX_Ac_e" name="Acetate exchange" reversible="true">
+							        <notes>
+							          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+							        </notes>
+							        <listOfReactants>
+							          <speciesReference species="M_Ac_e"/>
+							        </listOfReactants>
+							       
+							        <kineticLaw>
+							          <math xmlns="http://www.w3.org/1998/Math/MathML">
+							            <ci> FLUX_VALUE </ci>
+							          </math>
+							          <listOfParameters>
+							            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+							            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+							            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+							            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+							          </listOfParameters>
+							        </kineticLaw>
+		                        </reaction>
+		                        
+    					<reaction id="R_EX_SUCC_e" name="Succinate exchange" reversible="true">
+							        <notes>
+							          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+							        </notes>
+							        <listOfReactants>
+							          <speciesReference species="M_SUCC_e"/>
+							        </listOfReactants>
+							        
+							        <kineticLaw>
+							          <math xmlns="http://www.w3.org/1998/Math/MathML">
+							            <ci> FLUX_VALUE </ci>
+							          </math>
+							          <listOfParameters>
+							            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+							            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+							            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+							            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+							          </listOfParameters>
+							        </kineticLaw>
+		                        </reaction>	    		    		
+    					<reaction id="R_EX_LAC_e" name="Lactate exchange" reversible="true">
+									        <notes>
+									          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+									        </notes>
+									        <listOfReactants>
+									          <speciesReference species="M_LAC_e"/>
+									        </listOfReactants>
+									       
+									        <kineticLaw>
+									          <math xmlns="http://www.w3.org/1998/Math/MathML">
+									            <ci> FLUX_VALUE </ci>
+									          </math>
+									          <listOfParameters>
+									            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+									            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+									            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+									            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+									          </listOfParameters>
+									        </kineticLaw>
+		                        </reaction>	
+    		
+					<reaction id="R_EX_PYR_e" name="Pyruvate exchange" reversible="true">
+									        <notes>
+									          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+									        </notes>
+									        <listOfReactants>
+									          <speciesReference species="M_PYR_e"/>
+									        </listOfReactants>
+									        
+									        <kineticLaw>
+									          <math xmlns="http://www.w3.org/1998/Math/MathML">
+									            <ci> FLUX_VALUE </ci>
+									          </math>
+									          <listOfParameters>
+									            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+									            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+									            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+									            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+									          </listOfParameters>
+									        </kineticLaw>
+		                        </reaction>	
+					<reaction id="R_EX_FOR_e" name="Formate exchange" reversible="true">
+									        <notes>
+									          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+									        </notes>
+									        <listOfReactants>
+									          <speciesReference species="M_FOR_e"/>
+									        </listOfReactants>
+									       
+									        <kineticLaw>
+									          <math xmlns="http://www.w3.org/1998/Math/MathML">
+									            <ci> FLUX_VALUE </ci>
+									          </math>
+									          <listOfParameters>
+									            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+									            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+									            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+									            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+									          </listOfParameters>
+									        </kineticLaw>
+		                        </reaction>
+
+    			<reaction id="R_glk" name="Glucokinase (glk)" reversible="false"> <!--PART OF R1 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_GLC_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_G6P_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+    			<kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <ci> FLUX_VALUE </ci>
+          </math>
+          <listOfParameters>
+            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+          </listOfParameters>
+        </kineticLaw>	
+    			</reaction>
+<reaction id="R_pgi" name="Phosphoglucose isomerase (pgi)" reversible="true"> <!--PART OF R1 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_G6P_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_F6P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+<reaction id="R_pfkAB" name="Phosphofructokinase (pfkA/B)" reversible="false">
+    <listOfReactants>
+    	<speciesReference species="M_F6P_c" stoichiometry="1.0"/>
+    	<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    </listOfReactants>
+    <listOfProducts>
+    	<speciesReference species="M_FDP_c" stoichiometry="1.0"/>
+    </listOfProducts>
+    <kineticLaw>
+	<math xmlns="http://www.w3.org/1998/Math/MathML">
+		<ci> FLUX_VALUE </ci>
+	</math>
+	<listOfParameters>
+		<parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+		<parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+		<parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+		<parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+	</listOfParameters>
+        </kineticLaw>
+</reaction>    			
+
+    			<reaction id="R_fbaAB" name="Fructose bis-P aldolase (fbaA/B)" reversible="true"> <!--PART OF R3 SPLIT RATIO--> <!--Merged identical reactions fbaA and fbaB-->
+    				<listOfReactants>
+    					<speciesReference species="M_FDP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_DHAP_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_GA3P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    				<kineticLaw>
+			          <math xmlns="http://www.w3.org/1998/Math/MathML">
+			            <ci> FLUX_VALUE </ci>
+			          </math>
+			          <listOfParameters>
+			            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+			            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+			            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+			            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+			          </listOfParameters>
+        </kineticLaw>	
+        </reaction> 				<!--NO ERRORS THIS FAR-->
+        
+	       
+    			
+ <reaction id="R_tpiA" name="Triosephosphate isomerase (tpiA)" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_DHAP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_GA3P_c" stoichiometry="1.0"/>
+    				</listOfProducts>	
+    				<kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <ci> FLUX_VALUE </ci>
+          </math>
+          <listOfParameters>
+            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_gapA" name="Glyceraldehyde phosphate dehydrogenase (gapA)" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_GA3P_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_13DPG_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>   	
+    			
+ <reaction id="R_pgk" name="Phosphoglycerate kinase (pgk)" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_13DPG_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_3PG_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>   
+    			
+    			
+<reaction id="R_gpmAB" name="phosphoglyceromutase (gpmA/B)" reversible="true"> <!--Merged identical reactions gpmA and gpmB-->
+    				<listOfReactants>
+    					<speciesReference species="M_3PG_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_2PG_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    			
+    				<kineticLaw>
+			          <math xmlns="http://www.w3.org/1998/Math/MathML">
+			            <ci> FLUX_VALUE </ci>
+			          </math>
+			          <listOfParameters>
+			            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+			            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+			            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+			            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+			          </listOfParameters>
+        </kineticLaw>
+        </reaction>    		
+
+    			
+<reaction id="R_eno" name="enolase (eno)" reversible="true"> <!--PART OF R4 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_2PG_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_PEP_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_pykAF" name="Pyruvate kinase (pykAF)" reversible="false"> <!--Combination of original, identical reactions pykA and pykF-->
+    				<listOfReactants>
+    					<speciesReference species="M_PEP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+    			<reaction id="R_aceEF" name="Pyruvate dehydrogenase (aceEF)" reversible="false"> <!--PART OF R5 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ACCOA_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>    			
+<reaction id="R_maeB" name="Malic enzyme (maeB)" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_MAL_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADPH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_maeA" name="Malic enzyme (maeA)" reversible="false"> <!--PART OF R5 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_MAL_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_pck" name="PEP carboxykinase (pck)" reversible="false"> <!--PART OF R4 and R8 SPLIT RATIOs-->
+    				<listOfReactants>
+    					<speciesReference species="M_OA_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_PEP_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_fbp_glpX" name="Fructose-bisphosphatase (fbp/glpX)" reversible="false"> <!--Merged identical reactions fbp and glpX-->
+    				<listOfReactants>
+    					<speciesReference species="M_FDP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_F6P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+    			
+    			
+    			
+    			<reaction id="R_pps" name="PEP synthase (pps)" reversible="false"> <!--PART OF R4 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_ATP_c" stoichiometry="2.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_PEP_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>
+    			</reaction>
+    			
+    			
+    			<reaction id="R_zwf" name="glucose-6-phosphate dehydrogenase (zwf)" reversible="true"> <!--PART OF R1 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_G6P_c" stoichiometry="1.0"/> <!-- Possible ERROR? No NADH on the reactant side. -->
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_D6PGL_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADPH_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+ 				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>   				
+    			</reaction>	
+    				   				
+    				
+    			
+    			<reaction id="R_pgl" name="6-phosphogluconolactonase (pgl)" reversible="false"> <!--PART OF R2 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_D6PGL_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_6PGC_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_gnd" name="gluconate-6-phosphate dehydrogenase (gnd)" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_6PGC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_NADPH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_RL5P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_rpiAB" name="ribose 5-phosphate isomerase (rpiA/B)" reversible="true"> <!--Merged reactions rpiA and rpiB-->
+    				<listOfReactants>
+    					<speciesReference species="M_RL5P_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_R5P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+        
+        
+<reaction id="R_rpe" name="ribulose-phosphate 3-epimerase (rpe)" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_RL5P_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_X5P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_tktAB" name="Transketolase (tktA/B)" reversible="true"> <!--Merged identical reactions tktA and tktB-->
+    				<listOfReactants>
+    					<speciesReference species="M_R5P_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_X5P_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_GA3P_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_S7P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+    			<reaction id="R_tktAB_r2" name="tktAB_r2" reversible="true"> <!--Merged reactions tktA_R2 and tktB_R2-->
+    				<listOfReactants>
+    					<speciesReference species="M_X5P_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_E4P_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_F6P_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_GA3P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+    			<reaction id="R_talAB" name="Transaldolase (talA/B)" reversible="true"> <!--Merged identical reactions talA and talB-->
+    				<listOfReactants>
+    					<speciesReference species="M_GA3P_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_S7P_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_E4P_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_F6P_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+    			<reaction id="R_gltA_prpC" name="Citrate synthase (gltA/prpC)" reversible="false"> <!--PART OF R6 SPLIT RATIO--> <!--Merged identical reactions gltA and prpC-->
+    				<listOfReactants>
+    					<speciesReference species="M_ACCOA_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_OA_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_CIT_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+    			<reaction id="R_acnAB" name="acnAB (Aconitase A/B)" reversible="true"> <!--PART OF R7 SPLIT RATIO--> <!--Merged original identical reactions AcnA and AcnB-->
+    				<listOfReactants>
+    					<speciesReference species="M_CIT_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_CAC_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>         
+    			
+<reaction id="R_acnAB_r2" name="acnAB_r2" reversible="true"> <!--Merged identical reactions acnA_r2 and acnB_r2-->
+    				<listOfReactants>
+    					<speciesReference species="M_CAC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ICIT_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+    			
+    			<reaction id="R_icd" name="Isocitrate dehydrogenase (icd)" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_ICIT_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADPH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_AKG_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_sucAB" name="sucAB" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_AKG_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_SUCCOA_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_sucCD" name="sucCD" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_SUCCOA_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_SUCC_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    				<kineticLaw>
+    				<math xmlns="http://www.w3.org/1998/Math/MathML">
+				  <ci> FLUX_VALUE </ci>
+			          </math>
+		          <listOfParameters>
+		            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+		            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+		            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+		            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+		          </listOfParameters>
+        		</kineticLaw>			
+    			</reaction>
+    			
+    			
+    			<reaction id="R_frdABCD_sdhAB" name="Succinate dehydrogenase (frdABCD/sdhAB)" reversible="true"> <!--Merged reactions frdABCD and sdhAB-->
+    				<listOfReactants>
+    					<speciesReference species="M_SUCC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_FUM_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_FADH_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			
+    			<reaction id="R_fumABC" name="fumarate hydratase (fumA/B/C)" reversible="true"> <!--merged identical reactions fumA, fumB and fumC-->
+    				<listOfReactants>
+    					<speciesReference species="M_FUM_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_MAL_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    					
+    			
+    			
+<reaction id="R_mdh" name="Malate dehydrogenase (mdh)" reversible="true"> <!--PART OF R8 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_MAL_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_OA_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_mqo" name="malate quinone oxidioreductase" reversible="false"> <!--PART OF R8 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_MAL_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_OA_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_aceA" name="isocitrate lyase (aceA)" reversible="true">  <!--Glyxocylate shunt-->
+    				<listOfReactants>
+    					<speciesReference species="M_ICIT_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_GLX_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_SUCC_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+    					<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        </kineticLaw>
+    			</reaction>
+    			<reaction id="R_aceB" name="Malate synthase (aceB)" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_GLX_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_ACCOA_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_MAL_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+				</kineticLaw>  				
+    			</reaction>
+    			<reaction id="R_ppc" name="phosphoenolpyruvate carboxylase (ppc)" reversible="false"> <!--PART OF R8 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_PEP_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_OA_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>    				
+    			</reaction>
+    			<reaction id="R_pntAB" name="Pyridine nucleotide transhydrogenase (pntAB)" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_H_e" stoichiometry="1.0"/>
+    					
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_NADPH_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>     				
+    			</reaction>
+    			<reaction id="R_udhA" name="pyridine nucleotide transhydrogenase (udhA/SthA)" reversible="false"> <!--NAD(P)+ transhydrogenase (EC 1.6.1.1)-->
+    				<listOfReactants>
+    					<speciesReference species="M_NADPH_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw> 
+    			</reaction>
+    			<reaction id="R_atp" name="atp" reversible="false"> <!--Production of ATP through proton gradient-->
+    				<listOfReactants>
+    					<speciesReference species="M_H_e" stoichiometry="4.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>     				
+    			</reaction>
+    			<reaction id="R_nuo" name="nuo" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_H_e" stoichiometry="4.0"/>
+    				</listOfProducts>
+<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>     				
+    			</reaction>
+    			<reaction id="R_ndh" name="ndh" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw> 
+    			</reaction>
+    			<reaction id="R_cyoABCD" name="cyoABCD" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_O2_c" stoichiometry="0.5"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_H_e" stoichiometry="4.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw> 
+    			</reaction>    			
+    			
+<reaction id="R_cydAB" name="cydAB" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_O2_c" stoichiometry="0.5"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_H_e" stoichiometry="2.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw> 
+    			</reaction>
+    			<reaction id="R_narGHI" name="narGHI" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NO3_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NO2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_H_e" stoichiometry="2.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw> 
+    			</reaction>
+    			<reaction id="R_poxB" name="pyruvate dehydrogenase (quinone) (poxB)" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_AC_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw> 
+    			</reaction>
+    			<reaction id="R_sdhABCD" name="sdhABCD" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_SUCC_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_FUM_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw> 
+
+    			</reaction>
+    			<reaction id="R_sdhABCD_r2" name="sdhABCD_r2" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_FADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_Q_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_QH2_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>     				
+    				
+    			</reaction>
+    			<reaction id="R_pflB_tdcE" name="pyruvate formate lyase (pflB/tdcE)" reversible="true"> <!--PART OF R5 SPLIT RATIO--> <!--Merged identical reactions pflB and tdcE-->
+    				<listOfReactants>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ACCOA_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_FOR_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>     				
+    			</reaction>
+    			
+    			<reaction id="R_fdhF_fdoGHI" name="Formate dehydrogenase (fdhF/fdoGHI)" reversible="false"> <!--Merged identical reactions fdhF and fdoGHI-->
+    				<listOfReactants>
+    					<speciesReference species="M_FOR_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>     				
+    			</reaction>
+    			
+    			
+    			
+<reaction id="R_adhE_mhpF" name="Acetaldehyde dehydrogenase (adhE/mhpF)" reversible="true"> <!--PART OF R6 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_ACCOA_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ACAL_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>     				
+    			</reaction>
+    			
+    			
+    			<reaction id="R_adhPC_adhE_r2" name="Alcohol dehydrogeanse (adhP/adhC/adhE_r2)" reversible="true"> <!--Merged identical reactions adhE_r2, adhP and adhC-->
+    				<listOfReactants>
+    					<speciesReference species="M_ACAL_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ETH_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>     				
+    			</reaction>
+    			
+    			<reaction id="R_pta" name="phosphate acetyltransferase (pta)" reversible="false"> <!--PART OF R8 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_ACCOA_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ACTP_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+ 				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>    				
+    			</reaction>
+    			<reaction id="R_ackAB_tdcD_purT" name="acetate kinase (ackA/ackB/tdcD/purT)" reversible="true"> 
+    				<listOfReactants>
+    					<speciesReference species="M_ACTP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_AC_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+ 				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>    				
+    			</reaction>
+    			
+    			
+    			
+    			<reaction id="R_acs" name="Acetyl-CoA Synthase" reversible="false"> <!--PART OF R6 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_AC_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_ATP_c" stoichiometry="2.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="1.0"/>
+    					
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ACCOA_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>        	    				
+    			</reaction>    			
+    			
+<reaction id="R_dld" name="D-lactate dehydrogenase (dld)" reversible="false"> <!--part of R5 split ratio-->
+    				<listOfReactants>
+    					<speciesReference species="M_LAC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_FADH_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>        	    				
+    			</reaction>
+    			<reaction id="R_ldhA" name="ldhA" reversible="true"><!--Lactate dehydrogenase-->
+    				<listOfReactants>
+    					<speciesReference species="M_LAC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_NADH_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+ 				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>        	   				
+    			</reaction>
+    			<reaction id="R_edd" name="Entner-Douderoff dehydratase" reversible="false"><!--Entner-Douderoff dehydratase --> <!--PART OF R2 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_6PGC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_2KD6PG_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>        	      				
+    			</reaction>
+    			<reaction id="R_eda" name="Entner-Douderoff aldolase" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_2KD6PG_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_GA3P_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>    				
+    			</reaction>
+    			<reaction id="R_mgsA" name="Methylglyoxal synthase (mgsA)" reversible="false"> <!--mgsA converts DHAP to Methylglyoxal. Methylglyoxal reductase converts Methylglyoxal to Lactaldehyde and aldehyde dehydrogeanse convert Lactaldehyde to lactate. Thus reaction id actually describes the result of a serie of reactions.-->  
+    			<!--PART OF R3 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_DHAP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_LAC_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      				
+    			</reaction>
+    			<reaction id="R_ptsGHI" name="ptsGHI" reversible="false"> <!--pts operon. Phosphoenolpyruvate (PEP)-dependent, sugar transporting phosphotransferase system (PTS).--> <!--PART OF R1 SPLIT RATIO-->
+    				<listOfReactants>
+    					<speciesReference species="M_GLC_e" stoichiometry="1.0"/>
+    					<speciesReference species="M_PEP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_G6P_c" stoichiometry="1.0"/>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    					
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>
+    			</reaction> 
+
+
+				<reaction id="R_co2" name="CO2 transport" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_CO2_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_CO2_e" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    				
+    			</reaction>
+    			<reaction id="R_o2" name="Oxygen transport" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_O2_e" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_O2_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    				
+    			</reaction>
+    			<reaction id="R_no3" name="NO3 transport" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_NO3_e" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_NO3_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    				
+    			</reaction>
+    			<reaction id="R_no2" name="NO2 transport" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_NO2_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_NO2_e" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    				
+    			</reaction>
+    			<reaction id="R_eth" name="Ethanol transport" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_ETH_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_ETH_e" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    				
+    			</reaction>
+    			<reaction id="R_ac" name="Acetate transport" reversible="true">
+    				<listOfReactants>
+    					<speciesReference species="M_AC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_Ac_e" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="-1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    				
+    			</reaction>
+    			<reaction id="R_succ" name="succinate transport" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_SUCC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_SUCC_e" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    				
+    			</reaction>
+    			<reaction id="R_lac" name="lactate transport" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_LAC_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_LAC_e" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    				
+    			</reaction>
+    			<reaction id="R_pyr" name="Pyruvate transport" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_PYR_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_PYR_e" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		
+    			</reaction>
+    			<reaction id="R_focA" name="Formate transport (focA)" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_FOR_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_FOR_e" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      		    			
+    			</reaction>
+    			
+    			<reaction id="R_mglABC" name="methyl-galactoside transporter (mglABC)" reversible="false">
+    			<!--See http://www.biocyc.org/ECOLI/NEW-IMAGE?type=OPERON&object=TU00168 and http://eecoli.kaist.ac.kr/view?name=MglB and http://www.mdpi.com/1424-8220/7/10/2484-->
+    				<listOfReactants>
+    					<speciesReference species="M_GLC_e" stoichiometry="1.0"/>
+    					<speciesReference species="M_H_e" stoichiometry="1.0"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_GLC_c" stoichiometry="1.0"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>      	    				
+    			</reaction>
+    			<reaction id="R_maint" name="Non-growth associated maintenance" reversible="false"> 
+    				<listOfReactants>
+    					<speciesReference species="M_ATP_c" stoichiometry="1.0"/>
+    				</listOfReactants>
+ 				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="7.9" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="7.9" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/> <!--Flux_value is a simulation result. See http://sbml.org/images/d/d9/Raman-flux-annotations.pdf)-->
+				          </listOfParameters>
+        			</kineticLaw>      	   				
+    			</reaction>
+    			<reaction id="R_biomass" name="biomass" reversible="false">
+    				<listOfReactants>
+    					<speciesReference species="M_ATP_c" stoichiometry="40.2"/>
+    					<speciesReference species="M_NADPH_c" stoichiometry="15.7"/>
+    					<speciesReference species="M_G6P_c" stoichiometry="0.33"/>
+    					<speciesReference species="M_F6P_c" stoichiometry="0.07"/>
+    					<speciesReference species="M_R5P_c" stoichiometry="0.96"/>
+    					<speciesReference species="M_E4P_c" stoichiometry="0.36"/>
+    					<speciesReference species="M_GA3P_c" stoichiometry="0.12"/>
+    					<speciesReference species="M_3PG_c" stoichiometry="0.86"/>
+    					<speciesReference species="M_PEP_c" stoichiometry="0.77"/>
+    					<speciesReference species="M_PYR_c" stoichiometry="2.94"/>
+    					<speciesReference species="M_ACCOA_c" stoichiometry="2.41"/>
+    					<speciesReference species="M_OA_c" stoichiometry="1.65"/>
+    					<speciesReference species="M_AKG_c" stoichiometry="1.28"/>
+    				</listOfReactants>
+    				<listOfProducts>
+    					<speciesReference species="M_NADH_c" stoichiometry="3.0"/>
+    					<speciesReference species="M_COA_c" stoichiometry="2.41"/>
+    				</listOfProducts>
+				<kineticLaw>
+				          <math xmlns="http://www.w3.org/1998/Math/MathML">
+				            <ci> FLUX_VALUE </ci>
+				          </math>
+				          <listOfParameters>
+				            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="UPPER_BOUND" value="1000" units="mmol_per_gDW_per_hr"/>
+				            <parameter id="OBJECTIVE_COEFFICIENT" value="1"/>
+				            <parameter id="FLUX_VALUE" value="0" units="mmol_per_gDW_per_hr"/>
+				          </listOfParameters>
+        			</kineticLaw>    				
+    			</reaction>    			
+    			
+    			
+    			<reaction id="R_EX_GLC_O2_e" name="Coupled Glucose and O2 exchange" reversible="true">
+						        <notes>
+						          <html xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Exchange</p></html>
+						        </notes>
+						        <listOfReactants>
+						          <speciesReference species="M_O2_e" stoichiometry="3.0"/>
+						          <speciesReference species="M_GLC_e" stoichiometry="2.0"/>
+						        </listOfReactants>
+						        
+						        <kineticLaw>
+						          <math xmlns="http://www.w3.org/1998/Math/MathML">
+						            <ci> FLUX_VALUE </ci>
+						          </math>
+						          <listOfParameters>
+						            <parameter id="LOWER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+						            <parameter id="UPPER_BOUND" value="0" units="mmol_per_gDW_per_hr"/>
+						            <parameter id="OBJECTIVE_COEFFICIENT" value="0"/>
+						            <parameter id="FLUX_VALUE" value="500" units="mmol_per_gDW_per_hr"/>
+						          </listOfParameters>
+						        </kineticLaw>
+	                        </reaction>
+	                        
+	                        	
+</listOfReactions>
+
+
+</model>
+
+</sbml>
