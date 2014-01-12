@@ -34,6 +34,10 @@ def objective_coefficient_list(model):
     for reaction in model.reactions:
         print reaction.id, reaction.objective_coefficient
 
+def fluxlimitlist(model):
+    for reaction in model.reactions:
+        print reaction.id,reaction.upper_bound,reaction.lower_bound
+
 
 def createTokens(model,reactionmap):
     from cobra import Reaction

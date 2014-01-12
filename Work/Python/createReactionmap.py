@@ -18,6 +18,9 @@ def createReactionMap(publication_id,model_id,filename, debug = False):
     return
 
 
+def createSimpleReactionMap(simple_rmapdict,mapname,filename):
+    pass
+
 if __name__ == "__main__":
 
     publication_id = 'Perrenoud'
