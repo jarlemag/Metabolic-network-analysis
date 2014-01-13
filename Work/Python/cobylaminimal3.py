@@ -26,7 +26,7 @@ ub = [2,5,2,2,2,2]
 
 S = np.array([[1,-1,0,0,0,0],[0,1,-1,-1,0,0],[0,0,2,0,-1,0],[0,0,0,1,1,-1]])
 
-#Sparse = 
+#S = sparse.csr_matrix(S)
 
 
 def FBAobjective(x,C, sense = -1):

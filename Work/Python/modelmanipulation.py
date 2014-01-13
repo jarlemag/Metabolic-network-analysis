@@ -34,9 +34,88 @@ def objective_coefficient_list(model):
     for reaction in model.reactions:
         print reaction.id, reaction.objective_coefficient
 
+def getObjectiveVector(cobramodel):
+    C = [reaction.objective_coefficient for reaction in cobramodel.reactions]
+    return C
+
+def objectiveValue(x,C):
+    return  np.dot(np.array(C)*np.array(x))
+
+def getNonzeroIndexes(C):
+    return [i for i, e in enumerate(C) if e != 0]
+
 def fluxlimitlist(model):
     for reaction in model.reactions:
         print reaction.id,reaction.upper_bound,reaction.lower_bound
+
+def getUpperBounds(model):
+    return [reaction.upper_bound for reaction in model.reactions]
+
+def getLowerBounds(model):
+    return [reaction.lower_bound for reaction in model.reactions]
+
+
+ 
+upperrbounds = []
+for upperbound in ub:
+    def upperlimit(x, upperbound = upperbound): #Beware of closures/wrong scoping
+        return upperbound - x
+    upperbounds.append(upperlimit)
+
+
+lowerbounds = []
+for lowerbound in lb:
+    def lowerlimit(x, lowerbound = lowerbound):
+        return x - lowerbound
+    lowerbounds.append(lowerlimit)
+
+
+def constrainFunctionsUB(ub):
+    upperboundfuncs = []
+    for index, upperbound in enumerate(ub):
+        def upperlimit(x, upperbound = upperbound):
+            return upperbound - x[index]
+        upperboundfuncs.append(upperlimit)
+    return upperboundfuncs
+
+
+def constrainFunctionsLB(lb):
+    lowerboundfuncs = []
+    for index, ilowerbound in enumerate(lb):
+        def lowerlimit(x, lowerbound = lowerbound):
+            return x[index] - lowerbound
+        lowerboundfuncs.append(lowerlimit)
+    return lowerboundfuncs
+
+
+def constrainFunctions(ub,lb):
+    ub_funcs = []
+    lb_funcs = []
+    for index, upperbound in enumerate(ub):
+        def upperlimit(x, index = index, upperbound = upperbound):
+            return upperbound - x[index]
+        ub_funcs.append(upperlimit)
+    for index, lowerbound in enumerate(lb):
+        def lowerlimit(x, index = index, lowerbound = lowerbound):
+            return x[index] - lowerbound
+        lb_funcs.append(lowerlimit)
+    return ub_funcs, lb_funcs
+
+def ssConsFuncspos(S):
+    ss_funcs = []
+    for row in S:
+        def steadystatconstr(x, row = row ):
+            return sum(np.multiply(row,x))
+        ss_funcs.append(steadystatconstr)
+    return ss_funcs
+
+def ssConsFuncsposneg(S):
+    ss_funcs = []
+    for row in S:
+        def steadystatconstr(x, row = row ):
+            return -sum(np.multiply(row,x))
+        ss_funcs.append(steadystatconstr)
+    return ss_funcs
 
 
 def createTokens(model,reactionmap):

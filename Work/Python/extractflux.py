@@ -34,3 +34,6 @@ def extractfluxdict(fluxdict_in,reactionmap):
             totflux += fluxdict_in[rxid] * int(coef)
         fluxdict_out[expid] = totflux
     return fluxdict_out
+
+def computesplits(fluxdict,splitsmap):
+    pass

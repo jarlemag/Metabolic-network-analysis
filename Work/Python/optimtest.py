@@ -39,10 +39,16 @@ z = opt.fmin_cobyla(objective, [0.0,0.1],[constr1,constr2,constr3a,constr3b], di
 cobramodel.optimize()
 
 def getObjectiveVector(cobramodel):
-    C = [reaction.objective_coefficient for reaction in cobramodel.reactions]
+    C = [int(reaction.objective_coefficient) for reaction in cobramodel.reactions]
     return C
 
-C = getObjectiveVector(cobramodel)
+#C = getObjectiveVector(cobramodel) #Load the objective vector from the cobra model
+
+#C = [0 for x in xrange(len(cobramodel.reactions))] #Didn't help
+
+
+C = [0 for x in xrange(92)]
+C[84] = 1
 
 '''
 def FBAobjective(x,C, sense = -1):
@@ -50,9 +56,8 @@ def FBAobjective(x,C, sense = -1):
 '''
 def FBAobjective(x,C, sense = -1):
 
-
-    print 'This is a warning!'
-    print 'The enemy is watching!'
+    #print 'This is a warning!'
+    #print 'The enemy is watching!'
     return  np.dot(C,x)*sense
 
 def getUpperBounds(model):
@@ -102,28 +107,17 @@ lb_funcs = constrainFunctionsLB(lb)
 cobramodel.to_array_based_model()
 
 #x0 = np.array([0 for reaction in cobramodel.reactions])
-x0 = [0 for reaction in cobramodel.reactions]
+#x0 = [0 for reaction in cobramodel.reactions]
 
-S = cobramodel.S
-def ssConsFuncspos(S):
-    ss_funcs = []
-    for row in S:
-        def steadystatconstr(x, row = row ):
-            return sum(np.multiply(row,x))
-        ss_funcs.append(steadystatconstr)
-    return ss_funcs
+x0 = [0 for element in C]
 
-def ssConsFuncsneg(S):
-    ss_funcs = []
-    for row in S:
-        def steadystatconstr(x, row = row ):
-            return -sum(np.multiply(row,x))
-        ss_funcs.append(steadystatconstr)
-    return ss_funcs
+#S = cobramodel.S
+S = cobramodel.S.toarray()
 
-ss_funcs_a = ssConsFuncspos(S)
-ss_funcs_b = ssConsFuncsneg(S)
+ss_funcs_a = [(lambda x : sum(np.multiply(row,x))) for row in S]
+ss_funcs_b = [(lambda x : -sum(np.multiply(row,x))) for row in S]
 
 print 'About to start.'
-allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
+#allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
+allconstr = ub_funcs + lb_funcs + ss_funcs_a
 FBAres = opt.fmin_cobyla(FBAobjective,x0,allconstr,args = (C,),consargs =())
