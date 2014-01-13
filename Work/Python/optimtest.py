@@ -36,7 +36,7 @@ z = opt.fmin_cobyla(objective, [0.0,0.1],[constr1,constr2,constr3a,constr3b], di
 
 #Solving an FBA problem:
 
-cobramodel.optimize()
+cobramodel.optimize(solver="gurobi")
 
 def getObjectiveVector(cobramodel):
     C = [int(reaction.objective_coefficient) for reaction in cobramodel.reactions]
@@ -119,5 +119,52 @@ ss_funcs_b = [(lambda x : -sum(np.multiply(row,x))) for row in S]
 
 print 'About to start.'
 #allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
-allconstr = ub_funcs + lb_funcs + ss_funcs_a
+allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
 FBAres = opt.fmin_cobyla(FBAobjective,x0,allconstr,args = (C,),consargs =())
+
+reactions = cobramodel.reactions
+rids = [reaction.id for reaction in reactions]
+v = zip(rids,FBAres)
+
+for a,b in v:
+	print a, "%.1f" %b
+
+#Check for violation of lower/upper bounds rule:
+
+
+
+metabolites = cobramodel.metabolites
+#Check steady-state criteria:
+num = 0
+violators = []
+for row in S:
+    num +=1
+    dxdt = 0
+    for index,coef in enumerate(row):
+        dxdt += coef*FBAres[index]
+
+    print 'metabolite', num, "%.5f" %dxdt
+    if abs(dxdt) > 0.001:
+        violators.append(num-1)
+        print 'metabolite',num,'(',metabolites[num-1].id,')','added to violator list.'
+
+
+
+print 'Metabolites violating mass conservation:'
+violator_ids = []
+for met in violators:
+    met_id = metabolites[met].id
+    print met_id
+    violator_ids.append(metabolites[met].id)
+    violator_metabolite = metabolites[met]
+    violator_reactions = violator_metabolite._reaction
+    metflux = 0
+    for reaction in violator_reactions:
+        reaction_id = reaction.id
+        metflux += reaction.get_coefficient(met_id)*FBAres[reactions.index(reaction_id)]
+    print 'metabolite:',met_id,'total flux:',metflux
+
+
+#Verify that mass conservation is violated.
+
+reactions = cobramodel.reactions
