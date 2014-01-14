@@ -54,6 +54,11 @@ lb_funcs = constrainFunctionsLB(lb)
 ss_funcs_a = [(lambda x : sum(np.multiply(row,x))) for row in S]
 ss_funcs_b = [(lambda x : -sum(np.multiply(row,x))) for row in S]
 
+lambdas = [(lambda x : sum(np.multiply(row,x))) for row in S]
+
+dxdt = [fun(1) for fun in lambdas]
+
+testflux = [
 
 allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
 

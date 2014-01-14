@@ -1,3 +1,5 @@
+# -*- coding: cp1252 -*-
+
 #optimtest.py
 #Testing optimization functions
 
@@ -114,8 +116,18 @@ x0 = [0 for element in C]
 #S = cobramodel.S
 S = cobramodel.S.toarray()
 
-ss_funcs_a = [(lambda x : sum(np.multiply(row,x))) for row in S]
-ss_funcs_b = [(lambda x : -sum(np.multiply(row,x))) for row in S]
+#ss_funcs_a = [(lambda x : sum(np.multiply(row,x))) for row in S]
+#ss_funcs_b = [(lambda x : -sum(np.multiply(row,x))) for row in S]
+
+
+ss_funcs_a = []
+for row in S:
+    ss_funcs_a.append((lambda x, row = row: sum(np.multiply(row,x))))
+
+ss_funcs_b = []
+for row in S:
+    ss_funcs_b.append((lambda x, row = row: -sum(np.multiply(row,x))))
+
 
 print 'About to start.'
 #allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
@@ -129,14 +141,12 @@ v = zip(rids,FBAres)
 for a,b in v:
 	print a, "%.1f" %b
 
-#Check for violation of lower/upper bounds rule:
-
-
 
 metabolites = cobramodel.metabolites
 #Check steady-state criteria:
 num = 0
 violators = []
+violatorcount = 0
 for row in S:
     num +=1
     dxdt = 0
@@ -146,12 +156,17 @@ for row in S:
     print 'metabolite', num, "%.5f" %dxdt
     if abs(dxdt) > 0.001:
         violators.append(num-1)
+        violatorcount +=1
         print 'metabolite',num,'(',metabolites[num-1].id,')','added to violator list.'
 
+print 'Number of steady state violations:',violatorcount
 
+
+#Verify that mass conservation is violated.
 
 print 'Metabolites violating mass conservation:'
 violator_ids = []
+
 for met in violators:
     met_id = metabolites[met].id
     print met_id
@@ -165,6 +180,28 @@ for met in violators:
     print 'metabolite:',met_id,'total flux:',metflux
 
 
-#Verify that mass conservation is violated.
+print 'Number of metabolites violating steady state:', len(violators)
 
 reactions = cobramodel.reactions
+reaction_ids = [reaction.id for reaction in reactions]
+
+#Check for violation of lower/upper bounds rule:
+
+beyondbounds = 0
+for index,flux in enumerate(FBAres):
+    if (flux > ub[index]+.001) or (flux < lb[index]-0.001):
+        print 'reaction:',reaction_ids[index]
+        print 'lower bound:',lb[index]
+        print 'upper bound:',ub[index]
+        print 'flux:',flux
+        beyondbounds +=1
+print '# of reactions beyond bounds:',beyondbounds
+
+
+
+#Make equality constraints:
+
+ss_funcs = [(lambda x : sum(np.multiply(row,x))) for row in S]
+
+
+#res = opt.minimize(FBAobjective,x0,args = (C,),method = ‘SLSQP’, constraints = minSLQPcons)
