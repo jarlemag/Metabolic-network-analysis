@@ -57,9 +57,6 @@ def FBAobjective(x,C, sense = -1):
     return  np.dot(np.array(C),np.array(x))*sense
 '''
 def FBAobjective(x,C, sense = -1):
-
-    #print 'This is a warning!'
-    #print 'The enemy is watching!'
     return  np.dot(C,x)*sense
 
 def getUpperBounds(model):
@@ -114,19 +111,20 @@ cobramodel.to_array_based_model()
 x0 = [0 for element in C]
 
 #S = cobramodel.S
-S = cobramodel.S.toarray()
+
 
 #ss_funcs_a = [(lambda x : sum(np.multiply(row,x))) for row in S]
 #ss_funcs_b = [(lambda x : -sum(np.multiply(row,x))) for row in S]
 
 
 ss_funcs_a = []
+tol = 0.001 #Tolerance in steady-state constraints (zero tolerance creates numerical errors)
 for row in S:
-    ss_funcs_a.append((lambda x, row = row: 0.001 + sum(np.multiply(row,x))))
+    ss_funcs_a.append((lambda x, row = row: tol + sum(np.multiply(row,x))))
 
 ss_funcs_b = []
 for row in S:
-    ss_funcs_b.append((lambda x, row = row: 0.001 -sum(np.multiply(row,x))))
+    ss_funcs_b.append((lambda x, row = row: tol -sum(np.multiply(row,x))))
 
 
 print 'About to start.'
