@@ -16,7 +16,7 @@ for i,row in enumerate(S):
 
 lambdas = []
 for row in S:
-    lambdas.append((lambda x, row = row: sum(np.multiply(row,x))))
+    lambdas.append(lambda x, row = row: sum(np.multiply(row,x)))
 
 #lambdas = [(lambda row: lambda x: sum(np.multiply(row, x)))(row)]
 

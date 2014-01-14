@@ -4,7 +4,7 @@ import scipy.optimize as optimize
 import numpy as np
 from cobra.io.sbml import create_cobra_model_from_sbml_file
 cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
-
+cobramodel.optimize(solver='gurobi')
 
 
 def dictToLists(fluxdict):
@@ -77,6 +77,12 @@ def objectiveValue(x,C):
 def mindist(model,reactionmap,expfluxdict,splitsmap = None, verbose = False, debug = False, optreq = 1, optsplits = False):
     pass
 
+
+def objectiveConstraint(x,objective,value,optreq):
+    return
+
+    
+
 C = getObjectiveVector(cobramodel)
 
 cobramodel.to_array_based_model()
@@ -92,6 +98,10 @@ lb_funcs = constrainFunctionsLB(lb)
 
 x0 = [0 for element in C]
 
+#x0 =  cobramodel.solution.x
+
+optreq = 1
+
 ss_funcs_a = []
 tol = 0.001 #Tolerance in steady-state constraints (zero tolerance creates numerical errors)
 for row in S:
@@ -104,6 +114,11 @@ for row in S:
 
 allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
 FBAres = optimize.fmin_cobyla(FBAobjective,x0,allconstr,args = (C,),consargs =())
+
+FBAobjval = objectiveValue(FBAres,C)
+    
+
+objcon = lambda x, objective = C , value = FBAobjval, optreq = optreq : np.dot(C,x) - FBAobjval*optreq + 0.001
 
 
 print 'Objective value:',objectiveValue(FBAres,C)
