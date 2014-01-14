@@ -122,11 +122,11 @@ S = cobramodel.S.toarray()
 
 ss_funcs_a = []
 for row in S:
-    ss_funcs_a.append((lambda x, row = row: sum(np.multiply(row,x))))
+    ss_funcs_a.append((lambda x, row = row: 0.001 + sum(np.multiply(row,x))))
 
 ss_funcs_b = []
 for row in S:
-    ss_funcs_b.append((lambda x, row = row: -sum(np.multiply(row,x))))
+    ss_funcs_b.append((lambda x, row = row: 0.001 -sum(np.multiply(row,x))))
 
 
 print 'About to start.'
@@ -198,10 +198,14 @@ for index,flux in enumerate(FBAres):
 print '# of reactions beyond bounds:',beyondbounds
 
 
+def objectiveValue(x,C):
+    return  np.dot(np.array(C),np.array(x))
+
+
+print 'Objective value:',objectiveValue(FBAres,C)
 
 #Make equality constraints:
 
-ss_funcs = [(lambda x : sum(np.multiply(row,x))) for row in S]
 
 
 #res = opt.minimize(FBAobjective,x0,args = (C,),method = ‘SLSQP’, constraints = minSLQPcons)
