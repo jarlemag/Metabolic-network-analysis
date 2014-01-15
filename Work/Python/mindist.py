@@ -3,6 +3,7 @@
 import scipy.optimize as optimize
 import numpy as np
 from cobra.io.sbml import create_cobra_model_from_sbml_file
+import compdist
 cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
 cobramodel.optimize(solver='gurobi')
 
@@ -81,7 +82,35 @@ def mindist(model,reactionmap,expfluxdict,splitsmap = None, verbose = False, deb
 def objectiveConstraint(x,objective,value,optreq):
     return
 
-    
+
+
+
+def compdistcomplete(rawfluxvector,model, debug = False):
+    if debug:
+        print 'compdistcomplete: Calculating distance...'
+    import loadData as load
+    import extractflux
+    #print 'Loading experimental data...'
+    expdata = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
+    #print 'Loading reaction map...'
+    rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+
+    tup = zip([reaction.id for reaction in model.reactions],rawfluxvector,) #
+    rawfluxdict = {reactionid:fluxvalue for reactionid,fluxvalue in tup}
+    extractfluxdict = extractflux.extractfluxdict(rawfluxdict,rmap)
+    #extractfluxvector = [extractfluxdict[reaction.id] for reaction in model.reactions]
+    fluxvector = []
+    fluxvalues = []
+
+    for key in extractfluxdict:
+        if (key in expdata):
+            fluxvector.append(extractfluxdict[key])
+            fluxvalues.append(float(expdata[key]))
+ 
+    dist = np.linalg.norm(np.array(fluxvector)-np.array(fluxvalues))
+
+    return dist
+
 
 C = getObjectiveVector(cobramodel)
 
@@ -113,6 +142,9 @@ for row in S:
 
 
 allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
+
+print 'Optimizing FBA objective with COBYLA.'
+
 FBAres = optimize.fmin_cobyla(FBAobjective,x0,allconstr,args = (C,),consargs =())
 
 FBAobjval = objectiveValue(FBAres,C)
@@ -120,8 +152,37 @@ FBAobjval = objectiveValue(FBAres,C)
 
 objcon = lambda x, objective = C , value = FBAobjval, optreq = optreq : np.dot(C,x) - FBAobjval*optreq + 0.001
 
+print 'Cobyla solution:'
+print 'FBA Objective value:',FBAobjval
+print 'Distance to experimental data:',compdistcomplete(FBAres,cobramodel)
 
-print 'Objective value:',objectiveValue(FBAres,C)
+
+allconstr2 = allconstr + [objcon]
+
+print '\nMinimizing distance to experimental fluxes using COBYLA:'
+
+print '\nx0 = 0, optreq = 0'
+mindistsol = optimize.fmin_cobyla(compdistcomplete,x0,allconstr,args = (cobramodel,),consargs = ())
+print 'Distance:',compdistcomplete(mindistsol,cobramodel)
+print 'FBA objective value:',objectiveValue(mindistsol,C)
+
+print '\nx0 = FBAres, optreq = 0'
+mindistsol3 = optimize.fmin_cobyla(compdistcomplete,FBAres,allconstr,args = (cobramodel,),consargs = ())
+print 'Distance:',compdistcomplete(mindistsol3,cobramodel)
+print 'FBA objective value:',objectiveValue(mindistsol3,C)
+
+print '\nx0 = 0, optreq = 1'
+mindistsol2 = optimize.fmin_cobyla(compdistcomplete,x0,allconstr2,args = (cobramodel,),consargs = ())
+print 'Distance:',compdistcomplete(mindistsol2,cobramodel)
+print 'FBA objective value:',objectiveValue(mindistsol2,C)
+
+print '\nx0 = FBAres, optreq = 1'
+mindistsol4 = optimize.fmin_cobyla(compdistcomplete,FBAres,allconstr2,args = (cobramodel,),consargs = ())
+print 'Distance:',compdistcomplete(mindistsol4,cobramodel)
+print 'FBA objective value:',objectiveValue(mindistsol,C)
+
+
+
 
 if __name__ == "__main__": #If the module is executed as a program, run a test.
     from cobra.io.sbml import create_cobra_model_from_sbml_file
@@ -133,7 +194,3 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
 
 
 
-
-
-
-    

@@ -5,6 +5,7 @@
 import numpy as np
 import scipy.io
 import loadData as load
+import extractflux
 
 def compdistdict(fluxdict,expdata = None,options = None,sense = None):
     if expdata == None:
@@ -22,11 +23,18 @@ def compdistdict(fluxdict,expdata = None,options = None,sense = None):
     dist = np.linalg.norm(np.array(fluxvector)-np.array(fluxvalues))
     return dist
 
-def compdist2(fluxvector,expdata = None, options = None, sense = None):
+def compdist(fluxvector,expdata = None, options = None, sense = None, extract = True, rmap = 'Default'):
+    rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
+    if extract:
+        fluxvector = extractflux.extractfluxvector(fluxvector,rmap)
+
     if expdata == None:
         expdata = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe', vector = True)
     dist = np.linalg.norm(np.array(fluxvector)-np.array(expdata))
     return dist
+
+
+
 
 if __name__ == "__main__": #If the module is executed as a program, run a test.
     from cobra.io.sbml import create_cobra_model_from_sbml_file

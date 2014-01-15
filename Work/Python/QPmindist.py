@@ -21,6 +21,35 @@ def computeFBAobjval(fluxsolution,model):
             objval += fluxsolution[i]*model.reactions[i].objective_coefficient
         return objval
 
+
+def gurobiFBA(cobramodel):
+        
+    #Create a new Gurobi model
+    gurobimodel =gurobi.Model("QP")
+    #Create a new QuadExpr object to store the objective function.
+    QPobjective = gurobi.QuadExpr()
+
+    FBAobjective = gurobi.LinExpr() #Create a new Gurobi linear expression for the FBA objective function
+    #For every reaction in the Cobra model:
+    for reaction in cobramodel.reactions:
+        #Create a new decision variable in the Gurobi model, with upper and lower bounds as specified in the Cobra model:
+        newvar = gurobimodel.addVar(lb = reaction.lower_bound, ub = reaction.upper_bound, name = reaction.id)
+        gurobimodel.update()
+        FBAobjective.add(reaction.objective_coefficient * newvar) #Construct the FBA objective
+        gurobimodel.update()
+
+    #Add steady-state constraints for every metabolite:
+    for metabolite in cobramodel.metabolites:
+        #Get the list of reactions in which the metabolite partakes:
+        reactions = metabolite.get_reaction()
+        newconstr = gurobi.LinExpr([rxn.get_coefficient(metabolite.id) for rxn in reactions],[gurobimodel.getVarByName(rxn.id) for rxn in reactions])
+        gurobimodel.addConstr(newconstr, gurobi.GRB.EQUAL, 0, metabolite.id)
+    gurobimodel.update()
+    gurobimodel.setObjective(FBAobjective, gurobi.GRB.MAXIMIZE)
+    gurobimodel.update()
+    gurobimodel.optimize()
+    return gurobimodel
+
 def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = False):
    
     #Create a dictionary to hold the experimental flux values:
@@ -58,7 +87,6 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
             z = raw_input('Press enter to continue.')
         #Update the Gurobi model
         
-
     #Add steady-state constraints for every metabolite:
     for metabolite in cobramodel.metabolites:
         #Get the list of reactions in which the metabolite partakes:
@@ -118,7 +146,7 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
     import loadData as load
     rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
     
-    optreq = 1.0
+    optreq = 0.0
 
     fluxvalues = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
@@ -127,19 +155,35 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
     QPsolutiondict = getgurobisolutiondict(gurobimodel)
     QPFBAobjval = computeFBAobjval(QPsolutionvector,cobramodel)
 
-    import extractflux2
-    extractfluxdict = extractflux2.extractfluxdict(QPsolutiondict,rmap)
+    import extractflux
+    extractfluxdict = extractflux.extractfluxdict(QPsolutiondict,rmap)
 
     import fluxreport
     #fluxreport.fluxreport(extractedfluxes,fluxvalarray)
 
-    import compdist2
+    import compdist
 
-    dist = compdist2.compdistdict(extractfluxdict)
+    dist = compdist.compdistdict(extractfluxdict)
     #print 'Optimality requirement:',optreq
-    print 'compdist2 distance:',dist
+    print 'Optreq = 0:'
+    print 'compdist distance:',dist
 
-    print 'gurobimomdel gurobi objective value:',gurobimodel.ObjVal
+    #print 'gurobimomdel gurobi objective value:',gurobimodel.ObjVal
     import math
-    print 'square root of gurobi objective value:',math.sqrt(gurobimodel.ObjVal)
+    #print 'square root of gurobi objective value:',math.sqrt(gurobimodel.ObjVal)
     print "QP solution FBA objective value:",QPFBAobjval
+
+    #print 'Performing FBA only:'
+    #QPFBAres = gurobiFBA(cobramodel)
+
+    optreq = 1
+    print 'Optreq = 1:'
+    gurobimodel2 = QPmindist(cobramodel,fluxvalues,rmap,optreq)
+    QPsolutionvector2 = getgurobisolutionvector(gurobimodel2)
+    QPFBAobjval2 = computeFBAobjval(QPsolutionvector2,cobramodel)
+    QPsolutiondict2 = getgurobisolutiondict(gurobimodel2)
+    extractfluxdict2 = extractflux.extractfluxdict(QPsolutiondict2,rmap)
+    dist2 = compdist.compdistdict(extractfluxdict2)
+    print 'compdist distance:',dist2
+    print "QP solution FBA objective value:",QPFBAobjval2
+    

@@ -1,4 +1,4 @@
-#constrainfluxes2.py
+#constrainfluxes.py
 
 def constrainfluxes(model,expfluxdict,experrdict,reactionmap,tolerance = 1, fluxconstrainset = None,createTokens = False, verbose = True, debug = False):
 

@@ -75,6 +75,9 @@ def ReactionMapfromXML(filename,publication_id,model_id):
     return reactionmap
 
 
+def dictmapToList(dictmap,cobramodel):
+    pass
+
 if __name__ == "__main__":
     
     rmap = ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')

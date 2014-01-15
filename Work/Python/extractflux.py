@@ -16,6 +16,19 @@ def extractfluxvector(fluxvector,reactionmap):
     return fluxes
 
 
+def vectorToDict(fluxvector,model):
+    tup = zip([reaction.id for reaction in model.reactions],fluxvector,)
+    fluxdict = {reactionid:fluxvalue for reactionid,fluxvalue in tup}
+    return fluxdict
+
+
+def dictToVector(fluxdict,model):
+    fluxvector = [fluxdict[reaction.id] for reaction in model.reactions]
+    return fluxvector
+
+def dictsToVectors(dict1,dict2):
+    return [(dict1[key],dict2[key]) for key in dict1]
+
 def extractfluxdict(fluxdict_in,reactionmap):
     fluxdict_out = {}
     for linkdict in reactionmap:
