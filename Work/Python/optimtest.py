@@ -110,7 +110,7 @@ cobramodel.to_array_based_model()
 
 x0 = [0 for element in C]
 
-#S = cobramodel.S
+S = cobramodel.S.toarray()
 
 
 #ss_funcs_a = [(lambda x : sum(np.multiply(row,x))) for row in S]
