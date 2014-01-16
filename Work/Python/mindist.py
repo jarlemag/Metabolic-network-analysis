@@ -29,17 +29,6 @@ def dictToArrays(fluxdict):
 def FBAobjective(x,C, sense = -1):
     return  np.dot(C,x)*sense
 
-def getObjectiveVector(cobramodel):
-    C = [int(reaction.objective_coefficient) for reaction in cobramodel.reactions]
-    return C
-
-def getUpperBounds(model):
-    return [reaction.upper_bound for reaction in model.reactions]
-
-def getLowerBounds(model):
-    return [reaction.lower_bound for reaction in model.reactions]
-
-
 def constrainFunctionsUB(ub):
     upperboundfuncs = []
     for index,upperbound in enumerate(ub):
@@ -92,7 +81,6 @@ def compdistcomplete(rawfluxvector,model, debug = False):
     tup = zip([reaction.id for reaction in model.reactions],rawfluxvector,) #
     rawfluxdict = {reactionid:fluxvalue for reactionid,fluxvalue in tup}
     extractfluxdict = extractflux.extractfluxdict(rawfluxdict,rmap)
-    #extractfluxvector = [extractfluxdict[reaction.id] for reaction in model.reactions]
     fluxvector = []
     fluxvalues = []
 
@@ -106,89 +94,102 @@ def compdistcomplete(rawfluxvector,model, debug = False):
     return dist
 
 
-def mindist(model,reactionmap,expfluxdict,splitsmap = None, verbose = False, debug = False, optreq = 1, optsplits = False):
-    pass
-
-
-C = getObjectiveVector(cobramodel)
-
-cobramodel.to_array_based_model()
-S = cobramodel.S.toarray()
-
-
-ub = getUpperBounds(cobramodel)
-lb = getLowerBounds(cobramodel)
-
-ub_funcs = constrainFunctionsUB(ub) 
-lb_funcs = constrainFunctionsLB(lb)
-
-
-x0 = [0 for element in C]
-
-#x0 =  cobramodel.solution.x
-
-optreq = 1
-
-ss_funcs_a = []
-tol = 0.001 #Tolerance in steady-state constraints (zero tolerance creates numerical errors)
-for row in S:
-    ss_funcs_a.append((lambda x, row = row: tol + sum(np.multiply(row,x))))
-
-ss_funcs_b = []
-for row in S:
-    ss_funcs_b.append((lambda x, row = row: tol -sum(np.multiply(row,x))))
-
-
-allconstr = ub_funcs + lb_funcs + ss_funcs_a + ss_funcs_b
-
-print 'Optimizing FBA objective with COBYLA.'
-
-FBAres = optimize.fmin_cobyla(FBAobjective,x0,allconstr,args = (C,),consargs =())
-
-FBAobjval = objectiveValue(FBAres,C)
+class CobylaModel:
+    def __init__(self,cobramodel, tol = 0.001):
+        self.cobramodel = cobramodel.to_array_based_model()
+        self.S = cobramodel.S.toarray()
+        self.ub = self.cobramodel.upper_bounds
+        self.lb = self.cobramodel.lower_bounds
+        self.C = self.cobramodel.objective_coefficients
+        self.ub_funcs = constrainFunctionsUB(self.ub)
+        self.lb_funcs = constrainFunctionsLB(self.lb)
+        self.ss_funcs_a = []
+        self.ss_funcs_b = []
+        for row in self.S:
+            self.ss_funcs_a.append((lambda x, row = row: tol + sum(np.multiply(row,x))))
+            self.ss_funcs_b.append((lambda x, row = row: tol -sum(np.multiply(row,x))))
+        self.allconstr = self.ub_funcs + self.lb_funcs + self.ss_funcs_a + self.ss_funcs_b
+        
+        
+def cobylaFBA(cobramodel, tol = 0.001):
+    cobmodel = CobylaModel(cobramodel, tol = tol) 
+    x0 = [0 for element in cobmodel.C]
+    FBAres = optimize.fmin_cobyla(FBAobjective,x0,cobmodel.allconstr,args = (cobmodel.C,),consargs =())
+    return FBAres
     
-
-objcon = lambda x, objective = C , value = FBAobjval, optreq = optreq : np.dot(C,x) - FBAobjval*optreq + 0.0001
-
-print 'Cobyla solution:'
-print 'FBA Objective value:',FBAobjval
-print 'Distance to experimental data:',compdistcomplete(FBAres,cobramodel)
-
-
-allconstr2 = allconstr + [objcon]
-
-print '\nMinimizing distance to experimental fluxes using COBYLA:'
-
-print '\nx0 = 0, optreq = 0'
-mindistsol = optimize.fmin_cobyla(compdistcomplete,x0,allconstr,args = (cobramodel,),consargs = ())
-print 'Distance:',compdistcomplete(mindistsol,cobramodel)
-print 'FBA objective value:',objectiveValue(mindistsol,C)
-
-print '\nx0 = FBAres, optreq = 0'
-mindistsol3 = optimize.fmin_cobyla(compdistcomplete,FBAres,allconstr,args = (cobramodel,),consargs = ())
-print 'Distance:',compdistcomplete(mindistsol3,cobramodel)
-print 'FBA objective value:',objectiveValue(mindistsol3,C)
-
-print '\nx0 = 0, optreq = 1'
-mindistsol2 = optimize.fmin_cobyla(compdistcomplete,x0,allconstr2,args = (cobramodel,),consargs = ())
-print 'Distance:',compdistcomplete(mindistsol2,cobramodel)
-print 'FBA objective value:',objectiveValue(mindistsol2,C)
-
-print '\nx0 = FBAres, optreq = 1'
-mindistsol4 = optimize.fmin_cobyla(compdistcomplete,FBAres,allconstr2,args = (cobramodel,),consargs = ())
-print 'Distance:',compdistcomplete(mindistsol4,cobramodel)
-print 'FBA objective value:',objectiveValue(mindistsol4,C)
-
-
-
+def mindist(cobramodel,x0,FBAobjval, optreq = 0, tol = 0.001):
+    cobmodel = CobylaModel(cobramodel, tol = tol)
+    if x0 is None:
+        x0 = [0 for element in cobmodel.C]
+    if optreq == 0:
+        minsol = optimize.fmin_cobyla(compdistcomplete,x0,cobmodel.allconstr,args = (cobramodel,),consargs = ())
+    else:
+        objcon = lambda x, objective = cobmodel.C , value = FBAobjval, optreq = optreq : np.dot(C,x) - FBAobjval*optreq #+ 0.0001
+        allconstr2 = cobmodel.allconstr + [objcon]
+        minsol = optimize.fmin_cobyla(compdistcomplete,x0,allconstr2,args = (cobramodel,),consargs = ())
+        
+    return minsol
 
 if __name__ == "__main__": #If the module is executed as a program, run a test.
     from cobra.io.sbml import create_cobra_model_from_sbml_file
     cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    cobramodel.optimize(solver='gurobi')
+    CobraPyobjectivevalue = cobramodel.solution.f
+    C = cobramodel.to_array_based_model().objective_coefficients
     import loadData as load
     fluxvalues = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
     rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
 
+    print 'Optimizing FBA objective with COBYLA.'
 
+    CobylaFBAres = cobylaFBA(cobramodel)
+    CobylaFBAobjectivevalue = FBAobjective(CobylaFBAres,C, sense = 1)
+    
+    print 'Cobyla solution:'
+    print 'FBA Objective value:',CobylaFBAobjectivevalue
+    print 'Distance to experimental data:',compdistcomplete(CobylaFBAres,cobramodel)
 
+    print '\nMinimizing distance to experimental fluxes using COBYLA:'
+
+    print 'Using COBYLA-calculated FBA objective value as target:'
+    print '\nx0 = 0, optreq = 0'
+    mindistsol = mindist(cobramodel,None,CobylaFBAobjectivevalue)
+    print 'Distance:',compdistcomplete(mindistsol,cobramodel)
+    print 'FBA objective value:',objectiveValue(mindistsol,C)
+
+    print '\nx0 = FBAres, optreq = 0'
+    mindistsol2 = mindist(cobramodel,CobylaFBAres,CobylaFBAobjectivevalue)
+    print 'Distance:',compdistcomplete(mindistsol2,cobramodel)
+    print 'FBA objective value:',objectiveValue(mindistsol2,C)
+
+    print '\nx0 = 0, optreq = 1'
+    mindistsol3 =  mindist(cobramodel,None,CobylaFBAobjectivevalue,optreq = 1)
+    print 'Distance:',compdistcomplete(mindistsol3,cobramodel)
+    print 'FBA objective value:',objectiveValue(mindistsol3,C)
+
+    print '\nx0 = FBAres, optreq = 1'
+    mindistsol4 = mindist(cobramodel,CobylaFBAres,CobylaFBAobjectivevalue,optreq = 1)
+    print 'Distance:',compdistcomplete(mindistsol4,cobramodel)
+    print 'FBA objective value:',objectiveValue(mindistsol4,C)
+
+    print 'Using CobraPy-calculated objective value as target:'
+    print '\nx0 = 0, optreq = 0'
+    mindistsol5 = mindist(cobramodel,None,CobraPyobjectivevalue)
+    print 'Distance:',compdistcomplete(mindistsol5,cobramodel)
+    print 'FBA objective value:',objectiveValue(mindistsol5,C)
+
+    print '\nx0 = FBAres, optreq = 0'
+    mindistsol6 = mindist(cobramodel,CobylaFBAres,CobraPyobjectivevalue)
+    print 'Distance:',compdistcomplete(mindistsol6,cobramodel)
+    print 'FBA objective value:',objectiveValue(mindistsol6,C)
+
+    print '\nx0 = 0, optreq = 1'
+    mindistsol7 =  mindist(cobramodel,None,CobraPyobjectivevalue,optreq = 1)
+    print 'Distance:',compdistcomplete(mindistsol7,cobramodel)
+    print 'FBA objective value:',objectiveValue(mindistsol7,C)
+
+    print '\nx0 = FBAres, optreq = 1'
+    mindistsol8 = mindist(cobramodel,CobylaFBAres,CobraPyobjectivevalue,optreq = 1)
+    print 'Distance:',compdistcomplete(mindistsol8,cobramodel)
+    print 'FBA objective value:',objectiveValue(mindistsol8,C)
 
