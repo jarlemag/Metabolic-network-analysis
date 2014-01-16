@@ -29,6 +29,18 @@
 			<reaction id = "24" descr ="O2 + 2NADH -> 2P/O x ATP" flux = "10.9"  error = "0.7"	/>
 			<reaction id = "25" descr ="Biomass" flux = "0.64" error = "0.01" />
 			</reactiondata>
+			<splitsdata>
+			<split id = "1" flux = "0.7" error = "0.02"/>
+			<split id = "2" flux = "0.13" error ="0.06" />
+			<split id = "3" flux = "0" error ="0.05" />
+			<split id = "4" flux = "0.78" error ="0.02" />
+			<split id = "5" flux = "0.81" error ="0.03" />
+			<split id = "6" flux = "0.24" error ="0.02" />
+			<split id = "7" flux = "0" error ="0.05" />
+			<split id = "8" flux = "0" error ="0.05" />
+			<split id = "9" flux = "0.58" error ="0.03" />
+			<split id = "10" flux = "0" error ="0.05" />
+			</splitsdata>
 		<BM yield = "0.48" error = "0.01" />
 		<glucoseconsumption flux = "7.6" error = "0.2" />
 		<acetateproduction flux = "4.8" error = "0.2" />
