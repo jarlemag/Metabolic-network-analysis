@@ -2,10 +2,6 @@
 
 import xml.etree.ElementTree as ET
 
-#from lxml import etree
-
-tree = ET.parse('expdata.xml')
-root = tree.getroot()
 #simple commands:
 #print(root.tag)
 #print(root.attrib)
@@ -40,7 +36,11 @@ def ExpSplitsfromXML(filename,publication_id,reactor_id,experiment_id):
     return expsplitsdict
     pass
 
-def ExpSplitsfromTXTtoXML(source,destination,publication_id,reactor_id,experiment_id):
+def ExpSplitsfromTXT(source,destination,publication_id,reactor_id,experiment_id):
+    pass
+
+
+def ExpSplitsToXML(splits,filename):
     pass
 
 def ExpErrorsfromXML(filename,publication_id,reactor_id,experiment_id):
@@ -53,6 +53,13 @@ def ExpErrorsfromXML(filename,publication_id,reactor_id,experiment_id):
     return exp_errordict
     
 
+
+def SplitMapfromXML(filename,publication_id,model_id):
+    tree=ET.parse(filename)
+    root=tree.getroot()
+    string = './/publication[@id="{pub_id}"]/model[@id="{mod_id}"]/split'.format(pub_id=publication_id,mod_id=model_id)
+    splits = root.findall(string)
+    return splits
 
 def ReactionMapfromXML(filename,publication_id,model_id):
     tree = ET.parse(filename)
@@ -91,6 +98,13 @@ def ReactionMapfromXML(filename,publication_id,model_id):
 class ReactionMap:
     def __init__(self,linkdicts):
         self.links = linkdicts
+
+
+
+
+class ExpData:
+    def __init__(self,expfluxdict):
+        pass
 
 def dictmapToList(dictmap,cobramodel):
     pass
@@ -138,12 +152,17 @@ def XMLtoGurobi(filename):
     '''
 
 if __name__ == "__main__":
+
+    tree = ET.parse('expdata.xml')
+    root = tree.getroot()
     
     rmap = ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
 
     expfluxes = ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
-    expsplits = ExpSplitsfromXML('expdata.xml','Perrenoud','Batch','aerobe') #Should create a publication "Schuetz" and move splits there.
+    expsplits = ExpSplitsfromXML('expdata.xml','Schuetz','Batch','aerobe') #Should create a publication "Schuetz" and move splits there.
+
+    splitsmap = SplitMapfromXML('reactionmaps.xml','SCHUETZR','EXPDATA')
 
 
 

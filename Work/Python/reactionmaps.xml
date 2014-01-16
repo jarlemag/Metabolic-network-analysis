@@ -139,4 +139,213 @@
 	</link>
 	</model>
 </publication>
+<publication id = "SCHUETZR">
+	<model id="EXPDATA">
+	<split id ="1">	
+		<numerator>
+		<modelrxn id="4"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="1"/>
+		</denominator>
+	</split>
+	<split id ="2">
+		<numerator>
+		<modelrxn id="5"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="2"/>
+		</denominator>
+	
+	</split>
+	<split id ="3">
+		<numerator>
+		<modelrxn id="27" />
+		</numerator>
+		<denominator>	
+		<modelrxn id="6" />
+		</denominator>
+		
+	
+	</split>
+	<split id ="4">
+		<numerator>
+		<modelrxn id="12" />
+		</numerator>
+		<denominator>
+		<modelrxn id="11"/>
+		<modelrxn id="20"/>
+		</denominator>
+		
+		
+	</split>
+	<split id ="5">
+		<numerator>
+		<modelrxn id="13"/>
+		</numerator>
+		
+		<denominator>
+		<modelrxn id="12"/>
+		<modelrxn id="19"/>
+		<modelrxn id="27"/>
+		<modelrxn id="5"/>
+		</denominator>
+		
+	
+	</split>
+	<split id ="6">
+		<numerator>
+		<modelrxn id="14"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="13"/>	
+		</denominator>
+		
+	</split>
+	<split id ="7">
+		<numerator>
+		<modelrxn id="26"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="14"/>		
+		</denominator>
+	</split>
+	<split id ="8">
+		<numerator>
+		<modelrxn id="20"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="18"/>
+		<modelrxn id="21"/>
+		</denominator>
+		
+	</split>
+	<split id ="9">
+		<numerator>
+		<modelrxn id="22"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="13"/>
+		</denominator>
+		
+	</split>
+	<split id ="10">
+		<numerator>
+		<modelrxn id="28"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="13"/>			
+		</denominator>
+			
+	</split>
+	
+	</model>
+	<model id="SCHUETZR">
+	<split id="1">
+		<numerator>
+		<modelrxn id ="pgi"/>
+		</numerator>
+		<denominator>
+		<modelrxn id ="glk" modification = "subplus"/>
+		<modelrxn id ="ptsGHI" modification ="subplus"/>
+		<modelrxn id ="zwf" modification = "subplus" coef="-1"/>
+		</denominator>
+	</split>
+	<split id="2">
+		<numerator>
+		<modelrxn id="edd"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="pgl"/>
+		</denominator>
+	</split>
+	<split id="3">
+		<numerator>
+		<modelrxn id="mgsA"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="fbaAB" modification="subplus"/>
+		<modelrxn id="tpiA" modification = "sublus" coef ="-1"/>
+		</denominator>
+	</split>
+	<split id ="4">
+		<numerator>
+		<modelrxn id ="pykAF"/>
+		<modelrxn id="pps" coef="-1"/>
+		<modelrxn id="ptsGHI"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="eno" modification="subplus"/>
+		<modelrxn id="pck" />
+		</denominator>
+	</split>
+	<split id="5">
+		<numerator>
+		<modelrxn id="aceEF"/>
+		<modelrxn id="pflB_tdcE"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="pykAF"/>
+		<modelrxn id="maeB"/>
+		<modelrxn id="maeA"/>
+		<modelrxn id="dld"/>
+		<modelrxn id="ldhA" modification ="subplus"/>
+		<modelrxn id="eda"/>
+		<modelrxn id="ptsGHI"/>
+		<modelrxn id="pflB_tdcE" modification="subplus" coef = "-1"/>
+		</denominator>
+	</split>
+	<split id="6">
+		<numerator>
+		<modelrxn id="gltA_prpC"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="aceEF"/>
+		<modelrxn id="pflB_tdcE" modification ="subplus"/>
+		<modelrxn id="acs"/>
+		<modelrxn id="adhE_mhpF" modification ="subplus" coef="-1"/>
+		</denominator>
+	</split>
+	<split id="7">
+		<numerator>
+		<modelrxn id="aceA"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="acnAB"/>
+		</denominator>
+	</split>
+	<split id="8">
+		<numerator>
+		<modelrxn id="pck"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="mdh" modification="subplus"/>
+		<modelrxn id="mqo" modification="subplus"/>
+		<modelrxn id="ppc"/>
+		</denominator>
+	</split>
+	<split id="9">
+		<numerator>
+		<modelrxn id="pta"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="aceEF"/>
+		<modelrxn id="pflB_tdcE" modification="subplus"/>
+		<modelrxn id="acs"/>
+		<modelrxn id="adhE_mhpF" modification="subplus" coef="-1"/>
+		</denominator>
+	</split>
+	<split id="10">
+		<numerator>
+		<modelrxn id="adhE_mhpF"/>
+		</numerator>
+		<denominator>
+		<modelrxn id="aceEF"/>
+		<modelrxn id="pflB_tdcE" modification="subplus"/>
+		<modelrxn id="acs"/>
+		<modelrxn id="adhE_mhpF" modification="subplus" coef="-1"/>
+		</denominator>
+	</split>
+	</model>
+</publication>
 </xml>

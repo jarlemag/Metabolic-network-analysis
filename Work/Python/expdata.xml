@@ -28,7 +28,25 @@
 			<reaction id = "23" descr ="NADPH -> NADH" flux = "-4.0" error = "0.7" />
 			<reaction id = "24" descr ="O2 + 2NADH -> 2P/O x ATP" flux = "10.9"  error = "0.7"	/>
 			<reaction id = "25" descr ="Biomass" flux = "0.64" error = "0.01" />
+			<reaction id = "26" descr ="ICT + AcCoA -> MAL + FUM + NADH" flux="0" error="0"/>
+			<reaction id = "27" descr="DHAP -> PYR" flux="0" error="0" />
+			<reaction id = "28" descr ="ETH -> ETHxt" flux="0" error="0" />
 			</reactiondata>
+
+		<BM yield = "0.48" error = "0.01" />
+		<glucoseconsumption flux = "7.6" error = "0.2" />
+		<acetateproduction flux = "4.8" error = "0.2" />
+		</experiment>
+		<experiment conditions = "test" growthrate = "0" strain = "test2">
+			<reactiondata>
+			<reaction id = "1" flux = "5" error = "2"/>
+			</reactiondata >
+		</experiment>
+	</reactor>
+</publication>
+<publication id = "Schuetz">
+	<reactor id = "Batch">
+		<experiment id = "aerobe" growthrate = "0.64" strain = "BW25113" >
 			<splitsdata>
 			<split id = "1" flux = "0.7" error = "0.02"/>
 			<split id = "2" flux = "0.13" error ="0.06" />
@@ -41,17 +59,79 @@
 			<split id = "9" flux = "0.58" error ="0.03" />
 			<split id = "10" flux = "0" error ="0.05" />
 			</splitsdata>
-		<BM yield = "0.48" error = "0.01" />
-		<glucoseconsumption flux = "7.6" error = "0.2" />
-		<acetateproduction flux = "4.8" error = "0.2" />
 		</experiment>
-		<experiment conditions = "test" growthrate = "0" strain = "test2">
-			<reactiondata>
-			<reaction id = "1" flux = "5" error = "2"/>
-			</reactiondata >
+		<experiment id ="anerobe">
+			<splitsdata>
+			<split id = "1" flux = "0.9" error = "0.05"/>
+			<split id = "2" flux = "0.86" error ="0.94" />
+			<split id = "3" flux = "0" error ="0.05" />
+			<split id = "4" flux = "0.94" error ="0.05" />
+			<split id = "5" flux = "0.96" error ="0.09" />
+			<split id = "6" flux = "0.02" error ="0.01" />
+			<split id = "7" flux = "0" error ="0.05" />
+			<split id = "8" flux = "0" error ="0.05" />
+			<split id = "9" flux = "0.34" error ="0.01" />
+			<split id = "10" flux = "0.61" error ="0.04" />
+			</splitsdata>
+		</experiment>
+		<experiment id="anaerobe NO3">
+			<splitsdata>
+			<split id = "1" flux = "0.82" error = "0.02"/>
+			<split id = "2" flux = "0" error ="0.05" />
+			<split id = "3" flux = "0" error ="0.05" />
+			<split id = "4" flux = "0.96" error ="0.02" />
+			<split id = "5" flux = "0.96" error ="0.02" />
+			<split id = "6" flux = "0.02" error ="0.01" />
+			<split id = "7" flux = "0" error ="0.05" />
+			<split id = "8" flux = "0" error ="0.05" />
+			<split id = "9" flux = "0.65" error ="0.01" />
+			<split id = "10" flux = "0.30" error ="0.02" />	
+			</splitsdata>
 		</experiment>
 	</reactor>
-</publication>
-<publication id ="Test">
+	<reactor id="Chemostat">
+		<experiment id="0.1/h C-limited">
+			<splitsdata>
+			<split id = "1" flux = "0.69" error ="0.12" />
+			<split id = "2" flux = "0.23" error ="0.20" />
+			<split id = "3" flux = "0" error ="0.05" />
+			<split id = "4" flux = "0.84" error ="0.14" />
+			<split id = "5" flux = "0.91" error ="0.21" />
+			<split id = "6" flux = "0.64" error ="0.13" />
+			<split id = "7" flux = "0.46" error ="0.13" />
+			<split id = "8" flux = "0.35" error ="0.08" />
+			<split id = "9" flux = "0." error ="0.05" />
+			<split id = "10" flux = "0." error ="0.05" />
+			</splitsdata>
+		</experiment>
+		<experiment id="0.4/h C-limited">
+			<splitsdata>
+			<split id = "1" flux = "0.64" error ="0.05" />
+			<split id = "2" flux = "0.19" error ="0.11" />
+			<split id = "3" flux = "0" error ="0.05" />
+			<split id = "4" flux = "0.70" error ="0.06" />
+			<split id = "5" flux = "0.84" error ="0.10" />
+			<split id = "6" flux = "0.85" error ="0.09" />
+			<split id = "7" flux = "0" error ="0.05" />
+			<split id = "8" flux = "0.12" error ="0.03" />
+			<split id = "9" flux = "0." error ="0.05" />
+			<split id = "10" flux = "0." error ="0.05" />
+			</splitsdata>
+		</experiment>
+		<experiment id="0.4/h N-limited">
+			<splitsdata>
+			<split id = "1" flux = "0.96" error ="0.14" />
+			<split id = "2" flux = "0" error ="0.05" />
+			<split id = "3" flux = "0" error ="0.05" />
+			<split id = "4" flux = "0.72" error ="0.10" />
+			<split id = "5" flux = "0.90" error ="0.15" />
+			<split id = "6" flux = "0.50" error ="0.06" />
+			<split id = "7" flux = "0.01" error ="0.05" />
+			<split id = "8" flux = "0.04" error ="0.01" />
+			<split id = "9" flux = "0." error ="0.01" />
+			<split id = "10" flux = "0." error ="0.05" />
+			</splitsdata>
+		</experiment>
+	</reactor>	
 </publication>
 </xml>
