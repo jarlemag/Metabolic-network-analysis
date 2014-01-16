@@ -75,15 +75,9 @@ def constrainFunctions(ub,lb):
 def objectiveValue(x,C):
     return  np.dot(np.array(C),np.array(x))
 
-def mindist(model,reactionmap,expfluxdict,splitsmap = None, verbose = False, debug = False, optreq = 1, optsplits = False):
-    pass
-
 
 def objectiveConstraint(x,objective,value,optreq):
     return
-
-
-
 
 def compdistcomplete(rawfluxvector,model, debug = False):
     if debug:
@@ -110,6 +104,10 @@ def compdistcomplete(rawfluxvector,model, debug = False):
     dist = np.linalg.norm(np.array(fluxvector)-np.array(fluxvalues))
 
     return dist
+
+
+def mindist(model,reactionmap,expfluxdict,splitsmap = None, verbose = False, debug = False, optreq = 1, optsplits = False):
+    pass
 
 
 C = getObjectiveVector(cobramodel)
@@ -179,7 +177,7 @@ print 'FBA objective value:',objectiveValue(mindistsol2,C)
 print '\nx0 = FBAres, optreq = 1'
 mindistsol4 = optimize.fmin_cobyla(compdistcomplete,FBAres,allconstr2,args = (cobramodel,),consargs = ())
 print 'Distance:',compdistcomplete(mindistsol4,cobramodel)
-print 'FBA objective value:',objectiveValue(mindistsol,C)
+print 'FBA objective value:',objectiveValue(mindistsol4,C)
 
 
 
