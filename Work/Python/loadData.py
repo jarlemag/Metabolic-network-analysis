@@ -78,6 +78,11 @@ def ReactionMapfromXML(filename,publication_id,model_id):
 def dictmapToList(dictmap,cobramodel):
     pass
 
+
+def XMLtoGurobi(filename):
+    #Create a Gurobi model directly from an FBA model saved as SBML
+    pass
+
 if __name__ == "__main__":
     
     rmap = ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')

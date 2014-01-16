@@ -19,36 +19,50 @@ def computeFBAobjval(fluxsolution,model):
         objval = 0
         for i in range(len(fluxsolution)):
             objval += fluxsolution[i]*model.reactions[i].objective_coefficient
+            #print i #DEBUG
         return objval
 
 
+
+def makeFBAmodel(cobramodel):
+        '''
+        Creates a gurobi model from a CobraPy model
+        '''
+        gurobimodel = gurobi.Model('QP')
+        gurobimodel.setAttr ('ModelSense',-1) 
+        for reaction in cobramodel.reactions:
+                newvar = gurobimodel.addVar(lb = reaction.lower_bound, ub = reaction.upper_bound, name = reaction.id, obj = reaction.objective_coefficient)
+                gurobimodel.update()
+        for metabolite in cobramodel.metabolites:
+                reactions = metabolite.get_reaction()
+                newconstr = gurobi.LinExpr([rxn.get_coefficient(metabolite.id) for rxn in reactions],[gurobimodel.getVarByName(rxn.id) for rxn in reactions])
+                gurobimodel.addConstr(newconstr, gurobi.GRB.EQUAL, 0, metabolite.id)
+        return gurobimodel
+
+
+def setFBAobjective(gurobimodel,cobramodel):
+        FBAobjective = gurobi.LinExpr()
+        for variable in gurobimodel.getVars():
+                rxid = variable.getAttr('name')
+                coef = cobramodel.reactions.get_by_id(rxid).objective_coefficient
+                FBAobjective.add(variable * coef)
+        gurobimodel.setObjective(FBAobjective, gurobi.GRB.MAXIMIZE)
+        gurobimodel.update()
+        return gurobimodel
+
+def getFBAobjective(gurobimodel):
+        FBAobjective = gurobi.LinExpr()
+        for variable in gurobimodel.getVars():
+                coef = variable.Obj
+                FBAobjective.add(variable * coef)
+        return FBAobjective
+
 def gurobiFBA(cobramodel):
-        
-    #Create a new Gurobi model
-    gurobimodel =gurobi.Model("QP")
-    #Create a new QuadExpr object to store the objective function.
-    QPobjective = gurobi.QuadExpr()
-
-    FBAobjective = gurobi.LinExpr() #Create a new Gurobi linear expression for the FBA objective function
-    #For every reaction in the Cobra model:
-    for reaction in cobramodel.reactions:
-        #Create a new decision variable in the Gurobi model, with upper and lower bounds as specified in the Cobra model:
-        newvar = gurobimodel.addVar(lb = reaction.lower_bound, ub = reaction.upper_bound, name = reaction.id)
+        gurobimodel = makeFBAmodel(cobramodel)
+        #gurobimodel = setFBAobjective(gurobimodel)
         gurobimodel.update()
-        FBAobjective.add(reaction.objective_coefficient * newvar) #Construct the FBA objective
-        gurobimodel.update()
-
-    #Add steady-state constraints for every metabolite:
-    for metabolite in cobramodel.metabolites:
-        #Get the list of reactions in which the metabolite partakes:
-        reactions = metabolite.get_reaction()
-        newconstr = gurobi.LinExpr([rxn.get_coefficient(metabolite.id) for rxn in reactions],[gurobimodel.getVarByName(rxn.id) for rxn in reactions])
-        gurobimodel.addConstr(newconstr, gurobi.GRB.EQUAL, 0, metabolite.id)
-    gurobimodel.update()
-    gurobimodel.setObjective(FBAobjective, gurobi.GRB.MAXIMIZE)
-    gurobimodel.update()
-    gurobimodel.optimize()
-    return gurobimodel
+        gurobimodel.optimize()
+        return gurobimodel
 
 def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = False):
    
@@ -67,47 +81,11 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
                     Ydict[modrxnid] = fluxvalues[exprxnid]*modcoef
 
 
-    #Create a new Gurobi model
-    gurobimodel =gurobi.Model("QP")
-    #Create a new QuadExpr object to store the objective function.
-    QPobjective = gurobi.QuadExpr()
-
-    #Add decision variables (reaction fluxes) to the Gurobi model, and construct the FBA objective function:
-
-    FBAobjective = gurobi.LinExpr() #Create a new Gurobi linear expression for the FBA objective function
-    #For every reaction in the Cobra model:
-    for reaction in cobramodel.reactions:
-        #Create a new decision variable in the Gurobi model, with upper and lower bounds as specified in the Cobra model:
-        newvar = gurobimodel.addVar(lb = reaction.lower_bound, ub = reaction.upper_bound, name = reaction.id)
-        gurobimodel.update()
-        FBAobjective.add(reaction.objective_coefficient * newvar) #Construct the FBA objective
-        gurobimodel.update()
-        if debug:
-            print FBAobjective
-            z = raw_input('Press enter to continue.')
-        #Update the Gurobi model
-        
-    #Add steady-state constraints for every metabolite:
-    for metabolite in cobramodel.metabolites:
-        #Get the list of reactions in which the metabolite partakes:
-        reactions = metabolite.get_reaction()
-        newconstr = gurobi.LinExpr([rxn.get_coefficient(metabolite.id) for rxn in reactions],[gurobimodel.getVarByName(rxn.id) for rxn in reactions])
-        gurobimodel.addConstr(newconstr, gurobi.GRB.EQUAL, 0, metabolite.id)
-    gurobimodel.update()
-
-    #Perform FBA to determine the target objective function value to inform the optimality requirement constraint:
-
-    if debug:
-        print 'FBAobjective variable:',FBAobjective
-        print 'gurobimodel objective before update:',str(gurobimodel.getObjective())
-    gurobimodel.setObjective(FBAobjective, gurobi.GRB.MAXIMIZE)
-    gurobimodel.update()
-    if debug:
-        print 'gurobimodel objective after update:',str(gurobimodel.getObjective())
-    gurobimodel.optimize()
-
+    
+    gurobimodel = gurobiFBA(cobramodel)
     FBAsolution = [v.x for v in gurobimodel.getVars()]
     FBAobjval = gurobimodel.Objval
+    FBAobjective = getFBAobjective(gurobimodel)
     if debug:
         print "FBA objective value:",FBAobjval
 
@@ -116,7 +94,8 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
         gurobimodel.addConstr(FBAobjective, gurobi.GRB.GREATER_EQUAL,FBAobjval*optreq)
         gurobimodel.update()    
 
-    #Construct the QP objective:
+    #Create a new QuadExpr object to store the objective function.
+    QPobjective = gurobi.QuadExpr()
 
     reactlist = []
     terms = []
@@ -135,7 +114,6 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
 
     gurobimodel.optimize()
     gurobimodel.update()
-
     return gurobimodel
 
 
