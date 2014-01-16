@@ -148,7 +148,7 @@ FBAres = optimize.fmin_cobyla(FBAobjective,x0,allconstr,args = (C,),consargs =()
 FBAobjval = objectiveValue(FBAres,C)
     
 
-objcon = lambda x, objective = C , value = FBAobjval, optreq = optreq : np.dot(C,x) - FBAobjval*optreq + 0.001
+objcon = lambda x, objective = C , value = FBAobjval, optreq = optreq : np.dot(C,x) - FBAobjval*optreq + 0.0001
 
 print 'Cobyla solution:'
 print 'FBA Objective value:',FBAobjval
