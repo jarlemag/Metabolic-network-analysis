@@ -11,6 +11,21 @@ import xml.etree.ElementTree as ET
 #for element in root:
 #    print(element)
 
+
+class ReactionMap:
+    def __init__(self):
+        pass
+
+
+class SplitMap:
+    def __init__(self):
+        pass
+
+
+class SplitDefinition:
+    def __init__(self):
+        pass
+
 def ExpFluxesfromXML(filename,publication_id,reactor_id,experiment_id,vector = False):
     tree = ET.parse(filename)
     root = tree.getroot()
@@ -58,7 +73,34 @@ def SplitMapfromXML(filename,publication_id,model_id):
     tree=ET.parse(filename)
     root=tree.getroot()
     string = './/publication[@id="{pub_id}"]/model[@id="{mod_id}"]/split'.format(pub_id=publication_id,mod_id=model_id)
-    splits = root.findall(string)
+    rawmap = root.findall(string)
+    splitmap = {}
+    for element in  rawmap:
+        split_id = element.get('id')
+        splitdict = {}
+        numdict = {}
+        denomdict = {}
+        numreactions = element.findall('./numerator')[0].findall('./modelrxn')
+        denomreactions = element.findall('./denominator')[0].findall('./modelrxn')
+        numlist = []
+        denomlist = []
+        for reaction in numreactions:
+            numdict = {}
+            for attrib in reaction.attrib:
+                numdict[attrib] = reaction.get(attrib)
+            numlist.append(numdict)
+        for reaction in denomreactions:
+            denomdict ={}
+            for attrib in reaction.attrib:
+                denomdict[attrib] = reaction.get(attrib)
+            denomlist.append(denomdict)
+        splitdict['numerator'] = numlist
+        splitdict['denominator'] = denomlist
+        splitmap[split_id] =splitdict
+    return splitmap
+        
+        
+    
     return splits
 
 def ReactionMapfromXML(filename,publication_id,model_id):
@@ -147,9 +189,8 @@ def XMLtoGurobi(filename):
     Grab node "list of species"
     Make an SBMLmodel class instance.
     (To be continued)
-    
-    
     '''
+    pass
 
 if __name__ == "__main__":
 
@@ -162,7 +203,7 @@ if __name__ == "__main__":
 
     expsplits = ExpSplitsfromXML('expdata.xml','Schuetz','Batch','aerobe') #Should create a publication "Schuetz" and move splits there.
 
-    splitsmap = SplitMapfromXML('reactionmaps.xml','SCHUETZR','EXPDATA')
+    splitmap = SplitMapfromXML('reactionmaps.xml','SCHUETZR','SCHUETZR')
 
 
 
