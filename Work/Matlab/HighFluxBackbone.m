@@ -33,9 +33,9 @@ mets = size(model.mets,1);
 rxns = size(model.rxns,1);
 
 prod_cand = zeros(rxns,1);
-pp        = 0;
+pp        = 0; #Number of producing candidates found
 cons_cand = zeros(rxns,1);
-pc        = 0;
+pc        = 0; #Number of consuming candidates found
 
 %First, find all largest consuming and producing reactions
 for i=1:mets
@@ -44,33 +44,35 @@ for i=1:mets
     disp(j)
     n    = size(j,2); %# The number of reactions that the current metabolite partakes in.
     disp(n)
-    bigp = +1e-7;   %Numerical cut-off for fluxes to be considered nonzero
-    bign = -1e-7;
+    bigp = +1e-7;   %Numerical cut-off for fluxes to be considered nonzero/largest flux found so far for this metabolite
+    bign = -1e-7; %Numerical cut-off/smallest flux found so far for this metabolite
     indp = zeros(1,200);
     indn = zeros(1,200);
     fp   = 0;
     fn   = 0;
     if n > 0
         %Loop over all the reactions metabolite i participates in.
-        for k=1:n
-            value = model.S(i,j(k))*flux_vector(j(k));
-            if (value >= bigp)
+        for k=1:n %#For all reactions the metabolite participates in
+            value = model.S(i,j(k))*flux_vector(j(k)); #The flux of the metabolite in the current reaction
+            if (value >= bigp) %If the flux is the largest found yet for this metabolites
                 %Metabolite is a product
                 if (value == bigp)
-                    fp       = fp + 1;
-                    indp(fp) = j(k);
+                    fp       = fp + 1; #Increase the number of largest (tied) producing reactions by one
+                    indp(fp) = j(k); #Record the number of (tied for) largest producing reactions found in the vector indp. The reaction # j(k) is assigned to
+                    		     #position fp. Thus, the reaction number of the first reaction to be found is saved in indp(1). If additional reactions with the
+                    		     #same flux is found, their reaction #s are stored in position 2, 3, etc. up to a maximum of 200 tied reactions.
                 else
-                    fp       = 1;
-                    bigp     = value;
-                    indp(fp) = j(k);
+                    fp       = 1; #Set the number of largest producing reactions to one (no tie-breaks)
+                    bigp     = value; #Set the new largest value 
+                    indp(fp) = j(k); #Save the reaction id of the largest value in indp(1).
                 end
-            elseif (value < bign)
+            elseif (value < bign) %If the flux is the most negative found yet for this metabolite
                 %Metabolite is a substrate
                 if (value == bign)
-                    fn       = fn + 1;
+                    fn       = fn + 1 #Increase the number of largest consuming reactions by one;
                     indn(fn) = j(k);
                 else
-                    fn       = 1;
+                    fn       = 1; #Set the number of largest producing reactions to one
                     bign     = value;
                     indn(fn) = j(k);
                 end
@@ -78,12 +80,12 @@ for i=1:mets
         end
         
         %Take care of any producing-reaction candidates identified
-        if (fp > 0)
-            for l=1:fp
-                if (ismember(indp(l),prod_cand))
-                else
-                    pp = pp + 1;
-                    prod_cand(pp) = indp(l);
+        if (fp > 0) #If any largest-producing reactions were found (true if at least one flux is producing)
+            for l=1:fp #For every largest-producing reaction (several reactions can be tied, giving more than one largest-producing reaction)
+                if (ismember(indp(l),prod_cand)) #If the candidate reaction # is recorded in the "producing candidates" list, do nothing.
+                else #If it is not already a member
+                    pp = pp + 1; #Increment the number of candidate reactions identified
+                    prod_cand(pp) = indp(l); #Add the reaction # of the candidate reaction to the list of candidate reactions.
                 end
             end
         end
