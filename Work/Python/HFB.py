@@ -1,7 +1,7 @@
 #HFB.py
 from collections import defaultdict
 
-def HFBreactions(cobramodel):
+def HFBreactions(cobramodel,fluxdict):
     print 'Finding HFB for model ',cobramodel.description
     maxproducerslist = []
     maxconsumerslist = []
@@ -14,7 +14,7 @@ def HFBreactions(cobramodel):
         maxconsumer_flux = 0
         for reaction in reactions:
             coef = reaction.get_coefficient(metabolite.id)
-            massflux = cobramodel.solution.x_dict[reaction.id] * coef
+            massflux = fluxdict[reaction.id] * coef
             if abs(massflux) > tol: #If flux is non-zero
                 if  massflux > maxproducer_flux:   
                     maxproducer_flux = massflux
@@ -37,7 +37,7 @@ def HFBreactions(cobramodel):
    
     return HFBrxset
 
-def HFBnetwork(cobramodel):
+def HFBnetwork(cobramodel,fluxdict):
     HFBrxset = HFBreactions(cobramodel)
     #networkdict = {}
     networkdict = defaultdict(list)
@@ -60,7 +60,7 @@ def HFBnetwork(cobramodel):
             for rx in metabolite_reactions:
                 coef = rx.get_coefficient(reactant_id)
                 if coef < 0: #If the reactant is being consumed in that reaction:
-                    consumersdict[rx.id] = coef * cobramodel.solution.x_dict[rx.id] #Record the rate of consumption
+                    consumersdict[rx.id] = coef * fluxdict[rx.id] #Record the rate of consumption
             maxconsumer =  max(consumersdict, key = consumersdict.get) #Find the highest-consuming reaction for the reactant
             print 'max consumer:',maxconsumer #DEBUG
             if maxconsumer == reaction_id: #If the highest-consuming reaction is the current reaction
@@ -76,7 +76,7 @@ def HFBnetwork(cobramodel):
             for rx in metabolite_reactions:
                 coef = rx.get_coefficient(product_id)
                 if coef > 0: #If the product is being produced in that reaction:
-                    producersdict[rx.id] = coef * cobramodel.solution.x_dict[rx.id] #Record the rate of production
+                    producersdict[rx.id] = coef * fluxdict[rx.id] #Record the rate of production
         maxproducer = max(producersdict, key = producersdict.get) #Find the highest-producing reaction for the product
         print 'max producer:',maxproducer #DEBUG
         if maxproducer == reaction_id: #If the highst-producing reaction is the current reaction
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     cobramodel.optimize(solver='gurobi')
 
-    HFB = HFBreactions(cobramodel)
+    HFB = HFBreactions(cobramodel,cobramodel.solution.x_dict)
 
     #iJO1366b = create_cobra_model_from_sbml_file('../SBML/iJO1366b.xml')
 
@@ -103,4 +103,4 @@ if __name__ == "__main__":
 
     #z = HFBreactions(iJO1366b)
 
-    network = HFBnetwork(cobramodel)
+    network = HFBnetwork(cobramodel,cobramodel.solution.x_dict)
