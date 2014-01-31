@@ -16,8 +16,8 @@ def HFBreactions(cobramodel,fluxdict):
             coef = reaction.get_coefficient(metabolite.id)
             massflux = fluxdict[reaction.id] * coef
             if abs(massflux) > tol: #If flux is non-zero
-                if  massflux > maxproducer_flux:   
-                    maxproducer_flux = massflux
+                if  massflux > maxproducer_flux:   #If the massflux is greater than the current recorded maximum production flux
+                    maxproducer_flux = massflux #Record the current massflux as the new maximum production flux
                     maxproducer_ids = [reaction.id]
                 elif massflux == maxproducer_flux:
                     maxproducer_ids.append(reaction.id)
@@ -28,13 +28,29 @@ def HFBreactions(cobramodel,fluxdict):
                 elif massflux == maxconsumer_flux:
                     maxconsumer_ids.append(reaction.id)
     
-            if len(maxproducer_ids) > 0:       
-                maxproducerslist += maxproducer_ids
-            if len(maxconsumer_ids) > 0:
-                maxconsumerslist += maxconsumer_ids
+        if len(maxproducer_ids) > 0:       
+            maxproducerslist += maxproducer_ids
+        if len(maxconsumer_ids) > 0:
+            maxconsumerslist += maxconsumer_ids
+
+            if reaction.id ==  "rpe":
+                print 'reaction:',reaction.id
+                print 'metabolite:',metabolite.id
+                print 'massflux:',massflux
+                print 'maxproducer_flux:',maxproducer_flux
+                print 'maxconsumer_flux:',maxconsumer_flux
+                print 'maxproducer_ids:',maxproducer_ids
+                print 'maxconsumer_ids:',maxconsumer_ids
+        if metabolite.id == 'RL5P_c':
+            print 'RL5P_c maxproducer_ids:',maxproducer_ids
+            print 'RL5P_c maxconsumer_ids:',maxconsumer_ids
+                
     #print 'maxproducers:',maxproducerslist #DEBUG
     #print 'maxconsumers:',maxconsumerslist #DEBUG
+    print 'rpe in maxproducerslist?','rpe' in maxproducerslist
+    print 'rpe in maxconsumerslist?','rpe' in maxconsumerslist
     HFBrxset = set(maxproducerslist).intersection(maxconsumerslist)
+   
    
     return HFBrxset
 
@@ -47,8 +63,8 @@ def listreactions(model,metabolite,fluxdict):
     if type(metabolite) == type(''):
         metabolite = model.metabolites.get_by_id(metabolite)
     reactions = metabolite.get_reaction()
-    print '\n'
-    print 'metabolite:',metabolite.id
+    #print '\n'
+    #print 'metabolite:',metabolite.id
     print '{:20s} {:20s} {:20s} {:20s}\n'.format('Reaction ID','Reaction rate','Coefficient','Mass flux')
     for reaction in reactions:
         reactionrate = fluxdict[reaction.id]
@@ -220,6 +236,7 @@ def HFBdetails(model,HFB,fluxdict,hold = False):
         if hold:
             z = raw_input('Press enter to continue.')
         reaction = model.reactions.get_by_id(reaction_id)
+        print'Reaction:',reaction.id,'\n'
         reactants = reaction.get_reactants()
         products = reaction.get_products()
         for reactant in reactants:
@@ -229,6 +246,7 @@ def HFBdetails(model,HFB,fluxdict,hold = False):
         for product in products:
             print 'product:',product
             print 'maxproducer:',maxProducer(model,product,fluxdict)
+            listreactions(model,product,fluxdict)
     print 'Number of reactions processed:',len(HFB)
     return
 
@@ -246,7 +264,10 @@ if __name__ == "__main__":
     metabolite = metabolites.get_by_id('QH2_c')
     reaction = reactions.get_by_id('cyoABCD')
 
+    print 'Run 1:\n'
     HFB = HFBreactions(cobramodel,cobramodel.solution.x_dict)
+    print 'Run 2:\n'
+    HFB2 = HFBreactions(cobramodel,cobramodel.solution.x_dict)
 
     #iJO1366b = create_cobra_model_from_sbml_file('../SBML/iJO1366b.xml')
 
@@ -254,9 +275,9 @@ if __name__ == "__main__":
 
     #z = HFBreactions(iJO1366b)
 
-    network = HFBnetwork(cobramodel,cobramodel.solution.x_dict)
+    #network = HFBnetwork(cobramodel,cobramodel.solution.x_dict)
 
-    HFBtoSIF(network,'test.sif')
+    #HFBtoSIF(network,'test.sif')
 
     metabolites = cobramodel.metabolites
 
@@ -283,6 +304,6 @@ if __name__ == "__main__":
 
     #listreactions(cobramodel,'Q_c',fluxdict)
 
-    HFBdetails(cobramodel,HFB,fluxdict, hold = True)
+    #HFBdetails(cobramodel,HFB,fluxdict, hold = True)
 
     
