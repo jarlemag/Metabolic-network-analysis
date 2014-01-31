@@ -32,20 +32,9 @@ def HFBreactions(cobramodel,fluxdict):
             maxproducerslist += maxproducer_ids
         if len(maxconsumer_ids) > 0:
             maxconsumerslist += maxconsumer_ids
-
-    #print 'maxproducers:',maxproducerslist #DEBUG
-    #print 'maxconsumers:',maxconsumerslist #DEBUG
-    print 'rpe in maxproducerslist?','rpe' in maxproducerslist
-    print 'rpe in maxconsumerslist?','rpe' in maxconsumerslist
+        
     HFBrxset = set(maxproducerslist).intersection(maxconsumerslist)
-   
-   
     return HFBrxset
-
-
-def listconsumers(metabolite):
-    reactions = metabolite.get_reaction()
-    
 
 def listreactions(model,metabolite,fluxdict):
     if type(metabolite) == type(''):
@@ -75,90 +64,60 @@ def listproducers(model,metabolite_id,fluxdict):
             producersdict[rx.id] = coef * fluxdict[rx.id]
     return producersdict
 
-def reactionInfo(reaction):
-    print 'reaction ID:',reaction.id
-    print ''
-    pass
 
-def maxProducer(model,metabolite_id,fluxdict):
+def maxminflux(model,metabolite_id,fluxdict, minimize = False ):
+    '''
+    Find the most producing or most consuming reactions for a given metabolite and flux distribution
+    '''
     if type(metabolite_id) == type(''):
         metabolite = model.metabolites.get_by_id(metabolite_id)
     else:
         metabolite = metabolite_id
     metabolite_reactions = metabolite.get_reaction()
-    producersdict = {}
+    massfluxdict = {}
     for rx in metabolite_reactions:
         coef = rx.get_coefficient(metabolite_id)
-        massflux = coef * fluxdict[rx.id]
-        if massflux > 0:
-            producersdict[rx.id] = massflux
-    maxproducer = max(producersdict, key = producersdict.get)
-    return maxproducer
-
-
-def maxConsumer(model,metabolite_id,fluxdict): #Not giving correct results currently!
-    if type(metabolite_id) == type(''):
-        metabolite = model.metabolites.get_by_id(metabolite_id)
+        massfluxdict[rx.id] = coef * fluxdict[rx.id]
+    if minimize:
+        targetvalue = min(massfluxdict.values())
     else:
-        metabolite = metabolite_id
-    metabolite_reactions = metabolite.get_reaction()
-    consumersdict = {}
-    for rx in metabolite_reactions:
-        coef = rx.get_coefficient(metabolite_id)
-        massflux = coef*fluxdict[rx.id]
-        if massflux < 0:
-            consumersdict[rx.id] = massflux
-    #print 'consumers:',consumersdict
-    maxconsumer = min(consumersdict, key = consumersdict.get)
-    return maxconsumer
-
+        targetvalue = max(massfluxdict.values())
+    targetkeys = [key for key in massfluxdict if massfluxdict[key] == targetvalue]
+    return targetkeys
 
 def connectHFBmetabolites(model,fluxdict,reaction_id):
     if type(reaction_id) == type(''):
         reaction = model.reactions.get_by_id(reaction_id)
     else:
         reaction = reaction_id
-
     connections = defaultdict(list)
-    #For every reactant in the reaction
-    for reactant in reaction.get_reactants():
+    #For every metabolite partaking in the reaction:
+    for metabolite in (reaction.get_reactants()+reaction.get_products()):
         maxconsumed = []
         maxproduced = []
-        max_consumer = maxConsumer(model,reactant.id,fluxdict)
-        if max_consumer == reaction.id:
-            maxconsumed.append(reactant.id)
-    #
-    for product in reaction.get_products():
-        max_producer = maxProducer(model,product.id,fluxdict)
-        if max_producer == product.id:
-            maxproduced.append(product.id)
-
-    #print '\n'
-    #print 'reaction:',reaction.id
-    #print 'maxconsumed:',maxconsumed
-    #print 'maxproduced:',maxproduced
-    for element in maxconsumed:
+        max_consumers = maxminflux(model,metabolite.id,fluxdict, minimize = True)
+        if metabolite.id in max_consumers:
+            maxconsumed.append(metabolite.id)
+        max_producers = maxminflux(model,metabolite.id,fluxdict)
+        if metabolite.id in max_producers:
+            maxproduced.append(metabolite.id)
+    for reactant in maxconsumed:
         for product in maxproduced:
-            connections[element].append(product)
+            connections[reactant].append(product)
     return connections
-        
-        
 
+        
 def HFBnetwork(cobramodel,fluxdict, grouped = False):
     HFBrxset = HFBreactions(cobramodel,fluxdict)
     networkdict = defaultdict(list)
     #For every reaction in the HFB
     for reaction_id in HFBrxset:
-        #print '-------------'
-        #print 'HFB reaction:',reaction_id #DEBUG
         reaction = cobramodel.reactions.get_by_id(reaction_id)
-
         maxconsumed = []
         maxproduced = []
         #For every metabolite in the reaction
         for metabolite in (reaction.get_reactants() + reaction.get_products()):
             metabolite_id = metabolite.id
-            #print 'reactant id:',reactant_id #DEBUG
             metabolite = cobramodel.metabolites.get_by_id(metabolite_id) 
             metabolite_reactions = metabolite.get_reaction() #Get the reactions in which the reactant partakes
             consumersdict = {}
@@ -174,16 +133,13 @@ def HFBnetwork(cobramodel,fluxdict, grouped = False):
          
             maxconsumervalue = min(consumersdict.values())
             maxconsumers = [key for key in consumersdict if consumersdict[key] == maxconsumervalue]  #Find the highest-consuming reaction(s) for the metabolite
-            maxproducervalue = max(producersdict.values()) #Find the highest-producing reaction for the metabolite
-            maxproducers = [key for key in producersdict if producersdict[key] == maxproducervalue]
+            maxproducervalue = max(producersdict.values()) 
+            maxproducers = [key for key in producersdict if producersdict[key] == maxproducervalue] #Find the highest-producing reaction(s) for the metabolite
                        
-            if reaction_id in maxconsumers: #If the the current reaction is a highest-consuming reaction for the metabolite
+            if reaction_id in maxconsumers: #If the the current reaction is a highest-consuming reaction for the metabolite:
                 maxconsumed.append(metabolite_id) #Add the metabolite to the list of metabolites being maximally consumed by this reaction
-            if reaction_id in maxproducers: #If the highst-producing reaction is the current reaction
+            if reaction_id in maxproducers: #If the current reaction is a highest-producing reaction for the metabolite:
                 maxproduced.append(metabolite_id) #Add the metabolite to the list of metabolites being maximally produced by this reaction
-                
-        #print 'max consumed:',maxconsumed
-        #print 'maxp produced:',maxproduced
         for metabolite in maxconsumed:
             for product in maxproduced:
                 networkdict[metabolite].append(product)
@@ -192,10 +148,7 @@ def HFBnetwork(cobramodel,fluxdict, grouped = False):
 def HFBtoSIF(networkdict,filename):
     target = open(filename, 'w')
     for reactant in networkdict:
-        #print '-----------'
-        #print 'reactant:',reactant
         for product in networkdict[reactant]:
-            #print 'product:',product
             target.write(reactant)
             target.write(' ')
             target.write('produces')
@@ -208,8 +161,6 @@ def HFBtoSIF(networkdict,filename):
 
 def HFBdetails(model,HFB,fluxdict,hold = False):
     print '\n','HFB details:'
-    count = 1
-    
     for reaction_id in HFB:
         if hold:
             z = raw_input('Press enter to continue.')
@@ -268,20 +219,7 @@ if __name__ == "__main__":
 
     pglconnections = connectHFBmetabolites(cobramodel,fluxdict,pgl.id)
 
-    #listreactions(cobramodel,metabolite,fluxdict)
-
-    #maxConsumer(cobramodel,'QH2_c',fluxdict)
-
-    #maxConsumer(cobramodel,'O2_c',fluxdict)
-
-    #maxProducer(cobramodel,'H_e',fluxdict)
-
-    #listreactions(cobramodel,'H_e',fluxdict)
-
-    #maxProducer(cobramodel,'Q_c',fluxdict)
-
-    #listreactions(cobramodel,'Q_c',fluxdict)
-
+   
     #HFBdetails(cobramodel,HFB,fluxdict, hold = True)
 
     
