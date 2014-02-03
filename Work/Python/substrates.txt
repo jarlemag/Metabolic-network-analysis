@@ -1,0 +1,55 @@
+#substrate list for randomization of growth medium. (iJR904) See Almaas et al. 2004, supplementary table 2.
+M_ac_e
+M_acald_e
+M_ade_e
+M_adn_e
+M_akg_e
+M_ala_D_e
+M_amp_e
+M_arab_L_e
+M_arg_L_e
+M_asn_L_e
+M_asp_L_e
+M_ttdca_e #M_tetradecanoate__n_C140__C14H27O2/"C140", myristic acid.
+M_hdca_e #M_Hexadecanoate__n_C160__C16H31O2/ Palmitic acid
+M_ocdca_e # M_octadecanoate__n_C180__C18H35O2" / Stearic acid
+M_co2_e
+M_cys_L_e
+M_cytd_e #"M_Cytidine_C9H13N3O5
+M_csn_e #Cytosine
+M_dad_2_e #deoxyadenosine
+M_ala_L_e 
+M_dcyt_e #deoxycytodine
+M_dgsn_e #"M_Deoxyguanosine
+M_dha_e" #"M_Dihydroxyacetone
+M_din_e #Deoxyinosine
+#Dipep - Dipeptide, missing.
+M_ser_D_e #D-serine
+M_thymd_e #"M_Thymidine
+M_duri_e #deoxyuridine
+M_etoh_e #Ethanol
+M_for_e #Formate
+M_fru_e #Fructose
+M_fuc_L_e #Fucose
+M_fum_e #Fumarate
+M_4abut_e #Aminobutanoate
+M_glyc_e #Glycerol
+M_glyc3p_e #Glycerol-3P
+M_gal_e #Galactose
+M_glyald_e #Glyceraldehyde
+M_glc_D_e #Glucose
+M_glcn_e #Gluconate
+M_gln_L_e #Glutamine
+M_sbt_D_e #Sorbitol (glucitol)
+M_galt_e #Galacitol
+M_glu_L_e #Glutamate
+M_gly_e #Glycine
+M_gua_e #Guanine
+M_gsn_e #Guanosine
+
+
+
+
+
+#Missing metabolites:
+#BCAA: Branched chain amino acid.

@@ -233,10 +233,29 @@ def plotfragmentation(cobramodel,fluxdict):
     plt.show()
 
 
+
+def randomizemedium(filename,percent):
+    #See fig 1, Almaas et al.
+    #filename: text-file with list of substrates whose uptake should be allowed (set uptake flux bound to -1000)
+    #percent: Percentage of substrates in list for which uptake should be allowed.
+    pass
+
+
+def plotsinglefluxdistribution(cobramodel,reaction_id):
+    #See fig 4, Almaas et al.
+    pass
+
+
+def normalizefluxdict(cobramodel,fluxdict):
+    '''
+    Modify a flux dictionary to contain fluxes corresponding to the flux vector being normalized to unity.
+    '''
+    pass
+
 if __name__ == "__main__":
 
     from cobra.io.sbml import create_cobra_model_from_sbml_file
-    from cobra import fluxanalysis
+    from cobra import flux_analysis
 
     cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
 
@@ -258,8 +277,41 @@ if __name__ == "__main__":
     iJO1366b.optimize(solver='gurobi')
 
     iJR904 = create_cobra_model_from_sbml_file('../SBML/Ec_iJR904.xml')
-    iJR904.optimize(solver = 'gurobi')
     iJR904.reactions.get_by_id('BiomassEcoli').objective_coefficient = 1
+    bm = iJR904.reactions.get_by_id('BiomassEcoli')
+
+    #Retrieve all exchange reaction
+    exchange_reactions = ex = [x for x in iJR904.reactions if len(x.get_reactants()) == 0 or len(x.get_products())==0]
+    #alternative: system_boundary_reactions = [x for x in model.reactions if x.boundary == 'system_boundary']
+    #See https://groups.google.com/forum/#!topic/cobra-pie/IPIOq30i-js
+
+
+    for rx in exchange_reactions:
+        rx.lower_bound = 0
+    
+    atpm = iJR904.reactions.get_by_id('ATPM')
+    atpm.lower_bound = 7.6
+    atpm.upper_bound = 7.6
+    exo2 = iJR904.reactions.get_by_id('EX_o2_e_')
+    exo2.lower_bound = -20
+    exo2.upper_bound = 0
+    nh4 = iJR904.reactions.get_by_id('EX_nh4_e_')
+    nh4.lower_bound = -100
+
+    iJR904.reactions.get_by_id('EX_co2_e_').lower_bound = -1000
+    iJR904.reactions.get_by_id('EX_k_e_').lower_bound = -1000 #Potassium
+    iJR904.reactions.get_by_id('EX_pi_e_').lower_bound = -1000
+    iJR904.reactions.get_by_id('EX_so4_e_').lower_bound = -1000
+    
+
+
+    iJR904.optimize(solver = 'gurobi')
+
+    print 'iJR904 solution:',iJR904.solution
+
+    succCoA = iJR904.solution.x_dict['SUCOAS']
+
+    normflux = fluxvector / np.linalg.norm(fluxvector)
 
     #z = HFBreactions(iJO1366b)
 
