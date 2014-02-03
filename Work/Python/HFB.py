@@ -1,5 +1,7 @@
 #HFB.py
 from collections import defaultdict
+import numpy as np
+import matplotlib.pyplot as plt
 
 def HFBreactions(cobramodel,fluxdict):
     print 'Finding HFB for model ',cobramodel.description
@@ -179,9 +181,62 @@ def HFBdetails(model,HFB,fluxdict,hold = False):
     print 'Number of reactions processed:',len(HFB)
     return
 
+
+def countK(metabolite_id,model,fluxdict,sense = 1):
+    num = 0
+    for reaction in model.metabolites.get_by_id(metabolite_id).get_reaction():
+        massflux = reaction.get_coefficient(metabolite_id) * fluxdict[reaction.id]
+        if cmp(massflux,0) == cmp(sense,0):
+            num +=1
+    return num
+
+
+def getMassFlux(metabolite_id,model,reaction_id,fluxdict):
+    return model.reactions.get_by_id(reaction_id).get_coefficient(metabolite_id)*fluxdit[reaction.id]
+
+def fragmentation(metabolite_id,model,fluxdict, sense = 1):
+    rx = {}
+    for reaction in model.metabolites.get_by_id(metabolite_id).get_reaction():
+        massflux = reaction.get_coefficient(metabolite_id) * fluxdict[reaction.id]
+        if cmp(massflux,0) == cmp(sense,0):
+            rx[reaction.id] = fluxdict[reaction.id]
+    if sum(rx.values()) == 0:
+        return 0
+    else:
+        Y = sum([(flux/sum(rx.values()))**2 for flux in rx.values()])
+        return Y
+
+def avgfragmentation(model,fluxdict,k,sense = 1):
+    values = []
+    for metabolite in model.metabolites:
+        if countK(metabolite.id,model,fluxdict, sense = sense) == k:
+            values.append(fragmentation(metabolite.id,model,fluxdict, sense = sense))
+    return np.mean(values)
+
+
+
+
+def plotfragmentation(cobramodel,fluxdict):
+    kvals_in = list(set([countK(metabolite.id,cobramodel,fluxdict, sense = 1) for metabolite in cobramodel.metabolites]))
+    kvals_out = list(set([countK(metabolite.id,cobramodel,fluxdict, sense = -1) for metabolite in cobramodel.metabolites]))
+
+    yvals_in = [avgfragmentation(cobramodel,fluxdict,kval) for kval in kvals_in]
+    yvals_out =[avgfragmentation(cobramodel,fluxdict,kval, sense = -1) for kval in kvals_out]
+    fig = plt.figure()
+    plt.scatter(kvals_in,yvals_in, c='k',marker='o')
+    plt.scatter(kvals_out,yvals_out, c='r',marker='^')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    plt.xlim([1,10**3])
+    plt.ylim([1,10**2])
+    plt.show()
+
+
 if __name__ == "__main__":
 
     from cobra.io.sbml import create_cobra_model_from_sbml_file
+    from cobra import fluxanalysis
 
     cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
 
@@ -198,9 +253,13 @@ if __name__ == "__main__":
     print 'Run 2:\n'
     HFB2 = HFBreactions(cobramodel,cobramodel.solution.x_dict)
 
-    #iJO1366b = create_cobra_model_from_sbml_file('../SBML/iJO1366b.xml')
+    iJO1366b = create_cobra_model_from_sbml_file('../SBML/iJO1366b.xml')
 
-    #iJO1366b.optimize(solver='gurobi')
+    iJO1366b.optimize(solver='gurobi')
+
+    iJR904 = create_cobra_model_from_sbml_file('../SBML/Ec_iJR904.xml')
+    iJR904.optimize(solver = 'gurobi')
+    iJR904.reactions.get_by_id('BiomassEcoli').objective_coefficient = 1
 
     #z = HFBreactions(iJO1366b)
 
@@ -211,6 +270,7 @@ if __name__ == "__main__":
     metabolites = cobramodel.metabolites
 
     fluxdict = cobramodel.solution.x_dict
+    fluxdictGS = iJO1366b.solution.x_dict
     m = metabolites.get_by_id("H_e")
 
     connections = connectHFBmetabolites(cobramodel,fluxdict,reaction.id)
@@ -222,4 +282,38 @@ if __name__ == "__main__":
    
     #HFBdetails(cobramodel,HFB,fluxdict, hold = True)
 
+
+
+    #Plot fragmentation:
+    kvals_in = list(set([countK(metabolite.id,cobramodel,fluxdict, sense = 1) for metabolite in cobramodel.metabolites]))
+    kvals_out = list(set([countK(metabolite.id,cobramodel,fluxdict, sense = -1) for metabolite in cobramodel.metabolites]))
+
+    yvals_in = [avgfragmentation(cobramodel,fluxdict,kval) for kval in kvals_in]
+    yvals_out =[avgfragmentation(cobramodel,fluxdict,kval, sense = -1) for kval in kvals_out]
+
+    kvals_inGS = list(set([countK(metabolite.id,iJO1366b,fluxdictGS, sense = 1) for metabolite in iJO1366b.metabolites]))
+    kvals_outGS = list(set([countK(metabolite.id,iJO1366b,fluxdictGS, sense = -1) for metabolite in iJO1366b.metabolites]))
+
+    yvals_inGS = [avgfragmentation(iJO1366b,fluxdictGS,kval) for kval in kvals_inGS]
+    yvals_outGS = [avgfragmentation(iJO1366b,fluxdictGS,kval, sense = -1) for kval in kvals_outGS]
+
+    fig = plt.figure()
+    #plt.plot(kvals_inGS,yvals_inGS)
+    plt.scatter(kvals_inGS,yvals_inGS, c='k',marker='o')
+    plt.scatter(kvals_outGS,yvals_outGS, c='r',marker='^')
+    ax = fig.add_subplot(1,1,1)
+    ax.set_yscale('log')
+    ax.set_xscale('log')
+    plt.xlim([1,10**3])
+    plt.ylim([1,10**2])
+    plt.show()
+
+    '''
+    for metabolite in cobramodel.metabolites:
+        if (countK(metabolite.id,cobramodel,fluxdict, sense = 1) +countK(metabolite.id,cobramodel,fluxdict, sense = 0) + countK(metabolite.id,cobramodel,fluxdict, sense = -1)) == len(metabolite.get_reaction()):
+            print "it's good."
+        else:
+            print 'Uh-oh.'
+    '''
+        
     

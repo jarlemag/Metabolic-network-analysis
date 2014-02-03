@@ -55,7 +55,7 @@ def getLowerBounds(model):
     return [reaction.lower_bound for reaction in model.reactions]
 
 
- 
+'''
 upperrbounds = []
 for upperbound in ub:
     def upperlimit(x, upperbound = upperbound): #Beware of closures/wrong scoping
@@ -68,7 +68,7 @@ for lowerbound in lb:
     def lowerlimit(x, lowerbound = lowerbound):
         return x - lowerbound
     lowerbounds.append(lowerlimit)
-
+'''
 
 def constrainFunctionsUB(ub):
     upperboundfuncs = []
