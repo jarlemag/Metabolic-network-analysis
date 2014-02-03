@@ -2,6 +2,9 @@
 from collections import defaultdict
 import numpy as np
 import matplotlib.pyplot as plt
+import random
+import math
+import timeit
 
 def HFBreactions(cobramodel,fluxdict):
     print 'Finding HFB for model ',cobramodel.description
@@ -234,23 +237,79 @@ def plotfragmentation(cobramodel,fluxdict):
 
 
 
-def randomizemedium(filename,percent):
+def randomizemedium(cobramodel,filename,percent, limit = -1000):
     #See fig 1, Almaas et al.
     #filename: text-file with list of substrates whose uptake should be allowed (set uptake flux bound to -1000)
     #percent: Percentage of substrates in list for which uptake should be allowed.
-    pass
+    metabolites = []
+    with open(filename, 'r') as sourcefile:
+        for line in sourcefile:
+            if (not line.startswith('#')) and (len(line) > 1):
+                metabolite_id = line.split(' ')[0].split('\n')[0].split('M_')[1]
+                metabolites.append(metabolite_id)
+                
+    chosen_metabolites = random.sample(metabolites,int(math.floor(percent*0.01*len(metabolites))))
+    exchange_reactions = []
+    for metabolite_id in chosen_metabolites:
+        metabolite = cobramodel.metabolites.get_by_id(metabolite_id)
+        reactions = metabolite.get_reaction() 
+        exchange_reactions +=[x.id for x in reactions if x.boundary == 'system_boundary']
+    #print 'exchange reactions:',exchange_reactions
+    for reaction_id in exchange_reactions:
+        cobramodel.reactions.get_by_id(reaction_id).lower_bound = limit
+        
+    return exchange_reactions
+        
+    
 
 
-def plotsinglefluxdistribution(cobramodel,reaction_id):
+def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage = 50, frequency = True, normalize = False):
     #See fig 4, Almaas et al.
+    iterations = 0
+    fluxvalues = []
+    while iterations < trials:
+        iterations +=1
+        randomizemedium(cobramodel,'substrates.txt',percentage)
+        cobramodel.optimize()
+        fluxvalues.append(cobramodel.solution.x_dict[reaction_id])
+    '''
+    if (iterations > 1000) and (iterations % 100 == 0):
+        print 'iteration:',iterations
+    '''
+
+    n, bins = np.histogram(fluxvalues, bins = 50)
+
+    if frequency:
+        n = np.true_divide(n,sum(n))
+        
+    bins_mean = [0.5 * (bins[i] + bins[i+1]) for i in range(len(n))]
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.scatter(bins_mean, n)
+    print 'len(n):',len(n)
+    print 'n:',n
+    print 'sum(n):',sum(n)
+    #print 'fluxvalues:',fluxvalues
+    if frequency:
+        plt.ylim(0,1)
+    else:
+        plt.ylim([0,trials])
+    plt.show()
+    
     pass
 
 
-def normalizefluxdict(cobramodel,fluxdict):
+def normalizefluxdict(fluxdict):
     '''
     Modify a flux dictionary to contain fluxes corresponding to the flux vector being normalized to unity.
     '''
-    pass
+    ids = []
+    values = []
+    for entry in fluxdict:
+        ids.append(entry)
+        values.append(fluxdict[entry])
+    normalizedvalues = values / np.linalg.norm(values)
+    return dict(zip(ids, normalizedvalues))
 
 if __name__ == "__main__":
 
@@ -272,9 +331,11 @@ if __name__ == "__main__":
     print 'Run 2:\n'
     HFB2 = HFBreactions(cobramodel,cobramodel.solution.x_dict)
 
-    iJO1366b = create_cobra_model_from_sbml_file('../SBML/iJO1366b.xml')
+    
+    #iJO1366b = create_cobra_model_from_sbml_file('../SBML/iJO1366b.xml')
 
-    iJO1366b.optimize(solver='gurobi')
+    #iJO1366b.optimize(solver='gurobi')
+    
 
     iJR904 = create_cobra_model_from_sbml_file('../SBML/Ec_iJR904.xml')
     iJR904.reactions.get_by_id('BiomassEcoli').objective_coefficient = 1
@@ -311,7 +372,7 @@ if __name__ == "__main__":
 
     succCoA = iJR904.solution.x_dict['SUCOAS']
 
-    normflux = fluxvector / np.linalg.norm(fluxvector)
+    #normflux = fluxvector / np.linalg.norm(fluxvector)
 
     #z = HFBreactions(iJO1366b)
 
@@ -322,7 +383,7 @@ if __name__ == "__main__":
     metabolites = cobramodel.metabolites
 
     fluxdict = cobramodel.solution.x_dict
-    fluxdictGS = iJO1366b.solution.x_dict
+    #fluxdictGS = iJO1366b.solution.x_dict
     m = metabolites.get_by_id("H_e")
 
     connections = connectHFBmetabolites(cobramodel,fluxdict,reaction.id)
@@ -335,7 +396,7 @@ if __name__ == "__main__":
     #HFBdetails(cobramodel,HFB,fluxdict, hold = True)
 
 
-
+    '''
     #Plot fragmentation:
     kvals_in = list(set([countK(metabolite.id,cobramodel,fluxdict, sense = 1) for metabolite in cobramodel.metabolites]))
     kvals_out = list(set([countK(metabolite.id,cobramodel,fluxdict, sense = -1) for metabolite in cobramodel.metabolites]))
@@ -359,6 +420,7 @@ if __name__ == "__main__":
     plt.xlim([1,10**3])
     plt.ylim([1,10**2])
     plt.show()
+    '''
 
     '''
     for metabolite in cobramodel.metabolites:
@@ -367,5 +429,15 @@ if __name__ == "__main__":
         else:
             print 'Uh-oh.'
     '''
+
+    #start = timeit.timeit()
+    #plotsinglefluxdistribution(iJR904,'CO2t',trials = 500)
+    plotsinglefluxdistribution(iJR904,'CO2t',trials = 1000)
+    #plotsinglefluxdistribution(iJR904,'CO2t',trials = 1500)
+    #plotsinglefluxdistribution(iJR904,'CO2t',trials = 2000)
+    #plotsinglefluxdistribution(iJR904,'CO2t',trials = 5000)
+    #end = timeit.timeit()
+    #print end - start
+    
         
     

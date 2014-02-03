@@ -21,7 +21,7 @@ M_dad_2_e #deoxyadenosine
 M_ala_L_e 
 M_dcyt_e #deoxycytodine
 M_dgsn_e #"M_Deoxyguanosine
-M_dha_e" #"M_Dihydroxyacetone
+M_dha_e #"M_Dihydroxyacetone
 M_din_e #Deoxyinosine
 #Dipep - Dipeptide, missing.
 M_ser_D_e #D-serine
