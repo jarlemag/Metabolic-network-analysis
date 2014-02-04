@@ -242,6 +242,12 @@ def randomizemedium(cobramodel,filename,percent, limit = -1000):
     #See fig 1, Almaas et al.
     #filename: text-file with list of substrates whose uptake should be allowed (set uptake flux bound to -1000)
     #percent: Percentage of substrates in list for which uptake should be allowed.
+
+    #Set all exchange reactions to 0 before random selection of allowed fluxes:
+    exchange_reactions = [x for x in cobramodel.reactions if len(x.get_reactants()) == 0 or len(x.get_products())==0]
+    for rx in exchange_reactions:
+        rx.lower_bound = 0
+    
     metabolites = []
     with open(filename, 'r') as sourcefile:
         for line in sourcefile:
@@ -261,11 +267,10 @@ def randomizemedium(cobramodel,filename,percent, limit = -1000):
         
     return exchange_reactions
         
-    
 
 
-def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
-    #See fig 4, Almaas et al.
+
+def fluxdistributionhistogram(cobramodel,reaction_id,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
     iterations = 0
     fluxvalues = []
     while iterations < trials:
@@ -276,15 +281,15 @@ def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage =
             fluxvalues.append(normalizefluxdict(cobramodel.solution.x_dict)[reaction_id])
         else:
             fluxvalues.append(cobramodel.solution.x_dict[reaction_id])
-    '''
-    if (iterations > 1000) and (iterations % 100 == 0):
-        print 'iteration:',iterations
-    '''
-
     n, bins = np.histogram(fluxvalues, bins = binN)
-
     if frequency:
         n = np.true_divide(n,sum(n))
+    return n,bins
+
+def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+    #See fig 4, Almaas et al.
+
+    n, bins = fluxdistributionhistogram(cobramodel,reaction_id,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
         
     bins_mean = [0.5 * (bins[i] + bins[i+1]) for i in range(len(n))]
     fig = plt.figure()
@@ -293,9 +298,9 @@ def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage =
     print 'len(n):',len(n)
     print 'n:',n
     print 'sum(n):',sum(n)
-    #print 'fluxvalues:',fluxvalues
     if frequency:
-        plt.ylim(0,1)
+        #plt.ylim(0,1)
+        plt.ylim(0,0.15)
     else:
         plt.ylim([0,trials])
     #plt.ylim(0,
@@ -303,6 +308,23 @@ def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage =
     
     pass
 
+
+def plotfluxdistributions(cobramodel,reaction_ids,positions,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+    fig = plt.figure()
+    axes = []
+    for reaction_id,position in zip(reaction_ids,positions):
+        n, bins = fluxdistributionhistogram(cobramodel,reaction_id,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
+        bins_mean = [0.5 * (bins[i] + bins[i+1]) for i in range(len(n))]
+        axes.append(fig.add_subplot(position))
+        axes[-1].scatter(bins_mean, n)
+        axes[-1].set_title(reaction_id)
+        if frequency:
+            #plt.ylim(0,1)
+            plt.ylim(0,0.15)
+        else:
+            plt.ylim([0,trials])
+        #plt.ylim(0,
+    plt.show()
 
 def normalizefluxdict(fluxdict):
     '''
@@ -347,7 +369,7 @@ if __name__ == "__main__":
     bm = iJR904.reactions.get_by_id('BiomassEcoli')
 
     #Retrieve all exchange reaction
-    exchange_reactions = ex = [x for x in iJR904.reactions if len(x.get_reactants()) == 0 or len(x.get_products())==0]
+    exchange_reactions = [x for x in iJR904.reactions if len(x.get_reactants()) == 0 or len(x.get_products())==0]
     #alternative: system_boundary_reactions = [x for x in model.reactions if x.boundary == 'system_boundary']
     #See https://groups.google.com/forum/#!topic/cobra-pie/IPIOq30i-js
 
@@ -445,11 +467,15 @@ if __name__ == "__main__":
     #end = timeit.timeit()
     #print end - start
     print time.clock()
-    plotsinglefluxdistribution(iJR904,'TPI',trials = 500, normalize = True)
-    plotsinglefluxdistribution(iJR904,'NADK',trials = 500, normalize = True)
-    plotsinglefluxdistribution(iJR904,'GSNK',trials = 500, normalize = True)
     
+    #plotsinglefluxdistribution(iJR904,'TPI',trials = 500, normalize = True)
+    #plotsinglefluxdistribution(iJR904,'CO2t',trials = 500, normalize = True)
+    #plotsinglefluxdistribution(iJR904,'NADK',trials = 500, normalize = True)
+    #plotsinglefluxdistribution(iJR904,'GSNK',trials = 500, normalize = True)
 
+    reaction_ids = ['TPI','NADK','CO2t','GSNK']
+    positions = [221,222,223,224]
+    plotfluxdistributions(iJR904,reaction_ids,positions,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
     
     
     

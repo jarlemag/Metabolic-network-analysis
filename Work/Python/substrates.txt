@@ -50,6 +50,7 @@ M_his_L_e #Histidine
 M_hxan_e #Hypoxanthine
 M_ile_L_e #Isoleucine
 M_ins_e #Inosine
+M_k_e #Potassium
 M_lac_D_e #D-lactate
 M_leu_L_e #Leucine
 M_lys_L_e #L-lysine
@@ -63,9 +64,12 @@ M_malt_e #Maltose
 M_mnl_e #Mannitol
 M_na1_e #Sodium
 M_nad_e #NAD (Nicotinamide adenine dinucleotide)
+M_nh4_e #Ammonium
 M_nac_e # Nicotinamide adenine mononucleotide
+M_o2_e #Oxygen
 M_orn_e #Ornithine
 M_phe_L_e #Phenylalanine
+M_pi_e #Phosphate
 M_pnto_R_e #Pantothenate
 M_pro_L_e #Proline
 M_ptrc_e #Putrescine
@@ -74,6 +78,7 @@ M_rib_D_e #Ribose
 M_rmn_e #Rhamnose
 M_ser_D_e #D-serine
 M_ser_L_e #L-serine
+M_so4_e #Sulfate
 M_spmd_e #Spermidine
 M_sucr_e #Sucrose
 M_succ_e #Succinate
