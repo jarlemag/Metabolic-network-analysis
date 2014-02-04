@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import random
 import math
 import timeit
+import time
 
 def HFBreactions(cobramodel,fluxdict):
     print 'Finding HFB for model ',cobramodel.description
@@ -245,7 +246,7 @@ def randomizemedium(cobramodel,filename,percent, limit = -1000):
     with open(filename, 'r') as sourcefile:
         for line in sourcefile:
             if (not line.startswith('#')) and (len(line) > 1):
-                metabolite_id = line.split(' ')[0].split('\n')[0].split('M_')[1]
+                metabolite_id = line.split(' ')[0].split('\n')[0].split('M_',1)[1]
                 metabolites.append(metabolite_id)
                 
     chosen_metabolites = random.sample(metabolites,int(math.floor(percent*0.01*len(metabolites))))
@@ -263,7 +264,7 @@ def randomizemedium(cobramodel,filename,percent, limit = -1000):
     
 
 
-def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage = 50, frequency = True, normalize = False):
+def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
     #See fig 4, Almaas et al.
     iterations = 0
     fluxvalues = []
@@ -271,13 +272,16 @@ def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage =
         iterations +=1
         randomizemedium(cobramodel,'substrates.txt',percentage)
         cobramodel.optimize()
-        fluxvalues.append(cobramodel.solution.x_dict[reaction_id])
+        if normalize:
+            fluxvalues.append(normalizefluxdict(cobramodel.solution.x_dict)[reaction_id])
+        else:
+            fluxvalues.append(cobramodel.solution.x_dict[reaction_id])
     '''
     if (iterations > 1000) and (iterations % 100 == 0):
         print 'iteration:',iterations
     '''
 
-    n, bins = np.histogram(fluxvalues, bins = 50)
+    n, bins = np.histogram(fluxvalues, bins = binN)
 
     if frequency:
         n = np.true_divide(n,sum(n))
@@ -294,6 +298,7 @@ def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage =
         plt.ylim(0,1)
     else:
         plt.ylim([0,trials])
+    #plt.ylim(0,
     plt.show()
     
     pass
@@ -430,14 +435,23 @@ if __name__ == "__main__":
             print 'Uh-oh.'
     '''
 
+    time.clock()
     #start = timeit.timeit()
-    #plotsinglefluxdistribution(iJR904,'CO2t',trials = 500)
-    plotsinglefluxdistribution(iJR904,'CO2t',trials = 1000)
+    #plotsinglefluxdistribution(iJR904,'CO2t',trials = 5000, normalize = True)
+    #plotsinglefluxdistribution(iJR904,'CO2t',trials = 1000)
     #plotsinglefluxdistribution(iJR904,'CO2t',trials = 1500)
     #plotsinglefluxdistribution(iJR904,'CO2t',trials = 2000)
     #plotsinglefluxdistribution(iJR904,'CO2t',trials = 5000)
     #end = timeit.timeit()
     #print end - start
+    print time.clock()
+    plotsinglefluxdistribution(iJR904,'TPI',trials = 500, normalize = True)
+    plotsinglefluxdistribution(iJR904,'NADK',trials = 500, normalize = True)
+    plotsinglefluxdistribution(iJR904,'GSNK',trials = 500, normalize = True)
+    
+
+    
+    
     
         
     
