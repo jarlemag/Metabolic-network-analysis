@@ -6,6 +6,7 @@ import random
 import math
 import timeit
 import time
+from time import strftime
 
 def HFBreactions(cobramodel,fluxdict):
     print 'Finding HFB for model ',cobramodel.description
@@ -238,7 +239,7 @@ def plotfragmentation(cobramodel,fluxdict):
 
 
 
-def randomizemedium(cobramodel,filename,percent, limit = -1000,immune_metabolites = []):
+def randomizemedium(cobramodel,filename,percent, limit = -20,immune_metabolites = [],fixuptakes = False):
     #See fig 1, Almaas et al.
     #filename: text-file with list of substrates whose uptake should be allowed (set uptake flux bound to -1000)
     #percent: Percentage of substrates in list for which uptake should be allowed.
@@ -280,18 +281,20 @@ def randomizemedium(cobramodel,filename,percent, limit = -1000,immune_metabolite
     #Change the reaction bounds for the chosen exchange reactions:
     for reaction_id in chosen_reactions:
         cobramodel.reactions.get_by_id(reaction_id).lower_bound = limit
+        if fixuptakes:
+            cobramodel.reactions.get_by_id(reaction_id).upper_bound = limit
         
     return exchange_reactions #Don't need the return value. The main purpose is to shuffle the reaction bounds in the model.
         
 
 
 
-def fluxdistributionhistogram(cobramodel,filename,reaction_id,immune_metabolites = [],trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+def fluxdistributionhistogram(cobramodel,filename,reaction_id,immune_metabolites = [],fixuptakes = False,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
     iterations = 0
     fluxvalues = []
     while iterations < trials:
         iterations +=1
-        randomizemedium(cobramodel,filename,percentage,immune_metabolites = immune_metabolites)
+        randomizemedium(cobramodel,filename,percentage,immune_metabolites = immune_metabolites, fixuptakes = fixuptakes)
         cobramodel.optimize()
         if normalize:
             fluxvalues.append(normalizefluxdict(cobramodel.solution.x_dict)[reaction_id])
@@ -325,13 +328,13 @@ def plotsinglefluxdistribution(cobramodel,filename,reaction_id, trials = 20, per
     pass
 
 
-def plotfluxdistributions(cobramodel,filename,reaction_ids,positions,x_scales = [],immune_metabolites = [],trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+def plotfluxdistributions(cobramodel,filename,reaction_ids,positions,x_scales = [],immune_metabolites = [],trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100, fixuptakes = False):
     fig = plt.figure()
     axes = []
     if len(x_scales) == 0:
         x_scales = [None for position in reaction_ids]
     for reaction_id,position,scaling in zip(reaction_ids,positions,x_scales):
-        n, bins = fluxdistributionhistogram(cobramodel,filename,reaction_id,immune_metabolites = immune_metabolites,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
+        n, bins = fluxdistributionhistogram(cobramodel,filename,reaction_id,fixuptakes = fixuptakes,immune_metabolites = immune_metabolites,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
         bins_mean = [0.5 * (bins[i] + bins[i+1]) for i in range(len(n))]
         axes.append(fig.add_subplot(position))
         axes[-1].scatter(bins_mean, n)
@@ -395,6 +398,20 @@ if __name__ == "__main__":
 
     iJE660a = create_cobra_model_from_sbml_file('iJE660a_fromMPS.sbml')
 
+    iJE660a.reactions.get_by_id('EX_NH3').lower_bound = -100
+    iJE660a.reactions.get_by_id('EX_O2').lower_bound = -20
+    iJE660a.reactions.get_by_id('EX_O2').upper_bound = 0
+    iJE660a.reactions.get_by_id('ATPM').lower_bound = 7.6
+    iJE660a.reactions.get_by_id('ATPM').upper_bound = 7.6
+    iJE660a.reactions.get_by_id('EX_CO2').lower_bound = -1000
+    iJE660a.reactions.get_by_id('EX_K').lower_bound = -1000 #Potassium
+    iJE660a.reactions.get_by_id('EX_PI').lower_bound = -1000
+    iJE660a.reactions.get_by_id('EX_SLF').lower_bound = -1000
+
+    #Set maximal carbon source uptake:
+    #iJE660a.reactions.get_by_id('EX_GLU').lower_bound = -20
+    iJE660a.reactions.get_by_id('EX_SUCC').lower_bound = -20
+    
 
     for rx in exchange_reactions:
         rx.lower_bound = 0
@@ -501,14 +518,15 @@ if __name__ == "__main__":
 
     reaction_ids2 = ['TPIA','NADF','R0035','GSKx1']
     x_scales =[(-0.22,-0.08),(3e-6,8e-6),(-0.40,0.1),(0,0.008)]
-    #random = randomizemedium(iJE660a,'iJE660a_substrates.txt',50, limit = -1000)s
+    #random = randomizemedium(iJE660a,'iJE660a_substrates.txt',50, limit = -1000)
 
     #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,x_scales = [],trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)    
     #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
 
     immune = ['CO2_e','GLU_e','K_e','NH3_e','O2_e','PI_e','SLF_e']
+    #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,immune_metabolites = immune,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
+
+    strftime("%Y-%m-%d %H:%M:%S")
+    #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,immune_metabolites = immune,x_scales = x_scales,trials = 2000, percentage = 50, frequency = True, normalize = True, binN = 100)
     plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,immune_metabolites = immune,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
-       
-    
-        
-    
+   
