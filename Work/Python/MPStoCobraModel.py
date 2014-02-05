@@ -121,7 +121,7 @@ if __name__ == "__main__":
             count +=1
 
     model.reactions.get_by_id('Growth').objective_coefficient = 1
-    write_cobra_model_to_sbml_file(model,'model2.sbml')
+    write_cobra_model_to_sbml_file(model,'iJE660a_fromMPS.sbml')
 
     model.optimize(solver='gurobi')
 

@@ -265,17 +265,17 @@ def randomizemedium(cobramodel,filename,percent, limit = -1000):
     for reaction_id in exchange_reactions:
         cobramodel.reactions.get_by_id(reaction_id).lower_bound = limit
         
-    return exchange_reactions
+    return exchange_reactions #Don't need the return value. The main purpose is to shuffle the reaction bounds in the model.
         
 
 
 
-def fluxdistributionhistogram(cobramodel,reaction_id,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+def fluxdistributionhistogram(cobramodel,filename,reaction_id,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
     iterations = 0
     fluxvalues = []
     while iterations < trials:
         iterations +=1
-        randomizemedium(cobramodel,'substrates.txt',percentage)
+        randomizemedium(cobramodel,filename,percentage)
         cobramodel.optimize()
         if normalize:
             fluxvalues.append(normalizefluxdict(cobramodel.solution.x_dict)[reaction_id])
@@ -286,10 +286,10 @@ def fluxdistributionhistogram(cobramodel,reaction_id,trials = 20, percentage = 5
         n = np.true_divide(n,sum(n))
     return n,bins
 
-def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+def plotsinglefluxdistribution(cobramodel,filename,reaction_id, trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
     #See fig 4, Almaas et al.
 
-    n, bins = fluxdistributionhistogram(cobramodel,reaction_id,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
+    n, bins = fluxdistributionhistogram(cobramodel,filename,reaction_id,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
         
     bins_mean = [0.5 * (bins[i] + bins[i+1]) for i in range(len(n))]
     fig = plt.figure()
@@ -309,11 +309,11 @@ def plotsinglefluxdistribution(cobramodel,reaction_id, trials = 20, percentage =
     pass
 
 
-def plotfluxdistributions(cobramodel,reaction_ids,positions,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+def plotfluxdistributions(cobramodel,filename,reaction_ids,positions,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
     fig = plt.figure()
     axes = []
     for reaction_id,position in zip(reaction_ids,positions):
-        n, bins = fluxdistributionhistogram(cobramodel,reaction_id,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
+        n, bins = fluxdistributionhistogram(cobramodel,filename,reaction_id,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
         bins_mean = [0.5 * (bins[i] + bins[i+1]) for i in range(len(n))]
         axes.append(fig.add_subplot(position))
         axes[-1].scatter(bins_mean, n)
@@ -372,6 +372,8 @@ if __name__ == "__main__":
     exchange_reactions = [x for x in iJR904.reactions if len(x.get_reactants()) == 0 or len(x.get_products())==0]
     #alternative: system_boundary_reactions = [x for x in model.reactions if x.boundary == 'system_boundary']
     #See https://groups.google.com/forum/#!topic/cobra-pie/IPIOq30i-js
+
+    iJE660a = create_cobra_model_from_sbml_file('iJE660a_fromMPS.sbml')
 
 
     for rx in exchange_reactions:
@@ -475,9 +477,16 @@ if __name__ == "__main__":
 
     reaction_ids = ['TPI','NADK','CO2t','GSNK']
     positions = [221,222,223,224]
-    plotfluxdistributions(iJR904,reaction_ids,positions,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
+    #plotfluxdistributions(iJR904,'substrates.txt',reaction_ids,positions,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
+
+    reaction_ids2 = ['TPIA','NADF','R0035','GSKx1']
+    #random = randomizemedium(iJE660a,'iJE660a_substrates.txt',50, limit = -1000)s
+    
+    plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
+
     
     
+       
     
         
     
