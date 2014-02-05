@@ -238,31 +238,47 @@ def plotfragmentation(cobramodel,fluxdict):
 
 
 
-def randomizemedium(cobramodel,filename,percent, limit = -1000):
+def randomizemedium(cobramodel,filename,percent, limit = -1000,immune_metabolites = []):
     #See fig 1, Almaas et al.
     #filename: text-file with list of substrates whose uptake should be allowed (set uptake flux bound to -1000)
     #percent: Percentage of substrates in list for which uptake should be allowed.
 
+    #Generate a list of exchange reactions for which the flux limits should not be changed:
+    immune_reactions = []
+    for metabolite_id in immune_metabolites:
+        metabolite = cobramodel.metabolites.get_by_id(metabolite_id)
+        reactions = metabolite.get_reaction()
+        immune_reactions +=[x.id for x in reactions if x.boundary == 'system_boundary']
+                                
+
     #Set all exchange reactions to 0 before random selection of allowed fluxes:
     exchange_reactions = [x for x in cobramodel.reactions if len(x.get_reactants()) == 0 or len(x.get_products())==0]
     for rx in exchange_reactions:
-        rx.lower_bound = 0
+        if rx.id not in immune_reactions:
+            rx.lower_bound = 0
     
     metabolites = []
+    #Read in a list of metabolites for which the exchange flux limits are eligible to be changed:
     with open(filename, 'r') as sourcefile:
         for line in sourcefile:
             if (not line.startswith('#')) and (len(line) > 1):
                 metabolite_id = line.split(' ')[0].split('\n')[0].split('M_',1)[1]
                 metabolites.append(metabolite_id)
-                
-    chosen_metabolites = random.sample(metabolites,int(math.floor(percent*0.01*len(metabolites))))
-    exchange_reactions = []
+
+    #Select only those metbolites which are not in the "do not change" list:
+    eligible_metabolites = [metabolite_id for metabolite_id in metabolites if metabolite_id not in immune_metabolites]
+    #Make a random sample of metabolites for which the exchange reaction limit should be changed:
+    chosen_metabolites = random.sample(eligible_metabolites,int(math.floor(percent*0.01*len(eligible_metabolites))))
+
+    #Get the corresponding exchange reactions for the chosen metabolites:
+    chosen_reactions = []
     for metabolite_id in chosen_metabolites:
         metabolite = cobramodel.metabolites.get_by_id(metabolite_id)
         reactions = metabolite.get_reaction() 
-        exchange_reactions +=[x.id for x in reactions if x.boundary == 'system_boundary']
+        chosen_reactions +=[x.id for x in reactions if x.boundary == 'system_boundary']
     #print 'exchange reactions:',exchange_reactions
-    for reaction_id in exchange_reactions:
+    #Change the reaction bounds for the chosen exchange reactions:
+    for reaction_id in chosen_reactions:
         cobramodel.reactions.get_by_id(reaction_id).lower_bound = limit
         
     return exchange_reactions #Don't need the return value. The main purpose is to shuffle the reaction bounds in the model.
@@ -270,12 +286,12 @@ def randomizemedium(cobramodel,filename,percent, limit = -1000):
 
 
 
-def fluxdistributionhistogram(cobramodel,filename,reaction_id,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+def fluxdistributionhistogram(cobramodel,filename,reaction_id,immune_metabolites = [],trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
     iterations = 0
     fluxvalues = []
     while iterations < trials:
         iterations +=1
-        randomizemedium(cobramodel,filename,percentage)
+        randomizemedium(cobramodel,filename,percentage,immune_metabolites = immune_metabolites)
         cobramodel.optimize()
         if normalize:
             fluxvalues.append(normalizefluxdict(cobramodel.solution.x_dict)[reaction_id])
@@ -309,11 +325,13 @@ def plotsinglefluxdistribution(cobramodel,filename,reaction_id, trials = 20, per
     pass
 
 
-def plotfluxdistributions(cobramodel,filename,reaction_ids,positions,trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
+def plotfluxdistributions(cobramodel,filename,reaction_ids,positions,x_scales = [],immune_metabolites = [],trials = 20, percentage = 50, frequency = True, normalize = False, binN = 100):
     fig = plt.figure()
     axes = []
-    for reaction_id,position in zip(reaction_ids,positions):
-        n, bins = fluxdistributionhistogram(cobramodel,filename,reaction_id,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
+    if len(x_scales) == 0:
+        x_scales = [None for position in reaction_ids]
+    for reaction_id,position,scaling in zip(reaction_ids,positions,x_scales):
+        n, bins = fluxdistributionhistogram(cobramodel,filename,reaction_id,immune_metabolites = immune_metabolites,trials = trials, percentage = percentage, frequency = frequency, normalize = normalize, binN = binN)
         bins_mean = [0.5 * (bins[i] + bins[i+1]) for i in range(len(n))]
         axes.append(fig.add_subplot(position))
         axes[-1].scatter(bins_mean, n)
@@ -323,6 +341,8 @@ def plotfluxdistributions(cobramodel,filename,reaction_ids,positions,trials = 20
             plt.ylim(0,0.15)
         else:
             plt.ylim([0,trials])
+        if scaling is not None:
+            plt.xlim(list(scaling))
         #plt.ylim(0,
     plt.show()
 
@@ -480,12 +500,14 @@ if __name__ == "__main__":
     #plotfluxdistributions(iJR904,'substrates.txt',reaction_ids,positions,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
 
     reaction_ids2 = ['TPIA','NADF','R0035','GSKx1']
+    x_scales =[(-0.22,-0.08),(3e-6,8e-6),(-0.40,0.1),(0,0.008)]
     #random = randomizemedium(iJE660a,'iJE660a_substrates.txt',50, limit = -1000)s
-    
-    plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
 
-    
-    
+    #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,x_scales = [],trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)    
+    #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
+
+    immune = ['CO2_e','GLU_e','K_e','NH3_e','O2_e','PI_e','SLF_e']
+    plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,immune_metabolites = immune,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
        
     
         
