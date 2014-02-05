@@ -1,0 +1,96 @@
+M_AC_e Acetate
+M_ACAL_e Acetaldehyde
+M_AD_e Adenine
+M_ADN_e Adenosine
+M_AKG_e a-Ketoglutarate
+M_ALA_e Alanine
+M_AMP_e Adenosine monophosphate
+M_ARAB_e Arabinose
+M_ARG_e Arginine
+M_ASN_e Asparagine
+M_ASP_e Aspartate
+M_BCAA_e Branched chain amino acid
+M_C140_e Myristic acid
+M_C160_e Palmitic acid
+M_C180_e Stearic acid
+M_CO2_e Carbon dioxide
+M_CYS_e Cysteine
+M_CYTD_e Cytidine
+M_CYTS_e Cytosine
+M_DA_e Deoxyadenosine
+M_DALA_e D-Alanine
+M_DC_e Deoxycytidine
+M_DG_e Deoxyguanosine
+M_DHA_e Dihydroxyacetone 
+M_DIN_e Deoxyinosine
+M_DIPEP_e Dipeptide
+M_DSER_e D-Serine
+M_DT_e Thymidine
+M_DU_e Deoxyuridine
+M_ETH_e Ethanol
+M_FOR_e Formate
+M_FRU_e Fructose 
+M_FUC_e Fucose
+M_FUM_e Fumarate
+M_GABA_e 4-Aminobutanoate
+M_GL_e Glycerol
+M_GL3P_e Glycerol 3-phosphate
+M_GLAC_e Galactose
+M_GLAL_e D-Glyceraldehyde
+M_GLC_e a-D-Glucose
+M_GLCN_e Gluconate
+M_GLN_e Glutamine
+M_GLT_e Glucitol
+M_GLTL_e Galacitol
+M_GLU_e Glutamate
+M_GLY_e Glycine
+M_GN_e Guanine
+M_GSN_e Guanosine
+M_HIS_e Histidine 
+M_HYXN_e Hypoxanthine
+M_ILE_e Isoleucine
+M_INS_e Inosine
+M_K_e Potassium
+M_LAC_e D-Lactate
+M_LEU_e Leucine
+M_LYS_e L-Lysine
+M_MAL_e Malate
+M_MAN_e Mannose
+M_MDAP_e Meso-diaminopimelate
+M_MELI_e Melibiose
+M_MET_e Methionine
+M_MLT_e Maltose
+M_MNT_e Mannitol
+M_NA_e Sodium
+M_NAD_e Nicotinamide adenine dinucleotide
+M_NH3_e Ammonia
+M_NMN_e Nicotinamide mononucleotide
+M_O2_e Oxygen
+M_OPEP_e Oligopeptide
+M_ORN_e Ornithine
+M_PEPT_e Peptide
+M_PHE_e Phenylalanine
+M_PI_e Phosphate (inorganic)
+M_PNTO_e Pantothenate
+M_PRO_e Proline
+M_PTRC_e Putrescine
+M_PYR_e Pyruvate
+M_RIB_e Ribose
+M_RMN_e Rhamnose
+M_SER_e Serine 
+M_SLA_e Sialic acid
+M_SLF_e Sulfate
+M_SPMD_e Spermidine
+M_SUC_e Sucrose
+M_SUCC_e Succinate
+M_THR_e Threonine
+M_TRE_e Trehalose
+M_TRP_e Tryptophan
+M_TYR_e Tyrosine
+M_URA_e Uracil
+M_UREA_e Urea
+M_URI_e Uridine
+M_VAL_e Valine
+M_XAN_e Xanthine
+M_XTSN_e Xanthosine
+M_XYL_e Xylose

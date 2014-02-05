@@ -526,7 +526,7 @@ if __name__ == "__main__":
     immune = ['CO2_e','GLU_e','K_e','NH3_e','O2_e','PI_e','SLF_e']
     #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,immune_metabolites = immune,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
 
-    strftime("%Y-%m-%d %H:%M:%S")
+    print strftime("%Y-%m-%d %H:%M:%S")
     #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,immune_metabolites = immune,x_scales = x_scales,trials = 2000, percentage = 50, frequency = True, normalize = True, binN = 100)
     plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,immune_metabolites = immune,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
    
