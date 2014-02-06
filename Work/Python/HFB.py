@@ -366,36 +366,7 @@ if __name__ == "__main__":
     from cobra.io.sbml import create_cobra_model_from_sbml_file
     from cobra import flux_analysis
 
-    cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
-
-    cobramodel.optimize(solver='gurobi')
-
-    reactions = cobramodel.reactions
-    metabolites = cobramodel.metabolites
-
-    metabolite = metabolites.get_by_id('QH2_c')
-    reaction = reactions.get_by_id('cyoABCD')
-
-    print 'Run 1:\n'
-    HFB = HFBreactions(cobramodel,cobramodel.solution.x_dict)
-    print 'Run 2:\n'
-    HFB2 = HFBreactions(cobramodel,cobramodel.solution.x_dict)
-
     
-    #iJO1366b = create_cobra_model_from_sbml_file('../SBML/iJO1366b.xml')
-
-    #iJO1366b.optimize(solver='gurobi')
-    
-
-    iJR904 = create_cobra_model_from_sbml_file('../SBML/Ec_iJR904.xml')
-    iJR904.reactions.get_by_id('BiomassEcoli').objective_coefficient = 1
-    bm = iJR904.reactions.get_by_id('BiomassEcoli')
-
-    #Retrieve all exchange reaction
-    exchange_reactions = [x for x in iJR904.reactions if len(x.get_reactants()) == 0 or len(x.get_products())==0]
-    #alternative: system_boundary_reactions = [x for x in model.reactions if x.boundary == 'system_boundary']
-    #See https://groups.google.com/forum/#!topic/cobra-pie/IPIOq30i-js
-
     iJE660a = create_cobra_model_from_sbml_file('iJE660a_fromMPS.sbml')
 
     iJE660a.reactions.get_by_id('EX_NH3').lower_bound = -100
@@ -409,10 +380,23 @@ if __name__ == "__main__":
     iJE660a.reactions.get_by_id('EX_SLF').lower_bound = -1000
 
     #Set maximal carbon source uptake:
-    #iJE660a.reactions.get_by_id('EX_GLU').lower_bound = -20
-    iJE660a.reactions.get_by_id('EX_SUCC').lower_bound = -20
-    
+    iJE660a.reactions.get_by_id('EX_GLU').lower_bound = -20
+    #iJE660a.reactions.get_by_id('EX_SUCC').lower_bound = -20
 
+    iJE660a.optimize(solver='gurobi')
+    glutamateHFB = HFBnetwork(iJE660a,iJE660a.solution.x_dict, grouped = False)
+
+    HFBtoSIF(glutamateHFB,'GluHFB.sif')
+
+    iJR904 = create_cobra_model_from_sbml_file('../SBML/Ec_iJR904.xml')
+    iJR904.reactions.get_by_id('BiomassEcoli').objective_coefficient = 1
+    bm = iJR904.reactions.get_by_id('BiomassEcoli')
+
+    #Retrieve all exchange reaction
+    exchange_reactions = [x for x in iJR904.reactions if len(x.get_reactants()) == 0 or len(x.get_products())==0]
+    #alternative: system_boundary_reactions = [x for x in model.reactions if x.boundary == 'system_boundary']
+    #See https://groups.google.com/forum/#!topic/cobra-pie/IPIOq30i-js
+ 
     for rx in exchange_reactions:
         rx.lower_bound = 0
     
@@ -429,37 +413,6 @@ if __name__ == "__main__":
     iJR904.reactions.get_by_id('EX_k_e_').lower_bound = -1000 #Potassium
     iJR904.reactions.get_by_id('EX_pi_e_').lower_bound = -1000
     iJR904.reactions.get_by_id('EX_so4_e_').lower_bound = -1000
-    
-
-
-    iJR904.optimize(solver = 'gurobi')
-
-    print 'iJR904 solution:',iJR904.solution
-
-    succCoA = iJR904.solution.x_dict['SUCOAS']
-
-    #normflux = fluxvector / np.linalg.norm(fluxvector)
-
-    #z = HFBreactions(iJO1366b)
-
-    network = HFBnetwork(cobramodel,cobramodel.solution.x_dict)
-
-    HFBtoSIF(network,'test.sif')
-
-    metabolites = cobramodel.metabolites
-
-    fluxdict = cobramodel.solution.x_dict
-    #fluxdictGS = iJO1366b.solution.x_dict
-    m = metabolites.get_by_id("H_e")
-
-    connections = connectHFBmetabolites(cobramodel,fluxdict,reaction.id)
-
-    pgl = reactions.get_by_id('pgl')
-
-    pglconnections = connectHFBmetabolites(cobramodel,fluxdict,pgl.id)
-
-   
-    #HFBdetails(cobramodel,HFB,fluxdict, hold = True)
 
 
     '''
@@ -524,6 +477,7 @@ if __name__ == "__main__":
     #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
 
     immune = ['CO2_e','GLU_e','K_e','NH3_e','O2_e','PI_e','SLF_e']
+    immune = ['CO2_e','GLU_e','K_e','NH3_e','O2_e','PI_e','SLF_e','SUCC_e']
     #plotfluxdistributions(iJE660a,'iJE660a_substrates.txt',reaction_ids2,positions,immune_metabolites = immune,x_scales = x_scales,trials = 500, percentage = 50, frequency = True, normalize = True, binN = 100)
 
     print strftime("%Y-%m-%d %H:%M:%S")
