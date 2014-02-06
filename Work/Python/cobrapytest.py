@@ -18,7 +18,7 @@ iJO1366b = create_cobra_model_from_sbml_file('../SBML/iJO1366b.xml')
 
 ECME.optimize(solver='gurobi')
 
-#print 'ECME:',ECME.solution.f
+print 'ECME:',ECME.solution.f
 
 
 SCHUETZR.optimize(solver='gurobi')
