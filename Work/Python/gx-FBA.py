@@ -23,7 +23,7 @@ def metabolitefluxes(metabolite_id,cobramodel):
     for reaction in cobramodel.metabolites.get_by_id(metabolite_id).get_reaction():
         print reaction.id,reaction.get_coefficient(metabolite_id)*cobramodel.solution.x_dict[reaction.id]
 
-def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, exprType = 2, verbose = True,FVAcondition = 2, wait = False,treshold = 0.5):
+def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, exprType = 2, verbose = True,FVAcondition = 2, wait = False,treshold = 0.5,objectiveweights = 'log'):
     if verbose:
         print 'Performing gxFBA. Verbose = True.'
         print 'Provided gene expression ratios:'
@@ -176,21 +176,33 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
                 reaction.upper_bound = Ci_mRNA * wildtype_averageflux
             else:
                 reaction.upper_bound = Ci_mRNA * wildtype[reaction.id]
-            #if verbose:
-            #    reactionInfo(reaction.id)
-                
-            reaction.objective_coefficient = max(logvalues)*wildtype[reaction.id] / wt_avg[reaction.id]
+            #Set the objective function coefficient: Ci = log(Ci_mRNA) / (v_i average):
+            if objectiveweights == 'log':
+                reaction.objective_coefficient = max(logvalues) / wt_avg[reaction.id]
+            elif objectiveweights =='logabs':
+                reaction.objective_coefficient = max(logvalues) / wt_avg[reaction.id]
+            elif objectiveweights == 'ratios':
+                reaction.objective_coefficient = Ci_mRNA / wt_avg[reaction.id]
+            elif objectiveweights == 'pureratios':
+                reaction.objective_coefficient = Ci_mRNA
+            
         elif sign < 0:
             Ci_mRNA = 2**min(logvalues) ##    For reactions dependent on several genes (several mRNA values), use the maximal up/down-regulation value.
             if wildtype[reaction.id] == 0:
                 pass
             else:
                 reaction.lower_bound = Ci_mRNA * wildtype[reaction.id]
+            #Set the new objective function coefficient: Ci = log(Ci_mRNA) / (v_i average):
+            if objectiveweights == 'log':
+                reaction.objective_coefficient = min(logvalues) / wt_avg[reaction.id]
+            elif objectiveweights =='logabs':
+                reaction.objective_coefficient = abs(min(logvalues)) / wt_avg[reaction.id]
+            elif objectiveweights =='ratios':
+                reaction.objective_coefficient = Ci_mRNA / wt_avg[reaction.id]
+            elif objectiveweights == 'pureratios':
+                reaction.objective_coefficient = Ci_mRNA
         if verbose:
             reactionInfo(reaction.id)
-        ##5) Construct the new objective function: Z = sum over reactions in T:  log(Ci_mRNA) *v_i / (v_i average):
-        reaction.objective_coefficient = min(logvalues)*wildtype[reaction.id] / wt_avg[reaction.id]
-
     if verbose:
         print 'New objective function:'
         #print {reaction.id:reaction.objective_coefficient for reaction in T}
@@ -261,6 +273,12 @@ if __name__ == "__main__":
     cobramodel_2 = deepcopy(cobramodel_1)
 
     gx = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True)
+
+    #gx2 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, objectiveweights = 'logabs')
+
+    #gx3 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, objectiveweights = 'ratios')
+
+    gx4 = gx = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, objectiveweights = 'pureratios')
 
     #Confirm FVA result for upper_gly by optimizing with upper_gly as objective:
     #example_b.reactions.get_by_id('R8_Biomass').objective_coefficient = 0
