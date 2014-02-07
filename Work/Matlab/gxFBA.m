@@ -269,7 +269,7 @@ for i=keyset
             modelgxfba.ub(rx) = rxExMap(rx)*wt.x(rx);
         end
     end
-    modelgxfba.c(rx) = log2( rxExMap(rx) ) / wt_avg(rx); #Not multiplying by v_i in the numerator?
+    modelgxfba.c(rx) = log2( rxExMap(rx) ) / wt_avg(rx); #Not multiplying by v_i in the numerator? No, that's correct. The v_i is the flux value, not a factor of the objective coefficient.
 end
 Z = modelgxfba.c;
 
