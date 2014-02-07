@@ -1,6 +1,7 @@
 #gx-FBA.p
 import cobra
 from cobra.io.sbml import create_cobra_model_from_sbml_file
+from cobra.io.sbml import write_cobra_model_to_sbml_file
 import numpy as np
 from collections import defaultdict
 from math import log
@@ -13,6 +14,30 @@ def hold():
     print '\n'
 
 
+def vectorToText(fluxvector,filename,decimal = ','):
+    target = open(filename, 'w')
+    for flux in fluxvector:
+        target.write(str(flux).replace('.',decimal))
+        target.write('\t')
+    target.close()
+    return
+
+
+def FAMEtoTXT(filein,fileout, decimal = ','):
+    with open(filein, 'r') as sourcefile:
+        target = open(fileout, 'w')
+        for line in sourcefile:
+            flux = line.split()[1].replace('.',decimal)
+            print 'line:',line
+            print 'flux:',flux
+            target.write(flux)
+            target.write('\t')
+        target.close()
+    return
+        
+    
+
+
 def metabolitefluxsum(metabolite_id,cobramodel, abs = False):
     if abs:
         return sum([abs(cobramodel.solution.x_dict[reaction.id]*reaction.get_coefficient(metabolite_id)) for reaction in cobramodel.metabolites.get_by_id(metabolite_id).get_reaction()])
@@ -23,7 +48,7 @@ def metabolitefluxes(metabolite_id,cobramodel):
     for reaction in cobramodel.metabolites.get_by_id(metabolite_id).get_reaction():
         print reaction.id,reaction.get_coefficient(metabolite_id)*cobramodel.solution.x_dict[reaction.id]
 
-def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, exprType = 2, verbose = True,FVAcondition = 2, wait = False,treshold = 0.5,objectiveweights = 'log'):
+def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, exprType = 2, verbose = True,FVAcondition = 2, wait = False,treshold = 0.5,objectiveweights = 'log',dumpmodel = False):
     if verbose:
         print 'Performing gxFBA. Verbose = True.'
         print 'Provided gene expression ratios:'
@@ -230,6 +255,18 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
 
     print 'ATP fluxes:',metabolitefluxes('atp_c',cobramodel_2)
     print ''
+
+    vectorToText(cobramodel_2.solution.x,'flux.txt')
+    #vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'objective.txt')
+    vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'objective.txt', decimal = '.')
+    vectorToText([reaction.lower_bound for reaction in cobramodel_1.reactions],'FBA-lb.txt')
+    vectorToText([reaction.upper_bound for reaction in cobramodel_1.reactions],'FBA-ub.txt')
+    vectorToText([reaction.lower_bound for reaction in cobramodel_2.reactions],'gxFBA-lb.txt')
+    vectorToText([reaction.upper_bound for reaction in cobramodel_2.reactions],'gxFBA-ub.txt')
+
+    if dumpmodel:
+        write_cobra_model_to_sbml_file(cobramodel_2,'dumpedmodel.xml')
+    
     return cobramodel_2
 
 
@@ -253,6 +290,10 @@ if __name__ == "__main__":
     #print example_a.solution.x_dict
 
     example_b = create_cobra_model_from_sbml_file('../SBML/gxfba_example.xml')
+
+
+    example_c = create_cobra_model_from_sbml_file('../SBML/gx-fba_corrected.xml')
+    example_c.optimize(solver='gurobi')
 ##    gx-FBA example model 2:
 ##    Parameters:
 ##    Objective: Biomass (R8_Biomass)
@@ -272,14 +313,18 @@ if __name__ == "__main__":
     cobramodel_1 = example_b
     cobramodel_2 = deepcopy(cobramodel_1)
 
-    gx = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True)
+    #gx = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True)
 
     #gx2 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, objectiveweights = 'logabs')
 
     #gx3 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, objectiveweights = 'ratios')
 
-    gx4 = gx = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, objectiveweights = 'pureratios')
+    #cobramodel_1 = example_b
+    cobramodel_2 = deepcopy(cobramodel_1)
+    
+    #gx4 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, objectiveweights = 'pureratios')
 
+    gx5 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, dumpmodel = True)
     #Confirm FVA result for upper_gly by optimizing with upper_gly as objective:
     #example_b.reactions.get_by_id('R8_Biomass').objective_coefficient = 0
     #example_b.reactions.get_by_id('R1_uppergly').objective_coefficient = 1
@@ -288,4 +333,15 @@ if __name__ == "__main__":
     atp_reactions = ['R1_uppergly','R2_lowergly','R6_fumar','R8_biomass','R9_atpm']
 
     #metabolitefluxes('ATP_c',model)
+
+    gprlist2 = {'V2':['R2_lowergly'],'V5':['R5_akgdh']}
+
+    for reaction in gx5.reactions:
+        reaction.objective_coefficient = 0
+
+    gx5.reactions.get_by_id('R1_uppergly').objective_coefficient = 0.871257308653
+    gx5.optimize(solver='gurobi')
+    sol =  gx5.solution.x_dict
+    print 'solution X:'
+    print gx5.solution.x_dict
     
