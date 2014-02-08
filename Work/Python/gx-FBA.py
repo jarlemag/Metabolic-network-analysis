@@ -28,8 +28,8 @@ def FAMEtoTXT(filein,fileout, decimal = ','):
         target = open(fileout, 'w')
         for line in sourcefile:
             flux = line.split()[1].replace('.',decimal)
-            print 'line:',line
-            print 'flux:',flux
+            #print 'line:',line
+            #print 'flux:',flux
             target.write(flux)
             target.write('\t')
         target.close()
@@ -257,8 +257,9 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     print ''
 
     vectorToText(cobramodel_2.solution.x,'flux.txt')
+    print 'Flux solution dumped to flux.txt'
     #vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'objective.txt')
-    vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'objective.txt', decimal = '.')
+    vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'objective.txt', decimal = ',')
     vectorToText([reaction.lower_bound for reaction in cobramodel_1.reactions],'FBA-lb.txt')
     vectorToText([reaction.upper_bound for reaction in cobramodel_1.reactions],'FBA-ub.txt')
     vectorToText([reaction.lower_bound for reaction in cobramodel_2.reactions],'gxFBA-lb.txt')
@@ -324,7 +325,7 @@ if __name__ == "__main__":
     
     #gx4 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, objectiveweights = 'pureratios')
 
-    gx5 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, dumpmodel = True)
+    #gx5 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, dumpmodel = True)
     #Confirm FVA result for upper_gly by optimizing with upper_gly as objective:
     #example_b.reactions.get_by_id('R8_Biomass').objective_coefficient = 0
     #example_b.reactions.get_by_id('R1_uppergly').objective_coefficient = 1
@@ -336,12 +337,7 @@ if __name__ == "__main__":
 
     gprlist2 = {'V2':['R2_lowergly'],'V5':['R5_akgdh']}
 
-    for reaction in gx5.reactions:
-        reaction.objective_coefficient = 0
-
-    gx5.reactions.get_by_id('R1_uppergly').objective_coefficient = 0.871257308653
-    gx5.optimize(solver='gurobi')
-    sol =  gx5.solution.x_dict
-    print 'solution X:'
-    print gx5.solution.x_dict
+    gx6 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,gprlist2,exprType = 1, wait = True, dumpmodel = True,objectiveweights = 'pureratios')
+    
+   
     
