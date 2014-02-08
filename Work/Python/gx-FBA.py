@@ -14,11 +14,19 @@ def hold():
     print '\n'
 
 
-def vectorToText(fluxvector,filename,decimal = ','):
-    target = open(filename, 'w')
+def vectorToText(fluxvector,filename,decimal = ',', append = False, newline = True, linestart = None):
+    if append:
+        target = open(filename, 'a')
+    else:
+        target = open(filename, 'w')
+    if linestart is not None:
+        target.write(linestart)
+        target.write('\t')
     for flux in fluxvector:
         target.write(str(flux).replace('.',decimal))
         target.write('\t')
+    if newline:
+        target.write('\n')
     target.close()
     return
 
@@ -184,6 +192,7 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
         print 'Lower:',cobramodel_1.reactions.get_by_id(reaction.id).lower_bound,'Upper:',cobramodel_1.reactions.get_by_id(reaction.id).upper_bound
         print 'New reaction bounds:'
         print 'Lower:',reaction.lower_bound,'Upper:',reaction.upper_bound
+        print 'Objective coefficient:',reaction.objective_coefficient
     for reaction in T:
         if wait:
             hold()
@@ -228,11 +237,24 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
                 reaction.objective_coefficient = Ci_mRNA
         if verbose:
             reactionInfo(reaction.id)
+
+    cobramodel_2.reactions.get_by_id('R5_akgdh').lower_bound = 0.65
+    cobramodel_2.reactions.get_by_id('R5_akgdh').upper_bound = 1.3
+    cobramodel_2.reactions.get_by_id('R2_lowergly').lower_bound = 0.8
+    cobramodel_2.reactions.get_by_id('R2_lowergly').upper_bound = 3.42857
+
+    cobramodel_2.reactions.get_by_id('R2_lowergly').objective_coefficient = 1.5
+    cobramodel_2.reactions.get_by_id('R5_akgdh').objective_coefficient = 0.5
+    cobramodel_2.reactions.get_by_id('R1_uppergly').objective_coefficient = 1.5
+    cobramodel_2.reactions.get_by_id('R3_citsyn').objective_coefficient = 0.5
     if verbose:
         print 'New objective function:'
         #print {reaction.id:reaction.objective_coefficient for reaction in T}
         print {reaction.id:reaction.objective_coefficient for reaction in cobramodel_2.reactions}
+        print 'New lower bounds:',[reaction.lower_bound for reaction in cobramodel_2.reactions]
+        print 'New upper bounds:',[reaction.upper_bound for reaction in cobramodel_2.reactions]
         print 'Performing gx-FBA.'
+        
 
     #Solve the gx-FBA problem:
     cobramodel_2.optimize(solver='gurobi')
@@ -253,9 +275,11 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     for metabolite in cobramodel_2.metabolites:
         print metabolite.id,metabolitefluxsum(metabolite.id,cobramodel_2),metabolitefluxsum(metabolite.id,cobramodel_2, abs = True)
 
-    print 'ATP fluxes:',metabolitefluxes('atp_c',cobramodel_2)
-    print ''
+    #print 'ATP fluxes:',metabolitefluxes('atp_c',cobramodel_2)
+    #print ''
 
+    print 'Solution:'
+    print cobramodel_2.solution.x
     vectorToText(cobramodel_2.solution.x,'flux.txt')
     print 'Flux solution dumped to flux.txt'
     #vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'objective.txt')
@@ -264,6 +288,13 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     vectorToText([reaction.upper_bound for reaction in cobramodel_1.reactions],'FBA-ub.txt')
     vectorToText([reaction.lower_bound for reaction in cobramodel_2.reactions],'gxFBA-lb.txt')
     vectorToText([reaction.upper_bound for reaction in cobramodel_2.reactions],'gxFBA-ub.txt')
+
+    vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'A.txt', decimal = ',', linestart = 'C:')
+    #vectorToText([reaction.lower_bound for reaction in cobramodel_1.reactions],'A.txt',append = True, linestart = 'LB:')
+    #vectorToText([reaction.upper_bound for reaction in cobramodel_1.reactions],'A.txt', append = True,linestart = 'UB:')
+    vectorToText([reaction.lower_bound for reaction in cobramodel_2.reactions],'A.txt', append = True, linestart = 'LB:')
+    vectorToText([reaction.upper_bound for reaction in cobramodel_2.reactions],'A.txt.', append = True, linestart = 'UB:')
+    vectorToText(cobramodel_2.solution.x,'A.txt.', append = True, linestart = 'V:')
 
     if dumpmodel:
         write_cobra_model_to_sbml_file(cobramodel_2,'dumpedmodel.xml')
@@ -337,7 +368,7 @@ if __name__ == "__main__":
 
     gprlist2 = {'V2':['R2_lowergly'],'V5':['R5_akgdh']}
 
-    #gx6 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,gprlist2,exprType = 1, wait = True, dumpmodel = True,objectiveweights = 'pureratios')
+    gx6 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, dumpmodel = True,objectiveweights = 'pureratios')
     
    
     TEST = example_b
@@ -372,6 +403,18 @@ if __name__ == "__main__":
     print 'R9:',TEST.solution.x_dict['R9_atpm']
     print 'R13:',TEST.solution.x_dict['R13_pyrexport']
     print 'R15:',TEST.solution.x_dict['R15_co2export']
+
+    print 'Objective:',[reaction.objective_coefficient for reaction in TEST.reactions]
+    print 'Lower bounds:',[reaction.lower_bound for reaction in TEST.reactions]
+    print 'Upper bounds:',[reaction.upper_bound for reaction in TEST.reactions]
+
+    vectorToText([reaction.objective_coefficient for reaction in TEST.reactions],'B.txt', decimal = ',', linestart = 'C:')
+    vectorToText([reaction.lower_bound for reaction in TEST.reactions],'B.txt', append = True, linestart = 'LB:')
+    vectorToText([reaction.upper_bound for reaction in TEST.reactions],'B.txt.', append = True, linestart = 'UB:')
+    vectorToText(TEST.solution.x,'B.txt.', append = True, linestart = 'V:')
+    
+
+    
     
     
     
