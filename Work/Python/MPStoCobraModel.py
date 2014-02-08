@@ -1,8 +1,12 @@
-#MPStoCobraModel.py
+##MPStoCobraModel.py
+##Convert an MPS model file to SBML using CobraPy
+##Syntax: MPStoCobraModel.py filename_in filename_out
+
 import cobra
 from cobra.io.sbml import create_cobra_model_from_sbml_file
 from cobra import Model, Reaction, Metabolite
 from cobra.io.sbml import write_cobra_model_to_sbml_file
+import sys
 
 def convertMPStoCobraModel(filename, verbose = False):
     keywords = ['NAME','ROWS','COLUMNS','RHS','RANGES','BOUNDS','ENDATA']
@@ -17,7 +21,7 @@ def convertMPStoCobraModel(filename, verbose = False):
                 if verbose:
                     print 'keyword found:',linestart
                 lastkeyword = linestart
-            if (lastkeyword == 'NAME') and ("*" not in line):
+            if (lastkeyword == 'NAME'):
                 modelname = line.split(' ')[-1]
                 cobramodel = cobra.Model(modelname)
             #Add metabolites to model:
@@ -44,7 +48,7 @@ def convertMPStoCobraModel(filename, verbose = False):
                     continue #Ignore the "COST" metabolite
                 if metabolite_id not in cobramodel.metabolites:
                     print 'metabolite_id:',metabolite_id
-                    raise Exception ('metabolite not found.')
+                    raise Exception ('Metabolite not found.')
                 else:
                     current_metabolite = cobramodel.metabolites.get_by_id(metabolite_id)
                     
@@ -102,28 +106,13 @@ def convertMPStoCobraModel(filename, verbose = False):
 
 
 if __name__ == "__main__":
-    filename = 'ecoli_iJE660a.mps'
+    
+    filename = sys.argv[1]
+    print 'filename:',filename
+    target = sys.argv[2]
+    print 'target',target
 
     model = convertMPStoCobraModel(filename)
-    metabolites = model.metabolites
-    reactions = model.reactions
-    zwf = model.reactions.get_by_id('ZWF')
-    reactants = zwf.get_reactants()
-    products = zwf.get_products()
+    write_cobra_model_to_sbml_file(model,target)
 
-    PYR = metabolites.get_by_id('PYR')
-    ALAxt = metabolites.get_by_id('ALAxt')
-
-    count  = 0
-    for reaction in reactions:
-        if reaction.id.endswith('xtI') or reaction.id.endswith('xtO'):
-            #print reaction.id
-            count +=1
-
-    model.reactions.get_by_id('Growth').objective_coefficient = 1
-    write_cobra_model_to_sbml_file(model,'iJE660a_fromMPS.sbml')
-
-    model.optimize(solver='gurobi')
-
-    print model.solution
 
