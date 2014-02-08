@@ -337,7 +337,42 @@ if __name__ == "__main__":
 
     gprlist2 = {'V2':['R2_lowergly'],'V5':['R5_akgdh']}
 
-    gx6 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,gprlist2,exprType = 1, wait = True, dumpmodel = True,objectiveweights = 'pureratios')
+    #gx6 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,gprlist2,exprType = 1, wait = True, dumpmodel = True,objectiveweights = 'pureratios')
     
    
+    TEST = example_b
+    
+    TEST.reactions.get_by_id('R2_lowergly').lower_bound = 0.8
+    TEST.reactions.get_by_id('R2_lowergly').upper_bound = 3.42857
+
+
+    TEST.reactions.get_by_id('R5_akgdh').lower_bound = 0.65
+    TEST.reactions.get_by_id('R5_akgdh').upper_bound = 1.3
+
+    TEST.reactions.get_by_id('R8_Biomass').objective_coefficient = 0
+    
+    TEST.reactions.get_by_id('R2_lowergly').objective_coefficient = 1.5
+    TEST.reactions.get_by_id('R5_akgdh').objective_coefficient = 0.5
+    TEST.reactions.get_by_id('R1_uppergly').objective_coefficient = 1.5
+    TEST.reactions.get_by_id('R3_citsyn').objective_coefficient = 0.5
+
+    #TEST.reactions.get_by_id('R8_Biomass').objective_coefficient = -1
+    TEST.optimize(solver='gurobi')
+    
+    print 'solution:'
+    
+    print 'R1:',TEST.solution.x_dict['R1_uppergly']
+    print 'R2:',TEST.solution.x_dict['R2_lowergly']
+    print 'R3:',TEST.solution.x_dict['R3_citsyn']
+    print 'R4:',TEST.solution.x_dict['R4_acon']
+    print 'R5:',TEST.solution.x_dict['R5_akgdh']
+    print 'R6:',TEST.solution.x_dict['R6_fumar']
+    print 'R7:',TEST.solution.x_dict['R7_oxysh']
+    print 'R8:',TEST.solution.x_dict['R8_Biomass']
+    print 'R9:',TEST.solution.x_dict['R9_atpm']
+    print 'R13:',TEST.solution.x_dict['R13_pyrexport']
+    print 'R15:',TEST.solution.x_dict['R15_co2export']
+    
+    
+    
     
