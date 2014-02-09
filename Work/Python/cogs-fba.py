@@ -1,12 +1,13 @@
 #cogs-fba.py
 #Main module file for COGS-FBA
+import cobra
 import numpy as np
 import matplotlib.pyplot as plt
 from cobra.io.sbml import create_cobra_model_from_sbml_file
 from matplotlib import cm
+from matplotlib.patches import Polygon
 
 from mpl_toolkits.mplot3d import Axes3D
-
 
 
 
@@ -56,8 +57,31 @@ class Options:
 
 '''
 
-def drawFluxLimits(cobramodel,reactions):
-    pass
+def drawFluxSpace(cobramodel,reactionA,reactionB,):
+    FVA_result = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel,fraction_of_optimum = 0,the_reactions=[reactionA])
+    Amin = FVA_result[reactionA]['minimum']
+    Amax = FVA_result[reactionA]['maximum']
+    fluxlinspace = np.linspace(Amin,Amax)
+    upper = []
+    lower = []
+    for flux in fluxlinspace:
+        cobramodel.reactions.get_by_id(reactionA).lower_bound = flux
+        cobramodel.reactions.get_by_id(reactionA).upper_bound = flux
+        FVAres = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel,fraction_of_optimum = 0,the_reactions=[reactionB])
+        minimum = FVAres[reactionB]['minimum']
+        maximum = FVAres[reactionB]['maximum']
+
+        upper.append([flux,maximum])
+        lower.append([flux,minimum])
+    vertices = upper + lower[::-1]
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.add_patch(Polygon(vertices, closed = False, fill = True))
+    ax.set_xlim(0,5)
+    ax.set_ylim(0,5)
+    plt.show()
+
+    
 
 
 def z_func(x,y,cobramodel,reactions,boundtolerance = 1e-3):
@@ -114,7 +138,8 @@ if __name__ == "__main__":
     ylimits = [0,20]
     reactions = ['EX_GLC_e','o2']
 
-    PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True)
+    #PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True)
     #X,Y,Z = PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True, noplot = True)
 
-
+    gx = create_cobra_model_from_sbml_file('../SBML/gxfba_example.xml')
+    A = drawFluxSpace(gx,'R2_lowergly','R5_akgdh')
