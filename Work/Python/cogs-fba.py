@@ -81,85 +81,40 @@ def PhenotypePhasePlane(cobramodel,reactions,xlimits,ylimits, verbose = False, b
     X, Y = np.meshgrid(X, Y)
     #X = np.ndarray.flatten(X)
     #Y = np.ndarray.flatten(Y)
-    Z = []
 
-        
     Z = z_func(X, Y,cobramodel,reactions)
+    print 'len:',len(np.isnan(Z))
+    Z[np.isnan(Z)] = 0
 
-    
-    '''
-    points = zip(X,Y)
+
+##    if verbose:
+##        print 'Failed optimizations:',failed
+
     if verbose:
-        print '# of points:',len(points)
-    if wait:
-        message = raw_input('Press Enter to continue')
-        if message == 'abort':
-            print 'Exiting.'
-            return
-    its = 0
-    failed = 0
-    '''
-    '''
-    for point in points:
-        its +=1
-        cobramodel.reactions.get_by_id(reactions[0]).lower_bound = point[0] - boundtolerance
-        cobramodel.reactions.get_by_id(reactions[0]).upper_bound = point[0] + boundtolerance
-
-        cobramodel.reactions.get_by_id(reactions[1]).lower_bound = point[1] - boundtolerance
-        cobramodel.reactions.get_by_id(reactions[1]).upper_bound = point[1] + boundtolerance
-        
-        cobramodel.optimize(solver='gurobi')
-        objval = cobramodel.solution.f
-        Z.append(objval)
-        if objval is None:
-            failed += 1
-        if verbose:
-            print 'Processing point #',its,'z =',objval
-    '''
-
-    #if verbose:
-    #print 'Failed optimizations:',failed
-
-    print 'X:',len(X)
-    print 'Y:',len(Y)
-    print 'Z:',len(Z)
+        print 'Maximum objective value:',Z.max()
     if noplot:
         return [X,Y,Z]
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     #surf = ax.plot_surface(X, Y, Z)
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm,
+    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.RdYlGn,
         linewidth=0, antialiased=False)
+    ax.set_xlabel(reactions[0])
+    ax.set_ylabel(reactions[1])
     fig.colorbar(surf, shrink=0.5, aspect=5)
+    ax.set_xlim(xlimits[0],xlimits[1])
+    ax.set_ylim(ylimits[0],ylimits[1])
     plt.show()
 
 
-    
-SCHUETZR = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
-print 'Optiizing:'
-SCHUETZR.optimize(solver='gurobi')
-print 'solution:',SCHUETZR.solution.f
-cobramodel = SCHUETZR
-xlimits = [-20,0]
-ylimits = [0,20]
-reactions = ['EX_GLC_e','o2']
+if __name__ == "__main__":
 
-PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True)
-#X,Y,Z = PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True, noplot = True)
+    SCHUETZR = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    xlimits = [-20,0]
+    ylimits = [0,20]
+    reactions = ['EX_GLC_e','o2']
 
+    PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True)
+    #X,Y,Z = PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True, noplot = True)
 
-X = [-1,-2,-3,-4]
-Y = [-1,-2,-3,-4]
-X, Y = np.meshgrid(X, Y)
-#X = np.ndarray.flatten(X)
-#Y = np.ndarray.flatten(Y)
-Z = X*Y
-
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-#surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm)
-#surf = ax.plot_surface(X, Y, Z, cmap=cm.jet)
-surf = ax.plot_surface(X, Y, Z, cmap=cm.RdYlGn)
-#fig.colorbar(surf, shrink=0.5, aspect=5)
-plt.show()
 
