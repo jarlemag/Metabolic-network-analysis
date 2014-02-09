@@ -60,7 +60,8 @@ def drawFluxLimits(cobramodel,reactions):
     pass
 
 
-def z_func(cobramodel,x,y,reactions,boundtolerance = 1e-3):
+def z_func(x,y,cobramodel,reactions,boundtolerance = 1e-3):
+        #print 'Reactions:',reactions
         cobramodel.reactions.get_by_id(reactions[0]).lower_bound = x - boundtolerance
         cobramodel.reactions.get_by_id(reactions[0]).upper_bound = x + boundtolerance
 
@@ -68,7 +69,12 @@ def z_func(cobramodel,x,y,reactions,boundtolerance = 1e-3):
         cobramodel.reactions.get_by_id(reactions[1]).upper_bound = y + boundtolerance
         cobramodel.optimize(solver='gurobi')
         return cobramodel.solution.f
-        
+
+
+z_func = np.vectorize(z_func, excluded = ['cobramodel','reactions','boundtolerance'])
+z_func.excluded.add(2)
+z_func.excluded.add(3)
+
 def PhenotypePhasePlane(cobramodel,reactions,xlimits,ylimits, verbose = False, boundtolerance = 1e-3,noplot = False, wait = False):
     X = np.linspace(xlimits[0],xlimits[1])
     Y = np.linspace(ylimits[0],ylimits[1])
@@ -78,7 +84,10 @@ def PhenotypePhasePlane(cobramodel,reactions,xlimits,ylimits, verbose = False, b
     Z = []
 
         
-    Z = z_func(X, Y)
+    Z = z_func(X, Y,cobramodel,reactions)
+
+    
+    '''
     points = zip(X,Y)
     if verbose:
         print '# of points:',len(points)
@@ -89,6 +98,8 @@ def PhenotypePhasePlane(cobramodel,reactions,xlimits,ylimits, verbose = False, b
             return
     its = 0
     failed = 0
+    '''
+    '''
     for point in points:
         its +=1
         cobramodel.reactions.get_by_id(reactions[0]).lower_bound = point[0] - boundtolerance
@@ -104,9 +115,10 @@ def PhenotypePhasePlane(cobramodel,reactions,xlimits,ylimits, verbose = False, b
             failed += 1
         if verbose:
             print 'Processing point #',its,'z =',objval
+    '''
 
     #if verbose:
-    print 'Failed optimizations:',failed
+    #print 'Failed optimizations:',failed
 
     print 'X:',len(X)
     print 'Y:',len(Y)
@@ -132,7 +144,7 @@ xlimits = [-20,0]
 ylimits = [0,20]
 reactions = ['EX_GLC_e','o2']
 
-#PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True)
+PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True)
 #X,Y,Z = PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True, noplot = True)
 
 
