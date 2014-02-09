@@ -7,7 +7,7 @@ from collections import defaultdict
 from math import log
 from copy import deepcopy
 import QPmindist
-
+import random
 
 def hold():
     x = raw_input('Press any key to continue.')
@@ -302,6 +302,42 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     return cobramodel_2
 
 
+
+def sampleOptimalSolutions(cobramodel,biomassreaction = None):
+    tol = 1e-3
+    iterations = 100
+    #Identify the optimal value of the FBA objective function:
+    cobramodel.optimize(solver='gurobi')
+    z = cobramodel.solution.f
+    #For each model reaction, use FVA to identify the upper and lower flux bound, subject to FBA objective optimality:
+    FVAres = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel)
+    #Identify the reaction set R for which the upper and lower bounds are unequal (the flux is allowed to vary):
+    R = [reaction for reaction in FVAres.keys() if abs(FVAres[reaction]['minimum']-FVAres[reaction]['maximum']) > tol]
+
+    itercount = 0
+    Z_gxFBA = []
+    BMmax = []
+    BMmin = []
+    while itercount < iterations:
+        itercount +=1
+
+        #Select a random reaction:
+        randomreaction = random.choice(R)
+        randomflux = random.uniform(FVAres[randomreaction]['minimum'],FVAres[randomreaction]['maximum'])
+        cobramodel.reactions.get_by_id(randomreaction).upper_bound = randomflux
+        cobramodel.reactions.get_by_id(randomreaction).lower_bound = randomflux
+        cobramodel.optimize(solver='gurobi')
+
+        gxFBAsolution = gxFBA(
+
+        Z_gxFBA.append(gxFBAsolution.solution.f)
+        if biomassreaction is not None:
+            bmFVA = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel,the_reactions = [biomassreaction])
+            BMmax.append(bmFVA[biomassreaction]['maximum'])
+            BMmin.append(bmFVA[biomassreaction]['minimum'])
+   
+    return R,FVAres
+
 if __name__ == "__main__":
 
     model = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
@@ -368,7 +404,7 @@ if __name__ == "__main__":
 
     gprlist2 = {'V2':['R2_lowergly'],'V5':['R5_akgdh']}
 
-    gx6 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, dumpmodel = True,objectiveweights = 'pureratios')
+    #gx6 = gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,exprType = 1, wait = True, dumpmodel = True,objectiveweights = 'pureratios')
     
    
     TEST = example_b
@@ -414,8 +450,8 @@ if __name__ == "__main__":
     vectorToText(TEST.solution.x,'B.txt.', append = True, linestart = 'V:')
     
 
-    
-    
+    SCHUETZR = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    R,FVAres = sampleOptimalSolutions(SCHUETZR)    
     
     
     
