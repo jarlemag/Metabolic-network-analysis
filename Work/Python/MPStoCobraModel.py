@@ -1,6 +1,6 @@
 ##MPStoCobraModel.py
-##Convert an MPS model file to SBML using CobraPy
-##Syntax: MPStoCobraModel.py filename_in filename_out
+##Convert an FBA model in MPS format to SBML using CobraPy.
+##Usage: 'MPStoCobraModel.py file_in file_out'
 
 import cobra
 from cobra.io.sbml import create_cobra_model_from_sbml_file
@@ -8,10 +8,10 @@ from cobra import Model, Reaction, Metabolite
 from cobra.io.sbml import write_cobra_model_to_sbml_file
 import sys
 
-def convertMPStoCobraModel(filename, verbose = False):
+def convertMPStoCobraModel(filename, verbose = False,defaultbound = 1000, objective = 'Growth'): 
     keywords = ['NAME','ROWS','COLUMNS','RHS','RANGES','BOUNDS','ENDATA']
     with open(filename, 'r') as sourcefile:
-
+    ##Syntax: MPStoCobraModel.py filename_in filename_out
         metabolite_list = []
         for line in sourcefile:
             if "*" in line:
@@ -24,6 +24,8 @@ def convertMPStoCobraModel(filename, verbose = False):
             if (lastkeyword == 'NAME'):
                 modelname = line.split(' ')[-1]
                 cobramodel = cobra.Model(modelname)
+                cobramodel.id = modelname
+                cobramodel.description = modelname
             #Add metabolites to model:
             if lastkeyword == 'ROWS' and (linestart not in keywords):
                     metabolite_id = line.strip().rsplit(' ',1)[1]
@@ -66,8 +68,8 @@ def convertMPStoCobraModel(filename, verbose = False):
                 if len(data) > 3:
                     bound_value = float(data[3])
                 if bound_type == 'FR':
-                    cobramodel.reactions.get_by_id(reaction_id).lower_bound = -1000
-                    cobramodel.reactions.get_by_id(reaction_id).upper_bound = 1000
+                    cobramodel.reactions.get_by_id(reaction_id).lower_bound = -defaultbound
+                    cobramodel.reactions.get_by_id(reaction_id).upper_bound = defaultbound
                 elif bound_type == 'LO':
                     cobramodel.reactions.get_by_id(reaction_id).lower_bound = bound_value
                 elif bound_type == 'UP':
@@ -99,20 +101,14 @@ def convertMPStoCobraModel(filename, verbose = False):
                     reaction.lower_bound = -bound_in #Make the reaction a combined in/out exchange reaction by allowing negative flow (if allowed by the "in" reaction)
                     cobramodel.reactions.get_by_id(in_reaction_id).remove_from_model() #Remove redundant "in" reactions
                 reaction.id = 'EX_' + metabolite_id #Rename the now combined exchange reaction
-                    
-                    
-    #return rdata  
+
+    if objective is not None and (objective in cobramodel.reactions):
+            cobramodel.reactions.get_by_id(objective).objective_coefficient = 1
+
     return cobramodel
 
-
 if __name__ == "__main__":
-    
     filename = sys.argv[1]
-    print 'filename:',filename
     target = sys.argv[2]
-    print 'target',target
-
     model = convertMPStoCobraModel(filename)
     write_cobra_model_to_sbml_file(model,target)
-
-
