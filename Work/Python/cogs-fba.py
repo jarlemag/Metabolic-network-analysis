@@ -57,6 +57,28 @@ class Options:
 
 '''
 
+def findInactiveReactions(cobramodel,optreq = 1, verbose = True):
+    '''
+    Find reactions in a model which are never active when Z >= optreq*Zmax
+    '''
+    FVAres = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel,fraction_of_optimum = optreq)
+    inactive_set = [key for key in FVAres if (FVAres[key]['minimum'] == 0 and FVAres[key]['maximum'] == 0)]
+    if verbose:
+        print 'FVA result:'
+        print FVAres
+    return inactive_set
+
+def plotInactiveReactions(cobramodel,optreqrange = [0,1]):
+    optreqs = np.linspace(optreqrange, num = 20)
+    inactive_sets = [findInactiveReactions(cobramodel,optreq) for optreq in optreqs ]
+    inactive_number = [len(inactive_set) for inactive_set in inactive_sets]
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.set_xlabel('Optimality requirement (Z/Z_max)')
+    ax.set_ylabel('# Inactive reactions')
+    ax.scatter(optreqs,inactive_number)
+    plt.show()
+
 def drawFluxSpace(cobramodel,reactionA,reactionB,):
     FVA_result = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel,fraction_of_optimum = 0,the_reactions=[reactionA])
     Amin = FVA_result[reactionA]['minimum']
@@ -141,5 +163,5 @@ if __name__ == "__main__":
     #PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True)
     #X,Y,Z = PhenotypePhasePlane(SCHUETZR,reactions,xlimits,ylimits, verbose = True, noplot = True)
 
-    gx = create_cobra_model_from_sbml_file('../SBML/gxfba_example.xml')
-    A = drawFluxSpace(gx,'R2_lowergly','R5_akgdh')
+    #gx = create_cobra_model_from_sbml_file('../SBML/gxfba_example.xml')
+    #A = drawFluxSpace(gx,'R2_lowergly','R5_akgdh')
