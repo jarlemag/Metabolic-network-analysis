@@ -7,6 +7,25 @@ import math
 import timeit
 import time
 from time import strftime
+import os
+
+
+class HighFluxBackbone(object):
+    def __init__(self,cobramodel, fluxdict = 'FBAsolution'):
+        if fluxdict == 'FBAsolution'
+            try:
+                fluxdict = cobramodel.solution.x_dict:
+            except AttributeError:
+                cobramodel.optimize()
+                fluxdict = cobramodel.solution.x_dict
+                if fluxdict is None:
+                    raise Exception('No solution found for FBA problem. Please check model or provide a flux solution.')
+         
+        self.HFBreactions = HFBreactions(cobramodel,fluxdict)
+        self.HFBnetwork = HFBnetwork(cobramodel,fluxdict)
+
+    def saveSIF(self,filename):
+        HFBtoSIF(self.HFBnetwork,filename)
 
 def HFBreactions(cobramodel,fluxdict):
     print 'Finding HFB for model ',cobramodel.description
@@ -153,6 +172,12 @@ def HFBnetwork(cobramodel,fluxdict, grouped = False):
     return networkdict
 
 def HFBtoSIF(networkdict,filename):
+
+    if os.path.exists(filename):
+        confirmation = input('File already exists. Overwrite (Y/N)?')
+        if confirmation != 'Y' or 'y':
+            print 'Operation aborted.'
+            return
     target = open(filename, 'w')
     for reactant in networkdict:
         for product in networkdict[reactant]:
