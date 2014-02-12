@@ -9,6 +9,8 @@ import time
 from time import strftime
 import os
 
+#This is a test of the pre-commit verification system (PEP 8 check.)
+
 
 class HighFluxBackbone(object):
     def __init__(self,cobramodel, fluxdict = 'FBAsolution'):
