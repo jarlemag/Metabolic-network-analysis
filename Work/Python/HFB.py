@@ -226,11 +226,11 @@ def countK(metabolite_id,model,fluxdict,sense = 1):
 def getMassFlux(metabolite_id,model,reaction_id,fluxdict):
     return model.reactions.get_by_id(reaction_id).get_coefficient(metabolite_id)*fluxdit[reaction.id]
 
-def fragmentation(metabolite_id,model,fluxdict, sense = 1):
+def fragmentation(metabolite_id, model, fluxdict, sense=1):
     rx = {}
     for reaction in model.metabolites.get_by_id(metabolite_id).get_reaction():
         massflux = reaction.get_coefficient(metabolite_id) * fluxdict[reaction.id]
-        if cmp(massflux,0) == cmp(sense,0):
+        if cmp(massflux, 0) == cmp(sense, 0):
             rx[reaction.id] = fluxdict[reaction.id]
     if sum(rx.values()) == 0:
         return 0
@@ -238,7 +238,7 @@ def fragmentation(metabolite_id,model,fluxdict, sense = 1):
         Y = sum([(flux/sum(rx.values()))**2 for flux in rx.values()])
         return Y
 
-def avgfragmentation(model,fluxdict,k,sense = 1):
+def avgfragmentation(model,fluxdict,k,sense=1):
     values = []
     for metabolite in model.metabolites:
         if countK(metabolite.id,model,fluxdict, sense = sense) == k:

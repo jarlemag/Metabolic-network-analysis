@@ -57,6 +57,16 @@ class Options:
 
 '''
 
+
+class SimpleCobraModel(object):
+    def __init__(self,model_id):
+        self.id = model_id
+
+
+
+def createSimpleCobraModelfromXML(filename):
+    pass
+
 def findInactiveReactions(cobramodel,optreq = 1, verbose = True):
     '''
     Find reactions in a model which are never active when Z >= optreq*Zmax
