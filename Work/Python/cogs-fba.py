@@ -67,6 +67,25 @@ class SimpleCobraModel(object):
 def createSimpleCobraModelfromXML(filename):
     pass
 
+
+def writeModelToSIF(cobramodel,filename):
+    target = open(filename,'w')
+    for metabolite in cobramodel.metabolites:
+        reactions = metabolite._reaction
+        for reaction in reactions:
+            coef = reaction.get_coefficient(metabolite.id)
+            target.write(metabolite.id)
+            target.write(' ')
+            if coef < 0:
+                target.write('reactant')
+            else:
+                target.write('product')
+            target.write(' ')
+            target.write(reaction.id)
+            target.write('\n')
+    target.close()
+    return
+
 def findInactiveReactions(cobramodel,optreq = 1, verbose = True):
     '''
     Find reactions in a model which are never active when Z >= optreq*Zmax
