@@ -73,7 +73,7 @@ def calculabilityAnalysis(N_known,N_unknown,r_known = None,makeconsistent = True
         if verbose:
             print 'The system is fully determined.'
         if r_known is not None:
-        r_unknown = calculaterates(N_known,N_unknown,r_known)
+            r_unknown = calculaterates(N_known,N_unknown,r_known)
         return None,r_unknown
     #1.Balancing:
     #a. Determine if the system is redundant.

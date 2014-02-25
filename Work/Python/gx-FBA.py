@@ -328,7 +328,7 @@ def sampleOptimalSolutions(cobramodel,biomassreaction = None):
         cobramodel.reactions.get_by_id(randomreaction).lower_bound = randomflux
         cobramodel.optimize(solver='gurobi')
 
-        gxFBAsolution = gxFBA(
+        gxFBAsolution = gxFBA(cobramodel) #Does this ,make sense?
 
         Z_gxFBA.append(gxFBAsolution.solution.f)
         if biomassreaction is not None:
@@ -360,8 +360,8 @@ if __name__ == "__main__":
     example_b = create_cobra_model_from_sbml_file('../SBML/gxfba_example.xml')
 
 
-    example_c = create_cobra_model_from_sbml_file('../SBML/gx-fba_corrected.xml')
-    example_c.optimize(solver='gurobi')
+   # example_c = create_cobra_model_from_sbml_file('../SBML/gx-fba_corrected.xml') #The model file has disappeared. WTH?
+    #example_c.optimize(solver='gurobi')
 ##    gx-FBA example model 2:
 ##    Parameters:
 ##    Objective: Biomass (R8_Biomass)

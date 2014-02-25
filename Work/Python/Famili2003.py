@@ -5,9 +5,16 @@ import sympy
 
 
 
-def findEigenReaction(cobramodel):
+def findEigenReactions(cobramodel,removedreactions):
+
+    #Remove the biomass reaction:
+    cobramodel.remove_reactions(removedreactions)
+        
+    
     cobramodel.to_array_based_model()
     u,s, vh = np.linalg.svd(cobramodel.S)
+    eigenreactions = []
+    
     pass
 
 def plotSingularValues():
