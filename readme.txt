@@ -1,18 +1,18 @@
-This file contains basic documentation for the comparative Genome-Scale Flux Balance Analysis (COGS-FBA) package 
+This repository contains various MATLAB and Python scripts for analyzing metabolic networks and performing Flux Balance Analysis (FBA). 
 
 
-MATLAB version:
 
-The MATLAB version was developed for a half-semester project at NTNU fall 2012, and has limited functionality. It will not be developed further. 
-For further information and results obtained using this version, see the report folder.
+MATLAB files:
+
+The MATLAB version was developed for a half-semester project at NTNU fall 2012. The scripts can be used to compare the results of Flux Balance Analysis (FBA) with experimentally determined flux data, calculate the euclidean distance between experimental and computed fluxes and determine which model parameters (combinations of objective function and constraints) which are most consistent with the experimental data. The MATLAB scripts will not be developed further, as they are being superceded by the Python scripts.
 
 
 
 Python:
 
-Development of the Python package started in Fall 2013. COGS-FBA requires the free FBA package CobraPy, and a linear optimization solver supported by that package, such as Gurobi.
+The Python scripts expand on the functionality of the MATLAB files, and also include implementations of several non-related methods previously only available as MATLAB scripts or not available as open source code. The scripts were written starting in in Fall 2013. Most scripts requires the free FBA package CobraPy, a linear optimization solver supported by that package, such as Gurobi. NumPy and/or SciPy are also required for most of the scripts.
 
-A description of the files and functions follows below:
+A description of some of the scripts and functions follows below:
 
 optreqanalysis.py:
 Used to evaluate the minimal achievable distance between a FBA solution and a set of experimental fluxes, for various objective-optimality requirements with respect to the FBA solution.
