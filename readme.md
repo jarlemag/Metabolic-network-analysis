@@ -1,4 +1,4 @@
-This repository contains MATLAB and Python scripts for analyzing metabolic networks and  performing Flux Balance Analysis (FBA). 
+This repository contains MATLAB and Python scripts for metabolic network analysis and  performing Flux Balance Analysis (FBA). 
 
 
 File and resource types:
