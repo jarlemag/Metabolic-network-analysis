@@ -104,6 +104,15 @@ Writes all reaction IDs in a CobraPy model to a text file.
 The function fluxreport takes as input a vector of fluxes corresponding to the set of experimental reaction rates, and returns both sets of fluxes, the difference between each corresponding flux, the uncertainty in the experimental fluxes and the difference between the fluxes divided by that uncertainty.
 
 
+
+**loadData.py:**
+
+Loads flux values from stored experimental data .
+
+Dependencies: "xml" package (included with Python)
+
+
+
 Data files:
 -----------
 For the scripts comparing experimental and computed flux values, the following data must be supplied :

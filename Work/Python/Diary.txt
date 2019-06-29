@@ -1,0 +1,7 @@
+29.06.19:
+Cloned repository from Bitbucket to Asus laptop
+Updated to do.txt
+Installed Jypyter, osqp, cobrapy
+Created Jupyter notebook "notebook" in Python directory
+ran cobrapy test_all test suite. 85 passed, 4 skipped, 9 failed, 14 warnings in 29.83 seconds.
+
