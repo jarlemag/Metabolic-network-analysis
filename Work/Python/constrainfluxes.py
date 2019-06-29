@@ -19,10 +19,10 @@ def constrainfluxes(model,expfluxdict,experrdict,reactionmap,tolerance = 1, flux
         if len(modrxns) > 1: #If more than one model reaction is listed for a experimental reaction
             token_id = 't{exprxn}'.format(exprxn = expid)
             if token_id in model.reactions:
-                print 'Token reaction found in model for experimental reaction ',expid
+                print('Token reaction found in model for experimental reaction ',expid)
                 modrxnid = token_id
             else:
-                print 'Link contains more than model reaction, but no token reaction was found. Skipping.'
+                print('Link contains more than model reaction, but no token reaction was found. Skipping.')
         else:
             modrxnid = modrxns[0]['rxid']
             coef = modrxns[0]['coef']
@@ -31,15 +31,15 @@ def constrainfluxes(model,expfluxdict,experrdict,reactionmap,tolerance = 1, flux
             expflux = expfluxdict[expid]
             experror = experrdict[expid]
         else:
-            print 'No flux value found for experimental reaction ',expid,'. Skipping reaction.'
+            print('No flux value found for experimental reaction ',expid,'. Skipping reaction.')
             continue
 
         modelreaction = model.reactions.get_by_id(modrxnid)
         if verbose:
-            print 'Constraining experimental reaction ',expid
+            print('Constraining experimental reaction ',expid)
 
         if debug:
-            print 'coef:',coef
+            print('coef:',coef)
 
         if coef > 0:
             modelreaction.upper_bound = expflux+(experror*tolerance)
@@ -48,12 +48,12 @@ def constrainfluxes(model,expfluxdict,experrdict,reactionmap,tolerance = 1, flux
             modelreaction.upper_bound = -(expflux+experror*tolerance)
             modelreaction.lower_bound = -(expflux-experror*tolerance)
         else:
-            print 'Unexpected reaction coefficient in reaction map. Skipping reaction.'
+            print('Unexpected reaction coefficient in reaction map. Skipping reaction.')
             continue 
 
         if verbose:
-            print 'New upper bound:',modelreaction.upper_bound
-            print 'New lower bound:',modelreaction.lower_bound
+            print('New upper bound:',modelreaction.upper_bound)
+            print('New lower bound:',modelreaction.lower_bound)
     return model
 
 if __name__ == "__main__":
