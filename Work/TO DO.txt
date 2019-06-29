@@ -1,5 +1,7 @@
+Add examples, executable scripts/jupyter notebook
+Add support for osqp solver
+
+
+
 Implement remaining objectives
-
-
-
 Implement constraints
