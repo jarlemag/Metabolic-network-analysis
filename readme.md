@@ -132,7 +132,7 @@ Reaction maps define which experimental flux values correspond to which model re
 Reaction maps are loaded from  .txt/ or .xml files by the script loadData.py. See reactionmaps.xml for an example file.
 
 
-![Example](/doc/reactionmap_example.png)
+![Example reaction map file syntax](doc/reactionmap_example.png)
 
 
 
