@@ -87,7 +87,7 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
     FBAobjval = gurobimodel.Objval
     FBAobjective = getFBAobjective(gurobimodel)
     if debug:
-        print "FBA objective value:",FBAobjval
+        print("FBA objective value:",FBAobjval)
 
     #Add optimality requirement constraint to original model:
     if useoptreq:
@@ -118,8 +118,8 @@ def QPmindist(cobramodel,fluxvalues,reactionmap,optreq,useoptreq = True,debug = 
 
 
 if __name__ == "__main__": #If the module is executed as a program, run a test.
-    from cobra.io.sbml import create_cobra_model_from_sbml_file
-    cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    from cobra.io.sbml import read_sbml_model
+    cobramodel = read_sbml_model('../SBML/SCHUETZR.xml')
 
     import loadData as load
     rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
@@ -143,25 +143,25 @@ if __name__ == "__main__": #If the module is executed as a program, run a test.
 
     dist = compdist.compdistdict(extractfluxdict)
     #print 'Optimality requirement:',optreq
-    print 'Optreq = 0:'
-    print 'compdist distance:',dist
+    print('Optreq = 0:')
+    print('compdist distance:',dist)
 
     #print 'gurobimomdel gurobi objective value:',gurobimodel.ObjVal
     import math
     #print 'square root of gurobi objective value:',math.sqrt(gurobimodel.ObjVal)
-    print "QP solution FBA objective value:",QPFBAobjval
+    print("QP solution FBA objective value:",QPFBAobjval)
 
     #print 'Performing FBA only:'
     #QPFBAres = gurobiFBA(cobramodel)
 
     optreq = 1
-    print 'Optreq = 1:'
+    print('Optreq = 1:')
     gurobimodel2 = QPmindist(cobramodel,fluxvalues,rmap,optreq)
     QPsolutionvector2 = getgurobisolutionvector(gurobimodel2)
     QPFBAobjval2 = computeFBAobjval(QPsolutionvector2,cobramodel)
     QPsolutiondict2 = getgurobisolutiondict(gurobimodel2)
     extractfluxdict2 = extractflux.extractfluxdict(QPsolutiondict2,rmap)
     dist2 = compdist.compdistdict(extractfluxdict2)
-    print 'compdist distance:',dist2
-    print "QP solution FBA objective value:",QPFBAobjval2
+    print('compdist distance:',dist2)
+    print("QP solution FBA objective value:",QPFBAobjval2)
     
