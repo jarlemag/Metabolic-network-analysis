@@ -107,7 +107,7 @@ The function fluxreport takes as input a vector of fluxes corresponding to the s
 
 **loadData.py:**
 
-Loads flux values from stored experimental data .
+Loads flux values from stored experimental data and reaction maps which define which experimental flux values correspond to which model reactions for specific models.
 
 Dependencies: "xml" package (included with Python)
 
@@ -128,8 +128,11 @@ Experimental flux values must be supplied in .xml format. See expdata.xml for ex
 
 **Reaction maps:**
 
+Reaction maps define which experimental flux values correspond to which model reactions for specific models, pairing publications and models.
 Reaction maps are loaded from  .txt/ or .xml files by the script loadData.py. See reactionmaps.xml for an example file.
 
+
+![Example](/doc/reactionmap_example.png)
 
 
 
@@ -137,7 +140,7 @@ Reaction maps are loaded from  .txt/ or .xml files by the script loadData.py. Se
 
 The following models are included in the repository in the SBML directory:
 
- In addition to the changes described for each model, for those experimental reactions described in the original project report which had several corresponding model reactions, token metabolites and reactions were added so that the ?ux through each ’token’ reaction would give the sum of the model reactions. This was done to allow those sums to be used directly during optimization
+In addition to the changes described for each model, for those experimental reactions described in the original project report which had several corresponding model reactions, token metabolites and reactions were added so that the ?ux through each ’token’ reaction would give the sum of the model reactions. This was done to allow those sums to be used directly during optimization
 
 
 "SCHUETZR.xml" ("SCHUETZ Revised"):  A revised version of the metabolic model of E. coli central carbon metabolism used by Schuetz et al.  
@@ -153,10 +156,9 @@ The E. coli core model was edited to add reactions present in the SCHUETZR model
  
 
 
-
 Citations:
 Robert Schuetz, Lars Kuepfer, and Uwe Sauer. Systematic evaluation of objective functions for predicting intracellular ?uxes in Escherichia coli. Molecular Systems Biology, 3(119), 2007.
-Je?rey D Orth, Tom M Conrad, Jessica Na, et al. A comprehensive genome-scale reconstruction of Escherichia coli metabolism—2011. Molecular Systems Biology, 7(535), 2011.
+Jeffrey D Orth, Tom M Conrad, Jessica Na, et al. A comprehensive genome-scale reconstruction of Escherichia coli metabolism—2011. Molecular Systems Biology, 7(535), 2011.
  
  
- Please refer to the project report in Report directory for further details.
+Please refer to the project report in Report directory for further details.
