@@ -11,7 +11,7 @@ File and resource types:
 **.mat files:** MATLAB data files. To open a .mat file in GNU Octave, use the load command:
 "load <filename>"
 
-**.py files:** Python  2.7 script files.
+**.py files:** Python script files. Most/some files are written for python 2.7 and must be updated for use with Python 3.
 
 MATLAB files:
 -------------
