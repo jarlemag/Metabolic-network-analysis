@@ -3,7 +3,7 @@
 import cobra
 import numpy as np
 import matplotlib.pyplot as plt
-from cobra.io.sbml import create_cobra_model_from_sbml_file
+from cobra.io.sbml import read_sbml_model
 from matplotlib import cm
 from matplotlib.patches import Polygon
 
@@ -93,8 +93,8 @@ def findInactiveReactions(cobramodel,optreq = 1, verbose = True):
     FVAres = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel,fraction_of_optimum = optreq)
     inactive_set = [key for key in FVAres if (FVAres[key]['minimum'] == 0 and FVAres[key]['maximum'] == 0)]
     if verbose:
-        print 'FVA result:'
-        print FVAres
+        print('FVA result:')
+        print(FVAres)
     return inactive_set
 
 def plotInactiveReactions(cobramodel,optreqrange = [0,1]):
@@ -158,7 +158,7 @@ def PhenotypePhasePlane(cobramodel,reactions,xlimits,ylimits, verbose = False, b
     #Y = np.ndarray.flatten(Y)
 
     Z = z_func(X, Y,cobramodel,reactions)
-    print 'len:',len(np.isnan(Z))
+    print('len:',len(np.isnan(Z)))
     Z[np.isnan(Z)] = 0
 
 
@@ -166,7 +166,7 @@ def PhenotypePhasePlane(cobramodel,reactions,xlimits,ylimits, verbose = False, b
 ##        print 'Failed optimizations:',failed
 
     if verbose:
-        print 'Maximum objective value:',Z.max()
+        print('Maximum objective value:',Z.max())
     if noplot:
         return [X,Y,Z]
     fig = plt.figure()
@@ -184,7 +184,7 @@ def PhenotypePhasePlane(cobramodel,reactions,xlimits,ylimits, verbose = False, b
 
 if __name__ == "__main__":
 
-    SCHUETZR = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    SCHUETZR = read_sbml_model('../SBML/SCHUETZR.xml')
     xlimits = [-20,0]
     ylimits = [0,20]
     reactions = ['EX_GLC_e','o2']
