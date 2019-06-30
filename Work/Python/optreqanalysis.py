@@ -19,9 +19,9 @@ def optreqanalysis(modeldicts,objectives,experiments,steps = 10,makeplots = True
     syntax: optreqanalysis(modeldicts,objectives,experiments,steps = 10,makeplots = True,expfluxdict)
 
     arguments:
-    modeldicts: A python dictionary with the following fields:
+    modeldicts: An array of python dictionaries with the following fields:
         modelobject: A CobraPy model object for the model in question.
-        reactionmap: A Cogs-FBA reaction map array mapping between model reactions and experimental reactions for the model and experiment in question.
+        reactionmap: A reaction map array mapping between model reactions and experimental reactions for the model and experiment in question.
     objectives: A list of objectives to be used in the analysis.
     experiments: A list of experiments to be used in the analysis
     steps: The granularity of the analysis and produced plots.
