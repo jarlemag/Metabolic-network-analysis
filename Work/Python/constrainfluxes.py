@@ -58,10 +58,12 @@ def constrainfluxes(model,expfluxdict,experrdict,reactionmap,tolerance = 1, flux
 
 if __name__ == "__main__":
 
-    from cobra.io.sbml import create_cobra_model_from_sbml_file
+    
+    from cobra.io.sbml import read_sbml_model
+    
     import loadData as load
 
-    model = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    model = read_sbml_model('../SBML/SCHUETZR.xml')
     rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
     expfluxdict = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
     experrdict = load.ExpErrorsfromXML('expdata.xml','Perrenoud','Batch','aerobe')
