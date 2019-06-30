@@ -1,6 +1,3 @@
-#extractflux2.py
-#Rewrite from scratch of extractflux
-
 import numpy as np
 
 def extractfluxvector(fluxvector,reactionmap):

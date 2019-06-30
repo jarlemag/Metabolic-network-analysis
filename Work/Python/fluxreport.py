@@ -28,21 +28,21 @@ def fluxreport(fluxdict,expfluxdict = load.ExpFluxesfromXML('expdata.xml','Perre
 
     import datetime
     now = datetime.datetime.now()
-    print "Flux report generated at:",now
-    print "Solver:"
-    print "Model:"
-    print "Objective:"
-    print "Constraints:"
-    print "Number of computed fluxes outside experimental uncertainty bounds:",outsidefluxes
+    print("Flux report generated at:",now)
+    print("Solver:")
+    print("Model:")
+    print("Objective:")
+    print("Constraints:")
+    print("Number of computed fluxes outside experimental uncertainty bounds:",outsidefluxes)
 
 
     #print 'fluxdict:',fluxdict #DEBUG
     #print 'expfluxdict:',expfluxdict #DEBUG
 
-    print "%15s %15s %15s %15s %15s %15s" % tuple(textheader)
+    print("%15s %15s %15s %15s %15s %15s" % tuple(textheader))
 
     
-    for key in fluxdict:
+    #for key in fluxdict:
         #print key #DEBUG
         #print fluxdict[key]
         #print expfluxdict[key]
@@ -50,26 +50,28 @@ def fluxreport(fluxdict,expfluxdict = load.ExpFluxesfromXML('expdata.xml','Perre
         #print exp_errordict[key]
         #print uncertfrac_dict[key]
         #print uncertfrac_dict
-        print "%s %15.1f %15.1f %15.1f %15.1f %15.1f" % (key,float(fluxdict[key]),float(expfluxdict[key]),float(diff_dict[key]),float(exp_errordict[key]),float(uncertfrac_dict[key]))
+        #print "%s %15.1f %15.1f %15.1f %15.1f %15.1f" % (key,float(fluxdict[key]),float(expfluxdict[key]),float(diff_dict[key]),float(exp_errordict[key]),float(uncertfrac_dict[key]))
+        #Commenting out above line for the moment, as not sure how the Pythn 3 syntax for this is.
 
     return diff_dict
     
 
 #TEST CODE START:
 if __name__ == "__main__":
-    from cobra.io.sbml import create_cobra_model_from_sbml_file
+    from cobra.io.sbml import read_sbml_model
 
-    SCHUETZR = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
-    SCHUETZR.optimize(solver='gurobi')
+    SCHUETZR = read_sbml_model('../SBML/SCHUETZR.xml')
+    solution = SCHUETZR.optimize()
 
-    FBAresult = SCHUETZR.solution.x_dict
+    #FBAresult = solution.x_dict #x_dict is deprecated. Use "fluxes" instead.
+    FBAresult = solution.fluxes
     
-    import extractflux2
+    import extractflux
 
     rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
     expfluxes = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
 
-    fluxresult = extractflux2.extractfluxdict(FBAresult,rmap)
+    fluxresult = extractflux.extractfluxdict(FBAresult,rmap)
 
 
     t = fluxreport(fluxresult)
