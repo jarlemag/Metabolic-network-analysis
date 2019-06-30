@@ -117,8 +117,14 @@ Data files:
 -----------
 For the scripts comparing experimental and computed flux values, the following data must be supplied :
 
+
+
+
 **Experimental data:**
 Experimental flux values must be supplied in .xml format. See expdata.xml for example data.
+
+
+
 
 **Reaction maps:**
 
@@ -127,4 +133,30 @@ Reaction maps are loaded from  .txt/ or .xml files by the script loadData.py. Se
 
 
 
+**SBML Models**
 
+The following models are included in the repository in the SBML directory:
+
+ In addition to the changes described for each model, for those experimental reactions described in the original project report which had several corresponding model reactions, token metabolites and reactions were added so that the ?ux through each ’token’ reaction would give the sum of the model reactions. This was done to allow those sums to be used directly during optimization
+
+
+"SCHUETZR.xml" ("SCHUETZ Revised"):  A revised version of the metabolic model of E. coli central carbon metabolism used by Schuetz et al.  
+The .xml ?le containing the model by Schuetz et al. was edited by by changing metabolite and reaction identi?ers to the format expected by the COBRA toolbox, to allow the model to be processed by the program. 
+In addition, identical duplicate reactions were removed to simplify the computational work and reduce the potential for ?ux loops in the solutions. 
+
+"SCHUETZR_notokens.xml" SCHUETZR model without token reactions.
+
+"ECME.xml" ("E. Coli Core Expanded"):  Expanded version of E. coli core model downloaded from http: //systemsbiology.ucsd.edu/Downloads/EcoliCore. 
+The E. coli core model was edited to add reactions present in the SCHUETZR model and the experimental data set but missing in that model. 
+
+"iJO1366.xml" and "iJO1366b.xml": Original  E. coli genome-scale metabolic model iJO1366 used by Jorth et al., and a version modified by the addition of token reactions. Being so changed it is referred to as iJO1366b.
+ 
+
+
+
+Citations:
+Robert Schuetz, Lars Kuepfer, and Uwe Sauer. Systematic evaluation of objective functions for predicting intracellular ?uxes in Escherichia coli. Molecular Systems Biology, 3(119), 2007.
+Je?rey D Orth, Tom M Conrad, Jessica Na, et al. A comprehensive genome-scale reconstruction of Escherichia coli metabolism—2011. Molecular Systems Biology, 7(535), 2011.
+ 
+ 
+ Please refer to the project report in Report directory for further details.
