@@ -1,7 +1,7 @@
 #gx-FBA.p
 import cobra
-from cobra.io.sbml import create_cobra_model_from_sbml_file
-from cobra.io.sbml import write_cobra_model_to_sbml_file
+from cobra.io.sbml import read_sbml_model
+from cobra.io.sbml import write_sbml_model
 import numpy as np
 from collections import defaultdict
 from math import log
@@ -11,7 +11,7 @@ import random
 
 def hold():
     x = raw_input('Press any key to continue.')
-    print '\n'
+    print('\n')
 
 
 def vectorToText(fluxvector,filename,decimal = ',', append = False, newline = True, linestart = None):
@@ -54,24 +54,24 @@ def metabolitefluxsum(metabolite_id,cobramodel, abs = False):
     
 def metabolitefluxes(metabolite_id,cobramodel):
     for reaction in cobramodel.metabolites.get_by_id(metabolite_id).get_reaction():
-        print reaction.id,reaction.get_coefficient(metabolite_id)*cobramodel.solution.x_dict[reaction.id]
+        print(reaction.id,reaction.get_coefficient(metabolite_id)*cobramodel.solution.x_dict[reaction.id])
 
 def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, exprType = 2, verbose = True,FVAcondition = 2, wait = False,treshold = 0.5,objectiveweights = 'log',dumpmodel = False):
     if verbose:
-        print 'Performing gxFBA. Verbose = True.'
-        print 'Provided gene expression ratios:'
-        print gene_expressions
+        print('Performing gxFBA. Verbose = True.')
+        print('Provided gene expression ratios:')
+        print(gene_expressions)
         if exprType == 1:
-            print 'Input gene expression ratios handled as absolute ratios.'
+            print('Input gene expression ratios handled as absolute ratios.')
         else:
-            print 'Input gene expression ratios handled as log ratios.'
+            print('Input gene expression ratios handled as log ratios.')
 
     if exprType == 1:
         logvals = {gene:log(gene_expressions[gene],2) for gene in gene_expressions}
         ratios = gene_expressions
         if verbose:
-            print 'Calculated log ratios:'
-            print logvals
+            print('Calculated log ratios:')
+            print(logvals)
     else:
         logvals = gene_expressions
         ratios = {gene:2**gene_expressions[gene] for gene in gene_expressions}
@@ -83,10 +83,10 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     cobramodel_1.optimize(solver='gurobi')
     wildtype = cobramodel_1.solution.x_dict
     if verbose:
-        print 'generated wild-type flux distribution.'
+        print('generated wild-type flux distribution.')
         #print cobramodel_1.solution.x_dict
         for key,value in sorted(cobramodel_1.solution.x_dict.items()):
-            print key,value
+            print(key,value)
     if wait:
         hold()
     ###2) Perform FVA with nutritional constraints for condition 1 or 2 (Default: condition 2) and minimum biomass flux = 0 to calculate the upper and lower fluxes each
@@ -97,9 +97,9 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     else:
         FVA_result = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel_2,fraction_of_optimum = 0)
     if verbose:
-        print 'Performed FVA for condition',FVAcondition
+        print('Performed FVA for condition',FVAcondition)
         for key,value in sorted(FVA_result.items()):
-            print key,value
+            print(key,value)
         #print FVA_result
 
     #Reset the objective function for condition 2:
@@ -112,13 +112,13 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     wildtype_averageflux = np.mean(active_fluxes) #average wildtype flux
 
     if verbose:
-        print 'FVA average fluxes:'
+        print('FVA average fluxes:')
         #print wt_avg
         for key,value in wt_avg.items():
-            print key,value
-        print 'Total number of reactions in wildtype model:',len(wildtype.values())
-        print 'Number of active reactions in wildtype FBA solution:',len(active_fluxes)
-        print 'Average wildtype flux (Average of flux value for all fluxes in wildtype FBA solution):',wildtype_averageflux
+            print(key,value)
+        print('Total number of reactions in wildtype model:',len(wildtype.values()))
+        print('Number of active reactions in wildtype FBA solution:',len(active_fluxes))
+        print('Average wildtype flux (Average of flux value for all fluxes in wildtype FBA solution):',wildtype_averageflux)
 
     genemap = defaultdict(list)
     for gene in gene_expressions:
@@ -127,8 +127,8 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
                 genemap[rx].append(gene)
 
     if verbose:
-        print 'Gene map:'
-        print genemap
+        print('Gene map:')
+        print(genemap)
 
 
     if wait:
@@ -136,63 +136,63 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     T = []
     ##3) Identify the set of reactions (called T) for which an mRNA expression value can be associated.
     if verbose:
-        print 'Identifying reactions eligible for gx-regulation.'
+        print('Identifying reactions eligible for gx-regulation.')
     for reaction in cobramodel_2.reactions:
         #Skip reactions for which gene expression data is unavailable
         if reaction.id not in genemap:
             if verbose:
-                print reaction.id,'not in genemap. Skipping reaction.'
+                print(reaction.id,'not in genemap. Skipping reaction.')
             continue
         #Skip reactions for which the maximal up/down-regulation is below the set treshold:
         expressionratios = [ratios[gene] for gene in genemap[reaction.id] ]
         if max([abs(ratio-1) for ratio in expressionratios]) < treshold:
             if verbose:
-                print reaction.id,': Level of regulation below treshold. Skipping reaction.'
+                print(reaction.id,': Level of regulation below treshold. Skipping reaction.')
             continue
         #Do not include the reaction if the average flux is too high:
         if wt_avg[reaction.id] >= maxflux:
             if verbose:
-                print reaction.id,': FVA average flux too high. Skipping reaction.'
+                print(reaction.id,': FVA average flux too high. Skipping reaction.')
             continue
         #Do not include the reaction if it cannot carry any flux (as per FVA):
         if abs(wt_avg[reaction.id]) < eps2:
             if verbose:
-                print reaction.id,': Reaction always inactive under specified conditions. Skipping reaction.'
+                print(reaction.id,': Reaction always inactive under specified conditions. Skipping reaction.')
             continue
         #Do not include the reaction if it is not irreversible under the given constraints:
         bounds = FVA_result[reaction.id].values()
         irreversible = not min(bounds) < 0 < max(bounds)
         if not irreversible:
             if verbose:
-                print reaction.id,': Reaction may carry flux in both directions under specified conditions. Skipping reaction.'
+                print(reaction.id,': Reaction may carry flux in both directions under specified conditions. Skipping reaction.')
             continue
         #Do not include the reaction if gene expression data is inconsistent (both up- and down-regulation):
         exprvalues = [logvals[gene] for gene in genemap[reaction.id] ]
         signs = [cmp(logvalue,0) for logvalue in exprvalues]
         if not (signs[1:] == signs[:-1]): #If all the signs are not the same value. Alternative: if not (signs.count(signs[0]) == signs(x))
             if verbose:
-                print 'Gene expression information for reaction indicates mixed regulation (up/down). Skipping reaction.'
+                print('Gene expression information for reaction indicates mixed regulation (up/down). Skipping reaction.')
             continue
         #If none of the above checks failed, add the reaction to the list:
         if verbose:
-            print 'Adding reaction',reaction.id,'to T.'
+            print('Adding reaction',reaction.id,'to T.')
         T.append(reaction)
 
 
     ##4)  For each reaction in T; define a new upper bound UB = Ci_mRNA * v_i_wt if up-regulated or a new lower bound LB =
     ##    Ci_mRNA * v_i_wt if downregulated, where Ci_mRNA is the mRNA expression ratio.
     if verbose:
-        print 'Calculating new bounds and objective function coefficients:'
+        print('Calculating new bounds and objective function coefficients:')
 
 
     def reactionInfo(reaction_id):
-        print 'Ci_mRNA:',Ci_mRNA
-        print 'Wild-type flux:',wildtype[reaction.id]
-        print 'Original reaction bounds:'
-        print 'Lower:',cobramodel_1.reactions.get_by_id(reaction.id).lower_bound,'Upper:',cobramodel_1.reactions.get_by_id(reaction.id).upper_bound
-        print 'New reaction bounds:'
-        print 'Lower:',reaction.lower_bound,'Upper:',reaction.upper_bound
-        print 'Objective coefficient:',reaction.objective_coefficient
+        print('Ci_mRNA:',Ci_mRNA)
+        print('Wild-type flux:',wildtype[reaction.id])
+        print('Original reaction bounds:')
+        print('Lower:',cobramodel_1.reactions.get_by_id(reaction.id).lower_bound,'Upper:',cobramodel_1.reactions.get_by_id(reaction.id).upper_bound)
+        print('New reaction bounds:')
+        print('Lower:',reaction.lower_bound,'Upper:',reaction.upper_bound)
+        print('Objective coefficient:',reaction.objective_coefficient)
     for reaction in T:
         if wait:
             hold()
@@ -200,9 +200,9 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
         expressionratios = [ratios[gene] for gene in genemap[reaction.id] ] 
         sign = cmp(logvalues[0],0)
         if verbose:
-            print 'Processing reaction:',reaction.id
-            print 'Logvalues:',logvalues
-            print 'Ratios:',expressionratios
+            print('Processing reaction:',reaction.id)
+            print('Logvalues:',logvalues)
+            print('Ratios:',expressionratios)
             
         if sign > 0:
             Ci_mRNA = 2**max(logvalues) ##    For reactions dependent on several genes (several mRNA values), use the maximal up/down-regulation value.
@@ -248,40 +248,42 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     cobramodel_2.reactions.get_by_id('R1_uppergly').objective_coefficient = 1.5
     cobramodel_2.reactions.get_by_id('R3_citsyn').objective_coefficient = 0.5
     if verbose:
-        print 'New objective function:'
+        print('New objective function:')
         #print {reaction.id:reaction.objective_coefficient for reaction in T}
-        print {reaction.id:reaction.objective_coefficient for reaction in cobramodel_2.reactions}
-        print 'New lower bounds:',[reaction.lower_bound for reaction in cobramodel_2.reactions]
-        print 'New upper bounds:',[reaction.upper_bound for reaction in cobramodel_2.reactions]
-        print 'Performing gx-FBA.'
+        print({reaction.id:reaction.objective_coefficient for reaction in cobramodel_2.reactions})
+        print('New lower bounds:',[reaction.lower_bound for reaction in cobramodel_2.reactions])
+        print('New upper bounds:',[reaction.upper_bound for reaction in cobramodel_2.reactions])
+        print('Performing gx-FBA.')
         
 
     #Solve the gx-FBA problem:
-    cobramodel_2.optimize(solver='gurobi')
+    cobramodel_2.optimize()
     if verbose:
-        print 'Flux solution:'
-        print cobramodel_2.solution.x_dict
-        print 'Objective value:',cobramodel_2.solution
+        print('Flux solution:')
+        print(cobramodel_2.solution.fluxes)
+        print('Objective value:',cobramodel_2.solution)
 
     #Using Gurobi manually:
-    gurobisolution = QPmindist.gurobiFBA(cobramodel_2)
-    gurobisolutiondict = QPmindist.getgurobisolutiondict(gurobisolution)
-    print 'gurobi solution:'
-    print gurobisolutiondict
-    print 'Objective value:',gurobisolution.Objval
+    #Commenting out. Unable to use gurobi at the moment due to lack of license.
+
+    #gurobisolution = QPmindist.gurobiFBA(cobramodel_2)
+    #gurobisolutiondict = QPmindist.getgurobisolutiondict(gurobisolution)
+    #print('gurobi solution:')
+    #print(gurobisolutiondict)
+    #print('Objective value:',gurobisolution.Objval)
 
     #Check that mass conservation is preserved:
-    print 'Total metabolite fluxes:'
+    print('Total metabolite fluxes:')
     for metabolite in cobramodel_2.metabolites:
-        print metabolite.id,metabolitefluxsum(metabolite.id,cobramodel_2),metabolitefluxsum(metabolite.id,cobramodel_2, abs = True)
+        print(metabolite.id,metabolitefluxsum(metabolite.id,cobramodel_2),metabolitefluxsum(metabolite.id,cobramodel_2, abs = True))
 
     #print 'ATP fluxes:',metabolitefluxes('atp_c',cobramodel_2)
     #print ''
 
-    print 'Solution:'
-    print cobramodel_2.solution.x
+    print('Solution:')
+    print(cobramodel_2.solution.x)
     vectorToText(cobramodel_2.solution.x,'flux.txt')
-    print 'Flux solution dumped to flux.txt'
+    print('Flux solution dumped to flux.txt')
     #vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'objective.txt')
     vectorToText([reaction.objective_coefficient for reaction in cobramodel_2.reactions],'objective.txt', decimal = ',')
     vectorToText([reaction.lower_bound for reaction in cobramodel_1.reactions],'FBA-lb.txt')
@@ -297,7 +299,7 @@ def gxFBA(cobramodel_1,cobramodel_2,gene_expressions,GPRlist,maxflux = 500, expr
     vectorToText(cobramodel_2.solution.x,'A.txt.', append = True, linestart = 'V:')
 
     if dumpmodel:
-        write_cobra_model_to_sbml_file(cobramodel_2,'dumpedmodel.xml')
+        write_sbml_model(cobramodel_2,'dumpedmodel.xml')
     
     return cobramodel_2
 
@@ -307,7 +309,7 @@ def sampleOptimalSolutions(cobramodel,biomassreaction = None):
     tol = 1e-3
     iterations = 100
     #Identify the optimal value of the FBA objective function:
-    cobramodel.optimize(solver='gurobi')
+    cobramodel.optimize()
     z = cobramodel.solution.f
     #For each model reaction, use FVA to identify the upper and lower flux bound, subject to FBA objective optimality:
     FVAres = cobra.flux_analysis.variability.flux_variability_analysis(cobramodel)
@@ -326,7 +328,7 @@ def sampleOptimalSolutions(cobramodel,biomassreaction = None):
         randomflux = random.uniform(FVAres[randomreaction]['minimum'],FVAres[randomreaction]['maximum'])
         cobramodel.reactions.get_by_id(randomreaction).upper_bound = randomflux
         cobramodel.reactions.get_by_id(randomreaction).lower_bound = randomflux
-        cobramodel.optimize(solver='gurobi')
+        cobramodel.optimize()
 
         gxFBAsolution = gxFBA(cobramodel) #Does this ,make sense?
 
@@ -340,24 +342,24 @@ def sampleOptimalSolutions(cobramodel,biomassreaction = None):
 
 if __name__ == "__main__":
 
-    model = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
-    model.optimize(solver='gurobi')
+    model = read_sbml_model('../SBML/SCHUETZR.xml')
+    model.optimize()
 
     #fva = gxFBA(model,[],[])
 
-    example_a = create_cobra_model_from_sbml_file('../SBML/gx-fba.xml')
+    example_a = read_sbml_model('../SBML/gx-fba.xml')
 ##    gx-FBA example model 1:
 ##    Parameters:
 ##    Objective: Biomass
 ##    ATP maintenance: 12
 ##    Max glucose import (glc_e -> glc_c): 10
 ##    Max puruvate export (pyr_c -> pyr_e): 5
-    example_a.optimize(solver='gurobi')
+    example_a.optimize()
     #print 'Example A FBA result:'
     #print example_a.solution
     #print example_a.solution.x_dict
 
-    example_b = create_cobra_model_from_sbml_file('../SBML/gxfba_example.xml')
+    example_b = read_sbml_model('../SBML/gxfba_example.xml')
 
 
    # example_c = create_cobra_model_from_sbml_file('../SBML/gx-fba_corrected.xml') #The model file has disappeared. WTH?
@@ -368,7 +370,7 @@ if __name__ == "__main__":
 ##    ATP maintenancee: 12 (R9_atpm)
 ##    Max glucose exchange: -10 (R_glcb_ex)
 ##    Max pyruvate exchange: 5 (R_pyr_ex)
-    example_b.optimize(solver='gurobi')
+    example_b.optimize()
     #print 'Example B FBA result:'
     #print example_b.solution
     #print example_b.solution.x_dict
@@ -426,23 +428,23 @@ if __name__ == "__main__":
     #TEST.reactions.get_by_id('R8_Biomass').objective_coefficient = -1
     TEST.optimize(solver='gurobi')
     
-    print 'solution:'
+    print('solution:')
     
-    print 'R1:',TEST.solution.x_dict['R1_uppergly']
-    print 'R2:',TEST.solution.x_dict['R2_lowergly']
-    print 'R3:',TEST.solution.x_dict['R3_citsyn']
-    print 'R4:',TEST.solution.x_dict['R4_acon']
-    print 'R5:',TEST.solution.x_dict['R5_akgdh']
-    print 'R6:',TEST.solution.x_dict['R6_fumar']
-    print 'R7:',TEST.solution.x_dict['R7_oxysh']
-    print 'R8:',TEST.solution.x_dict['R8_Biomass']
-    print 'R9:',TEST.solution.x_dict['R9_atpm']
-    print 'R13:',TEST.solution.x_dict['R13_pyrexport']
-    print 'R15:',TEST.solution.x_dict['R15_co2export']
+    print('R1:',TEST.solution.x_dict['R1_uppergly'])
+    print('R2:',TEST.solution.x_dict['R2_lowergly'])
+    print('R3:',TEST.solution.x_dict['R3_citsyn'])
+    print('R4:',TEST.solution.x_dict['R4_acon'])
+    print('R5:',TEST.solution.x_dict['R5_akgdh'])
+    print('R6:',TEST.solution.x_dict['R6_fumar'])
+    print('R7:',TEST.solution.x_dict['R7_oxysh'])
+    print('R8:',TEST.solution.x_dict['R8_Biomass'])
+    print('R9:',TEST.solution.x_dict['R9_atpm'])
+    print('R13:',TEST.solution.x_dict['R13_pyrexport'])
+    print('R15:',TEST.solution.x_dict['R15_co2export'])
 
-    print 'Objective:',[reaction.objective_coefficient for reaction in TEST.reactions]
-    print 'Lower bounds:',[reaction.lower_bound for reaction in TEST.reactions]
-    print 'Upper bounds:',[reaction.upper_bound for reaction in TEST.reactions]
+    print('Objective:',[reaction.objective_coefficient for reaction in TEST.reactions])
+    print('Lower bounds:',[reaction.lower_bound for reaction in TEST.reactions])
+    print('Upper bounds:',[reaction.upper_bound for reaction in TEST.reactions])
 
     vectorToText([reaction.objective_coefficient for reaction in TEST.reactions],'B.txt', decimal = ',', linestart = 'C:')
     vectorToText([reaction.lower_bound for reaction in TEST.reactions],'B.txt', append = True, linestart = 'LB:')
@@ -450,7 +452,7 @@ if __name__ == "__main__":
     vectorToText(TEST.solution.x,'B.txt.', append = True, linestart = 'V:')
     
 
-    SCHUETZR = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    SCHUETZR = read_sbml_model('../SBML/SCHUETZR.xml')
     R,FVAres = sampleOptimalSolutions(SCHUETZR)    
     
     
