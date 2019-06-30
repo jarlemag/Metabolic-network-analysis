@@ -4,4 +4,9 @@ Updated to do.txt
 Installed Jypyter, osqp, cobrapy
 Created Jupyter notebook "notebook" in Python directory
 ran cobrapy test_all test suite. 85 passed, 4 skipped, 9 failed, 14 warnings in 29.83 seconds.
-
+30.06.19:
+Constrainfluxes.py couldn't run due to calling outdated SBML import function name "create_cobra_model_from_sbml_file ". Managed to run constrainfluxes.py script after updating function name for SBML import function.
+Many warnings from cobrapy that "Encoding OBJECTIVE_COEFFICIENT in KineticLaw is discouraged."
+Updated readme.md. Initially unable to get image embedding with relative path working on bitbucket.
+loadData.py appears to be working OK.
+Updated flowchart.
