@@ -1,7 +1,7 @@
 import numpy as np
 #import scipy as sp
 from numpy.linalg import svd
-import scitools
+import scitools #use "pip install scitools3" to install scitools for Python 3.
 import sympy
 #Calculability analysis and calculation of unknown rates from known rates, based on Klamt et al. 2002.
 
@@ -21,11 +21,11 @@ def isdetermined(A, verbose = False):
     rank =  np.linalg.matrix_rank(A) 
     if rank < u:
         if verbose:
-            print 'The system is undetermined.'
+            print('The system is undetermined.')
         return False
     elif rank == u:
         if verbose:
-            print 'The system is determined.'
+            print('The system is determined.')
         return True
     else:
         raise Exception('Rank larger than number of reactions.')
@@ -36,11 +36,11 @@ def isredundant(A, verbose = False):
     rank =  np.linalg.matrix_rank(A)
     if rank < m:
         if verbose:
-            print 'The system is redundant.'
+            print('The system is redundant.')
         return True
     elif rank == m:
         if verbose:
-            print 'The system is not redundant.'
+            print('The system is not redundant.')
         return False
     else:
         raise Exception('Rank larger than number of metabolites.')
@@ -71,7 +71,7 @@ def calculabilityAnalysis(N_known,N_unknown,r_known = None,makeconsistent = True
     #0. Check if the system is fully determined.
     if isdetermined(N_unknown) and not isredundant(N_unknown):
         if verbose:
-            print 'The system is fully determined.'
+            print('The system is fully determined.')
         if r_known is not None:
             r_unknown = calculaterates(N_known,N_unknown,r_known)
         return None,r_unknown
@@ -89,7 +89,7 @@ def calculabilityAnalysis(N_known,N_unknown,r_known = None,makeconsistent = True
     #null space matrix K_n
     K_n = np.array(sympy.Matrix(N_unknown).nullspace()).transpose()
     calculable = [x for x in range(len(K_n)) if x not in np.nonzero(K_n)[0]]
-    print 'calculable fluxes:',calculable #Need to ensure the index are reported correctly, taking into account 0-indexing and the known reactions
+    print('calculable fluxes:',calculable) #Need to ensure the index are reported correctly, taking into account 0-indexing and the known reactions
         
     #b. Take the values of the calculable rates from the least-squares solution.
     if r_known is not None:
