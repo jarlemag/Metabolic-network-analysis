@@ -16,17 +16,20 @@ iJO1366b = read_sbml_model('../SBML/iJO1366b.xml')
 
 #Perform FBA:
 
-#ECME.optimize(solver='gurobi')
+ECMEsolution = ECME.optimize()
 
-#print 'ECME:',ECME.solution.f
-
-
-SCHUETZR.optimize()
-
-#print 'SCHUETZR:',SCHUETZR.solution.f
+print ('ECME status:',ECMEsolution.status)
+print ('ECME:',ECMEsolution.objective_value)
 
 
-#iJO1366b.optimize(solver='gurobi')
 
-#print 'iJO1366b:',iJO1366b.solution.f
+SCHUETZRsolution = SCHUETZR.optimize()
 
+print ('SCHUETZR status:',SCHUETZRsolution.status)
+print ('SCHUETZR objective value:',SCHUETZRsolution.objective_value)
+
+
+iJO1366bsolution = iJO1366b.optimize()
+
+print ('iJO1366b status:',iJO1366bsolution.status)
+print ('iJO1366b objective value:',iJO1366bsolution.objective_value)

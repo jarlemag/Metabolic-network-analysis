@@ -1,6 +1,6 @@
 Add examples, executable scripts/jupyter notebook
 Add support for osqp solver
-
+Update models to reduce cobrapy warnings
 
 
 Implement remaining objectives
