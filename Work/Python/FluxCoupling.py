@@ -3,7 +3,7 @@
 import cobra
 import numpy as np
 import itertools
-from cobra.io.sbml import create_cobra_model_from_sbml_file
+from cobra.io.sbml import read_sbml_model
 
 #Perform flux variability analysis
 
@@ -14,7 +14,7 @@ class FluxCouplings(object):
         
 
 class FluxCoupling(object):
-    def __init__(self,reaction1,reaction2,couplingtype)
+    def __init__(self,reaction1,reaction2,couplingtype):
         self.reaction1 = reaction1
         self.reaction2 = reaction2
         self.couplingtype = couplingtype
@@ -31,7 +31,7 @@ def findcouplings(cobramodel):
 
     #alreadyCoupled = np.zeros(len(metabolites))
 
-    reactionpairs = [tuitertools.combinations(nonblocked, r = 2)
+    reactionpairs = [tuitertools.combinations(nonblocked, r = 2)]
     couplings = []
     couplingsets = []
     #Iterate over couples of reactions:
@@ -49,7 +49,7 @@ def findcouplings(cobramodel):
         if R_min < tol and np.isinf(R_max) == False:
             couplings.append(FluxCoupling(reaction1.id,reaction2.id,couplingtype='directional')
         #C. if Rmin = 0 and Rmax = c > 0 then:
-        if R_min < tol and R_max > tol and (np.isinf(R_max) == False):
+        if (R_min < tol and R_max > tol) and (np.isinf(R_max) is False):
             #If (c2-c2) > 0 then (v_j <-> v_'j)  (partially coupled)
                 if (c2-c1) > 0:
                     couplings.append(FluxCoupling(reaction1.id,reaction2.id,couplingtype = 'partial')
@@ -105,6 +105,6 @@ def normalizeFluxesByReaction(fluxdict,reaction):
 
 if __name__ == '__main__':
 
-    SCHUETZR = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    SCHUETZR = read_sbml_model('../SBML/SCHUETZR.xml')
                  
     
