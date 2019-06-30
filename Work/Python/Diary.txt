@@ -10,3 +10,18 @@ Many warnings from cobrapy that "Encoding OBJECTIVE_COEFFICIENT in KineticLaw is
 Updated readme.md. Initially unable to get image embedding with relative path working on bitbucket.
 loadData.py appears to be working OK.
 Updated flowchart.
+Reviewed optreqanalysis.py and qpmindisty.py. Lacking a gurobi license, these must be updated to use a different solver (osqp?) before they can be tested.
+Executed cobylaminimal2.py with no errors.
+Attempted to run cobrapytest.py which resulted in error:
+"Traceback (most recent call last):
+  File "C:\Users\jarlemag\metabolic-network-analysis\Work\Python\cobrapytest.py", line 24, in <module>
+    SCHUETZR.optimize(solver='gurobi')
+TypeError: optimize() got an unexpected keyword argument 'solver'"
+Studied the source code for cobra.model.optimize and cobra.core.solution in order to understand solver selection in current version of cobrapy. 
+Don't understand exactly when/where OPTLANG/the selected optimizer is called, but it appears like GLPK may be the default solver? Update: the following code in cobra.util.solver.py sets the default solver preference for linear optimization: "lp_order = ["glpk", "cplex", "gurobi"]"
+Executed the following code without errors:
+>>> import cobra.test
+>>> model = cobra.test.create_test_model("textbook")
+>>> model.optimize()
+See also cobra.util.solver. ...
+Removed non-useable code from end of cobrapytest.py (optimization of model "iJE660a_fromMPS.sbml". The model is not in the repository. See "MPStocobramodel.py" for code which was probably used to generate this SBML file. The source of the MPS file is unclear.
