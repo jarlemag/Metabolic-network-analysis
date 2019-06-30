@@ -37,8 +37,8 @@ def compdist(fluxvector,expdata = None, options = None, sense = None, extract = 
 
 
 if __name__ == "__main__": #If the module is executed as a program, run a test.
-    from cobra.io.sbml import create_cobra_model_from_sbml_file
-    cobramodel = create_cobra_model_from_sbml_file('../SBML/SCHUETZR.xml')
+    from cobra.io.sbml import read_sbml_model
+    cobramodel = read_sbml_model('../SBML/SCHUETZR.xml')
     import loadData as load
     fluxvalues = load.ExpFluxesfromXML('expdata.xml','Perrenoud','Batch','aerobe')
     rmap = load.ReactionMapfromXML('reactionmaps.xml','Perrenoud','SCHUETZR')
