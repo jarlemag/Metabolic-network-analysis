@@ -70,7 +70,7 @@ def objectiveConstraint(x,objective,value,optreq):
 
 def compdistcomplete(rawfluxvector,model, debug = False):
     if debug:
-        print 'compdistcomplete: Calculating distance...'
+        print('compdistcomplete: Calculating distance...')
     import loadData as load
     import extractflux
     #print 'Loading experimental data...'

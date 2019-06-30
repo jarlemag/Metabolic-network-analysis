@@ -25,3 +25,11 @@ Executed the following code without errors:
 >>> model.optimize()
 See also cobra.util.solver. ...
 Removed non-useable code from end of cobrapytest.py (optimization of model "iJE660a_fromMPS.sbml". The model is not in the repository. See "MPStocobramodel.py" for code which was probably used to generate this SBML file. The source of the MPS file is unclear.
+Updated cobrapytest.py to work with new cobrapy syntax/object structure. (unable to generate solution for ECME model. (Infeasible.))
+Installed scitools3. Attempted to execute CalculabilityAnalysis.py. Error on line 145, appears to be related to comment about having to find correct slice (index) for the array. Thus probably not related to changes in dependent libraries or python2 -> python 3.
+Tested convertrxmaps.py. Appears to work OK.
+Test createReactionmap.py. Appears to work OK.
+Attempted to fix/update syntax in FluxCoupling.py. At least 1 syntax error ream
+Updated fluxreport.py. Appears to work partially. Removed reference to extractflux2.py from extractflux.py header. Appears to work OK.
+Updated cobrapy and Python 3 syntax in gx-FBA.py. Unable to test this script, as it imports qpmindist, which uses gurobi.
+Updated print syntax in lambdacheck.py. Appears to work OK.
